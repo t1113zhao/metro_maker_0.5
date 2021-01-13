@@ -41,9 +41,7 @@ function addService(state, action) {
 }
 
 function editService(state, action) {
-    return {
-        ...state,
-        services: services.map((item, index) => {
+    return state.map((item, index) => {
             if (index !== action.payload.id) {
                 return item
             }
@@ -53,14 +51,11 @@ function editService(state, action) {
                 serviceType: action.payload.serviceType
             }
         })
-    }
 }
 
 //Multiple Services are removed when lines and operators are removed
 function removeServices(state, serviceIDs) {
-    return {
-        ...state,
-        services: services.map((item) => {
+    return state.map((item) => {
             if (serviceIDs.has(item.id)) {
                 return {
                     ...item,
@@ -70,7 +65,6 @@ function removeServices(state, serviceIDs) {
                 return item
             }
         })
-    }
 }
 
 export function selectAllServices(state){
