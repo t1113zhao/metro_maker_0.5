@@ -1,34 +1,34 @@
-import { createSlice } from '@reduxjs/toolkit';
 import { nextIDForArray } from './mapReducer.js'
-export const operatorSlice = createSlice({
-    name: 'operators',
-    initialState: [],
-    reducers: {
-        addOperator: (state, action) => {
-            return addOperator(state, action);
-        },
-        editOperator: (state, action) => {
-            return editOperator(state, action);
-        },
-        removeOperator: (state, action) => {
-            return removeOperator(state, action)
+import {ADD_OPERATOR,
+    EDIT_OPERATOR,
+    REMOVE_OPERATOR,
+    UNDO_REMOVE_OPERATOR} from '../actions/actionTypes'
+const initialOperatorState = []
+
+export default function operatorReducer (state= initialOperatorState, action){
+    switch(action.type){
+        case ADD_OPERATOR:{
+            return doAddOperator(state,action);
         }
+        case EDIT_OPERATOR:{
+            return doEditOperator(state,action);
+        }
+        case REMOVE_OPERATOR:{
+            return doRemoveOperator(state,action);
+        }
+        case UNDO_REMOVE_OPERATOR:{
+            return doUnRemoveOperator(state,action);
+        }
+        default:
+            return state;
     }
-});
+}
 
-export const {
-    addOperator,
-    editOperator,
-    removeOperator
-} = operatorSlice.actions;
-
-export default operatorSlice.reducer;
-
-function addOperator(state, action) {
+function doAddOperator(state, action) {
     return [
         ...state,
         {
-            id: nextIDForArray(state.operators),
+            id: nextIDForArray(state),
             name: action.payload.name,
             color: action.payload.color,
             deletedAt: null
@@ -36,9 +36,9 @@ function addOperator(state, action) {
     ]
 }
 
-function editOperator(state, action) {
+function doEditOperator(state, action) {
     return state.map(item => {
-        if (item.id !== action.payload.id) {
+        if (item.id != action.payload.id) {
             return item
         }
         return {
@@ -49,9 +49,9 @@ function editOperator(state, action) {
     })
 }
 
-export function removeOperator(state, action) {
+function doRemoveOperator(state, action) {
     return state.map(item => {
-        if (item.id !== action.payload.id) {
+        if (item.id != action.payload.id) {
             return item
         }
         return {
@@ -61,12 +61,24 @@ export function removeOperator(state, action) {
     })
 }
 
-function selectAllOperators(state) {
+function doUnRemoveOperator(state, action) {
+    return state.map(item => {
+        if (item.id != action.payload.id) {
+            return item
+        }
+        return {
+            ...item,
+            deletedAt: null
+        }
+    })
+}
+
+export function selectAllOperators(state) {
     return state.operators
 }
 
-function selectOperatorsGivenId(state,id){
+export function selectOperatorsGivenId(state,id){
     return state.operators.filter(operator =>{
-        return operator.id == id
+        return operator.id == id  
     })
 }

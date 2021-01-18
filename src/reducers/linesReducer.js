@@ -1,35 +1,39 @@
-import { createSlice } from '@reduxjs/toolkit';
 import { nextIDForArray } from './mapReducer.js'
+import {ADD_LINE,
+    EDIT_LINE,
+    REMOVE_LINE,
+    UNDO_REMOVE_LINE,
+    REMOVE_OPERATOR,
+    UNDO_REMOVE_OPERATOR} from '../actions/actionTypes'
 
-export const lineSlice = createSlice({
-    name: 'lines',
-    initialState: [],
-    reducers: {
-        addLine: (state, action) => {
-            return addLine(state, action)
-        },
-        editLine: (state, action) => {
-            return editLine(state, action)
-        },
-        removeLines: (state, action) => {
-            return removeLines(state, action)
+const initialLineState = [];
+
+export default function lineReducer (state = initialLineState, action){
+    switch(action.type){
+        case ADD_LINE:{
+            return doAddLine(state,action);
         }
+        case EDIT_LINE:{
+            return doEditLine(state,action);
+        }
+        case REMOVE_OPERATOR:
+        case REMOVE_LINE:{
+            return doRemoveLines(state,action);
+        }
+        case UNDO_REMOVE_OPERATOR:
+        case UNDO_REMOVE_LINE:{
+            return doUnRemoveLines(state,action);
+        }
+        default:
+            return state;
     }
-});
+}
 
-export const {
-    addLine,
-    editLine,
-    removeLines
-} = operatorSlice.actions;
-
-export default operatorSlice.reducer;
-
-function addLine(state, action) {
+function doAddLine(state, action) {
     return [
         ...state,
         {
-            id: nextIDForArray(state.lines),
+            id: nextIDForArray(state),
             operatorID: action.payload.operatorID,
             name: action.payload.name,
             color: action.payload.color,
@@ -39,9 +43,9 @@ function addLine(state, action) {
     ]
 }
 
-function editLine(state, action) {
+function doEditLine(state, action) {
     return state.map(item => {
-            if (item.id !== action.payload.id) {
+            if (item.id != action.payload.id) {
                 return item
             }
             return {
@@ -54,13 +58,29 @@ function editLine(state, action) {
 }
 
 // Remove Operators calls this for every line that Operator contains
-function removeLines(state, action) {
+function doRemoveLines(state, action) {
+    var lineIDset = new Set(action.payload.lineIDs)
 
     return state.map((item) => {
-            if (action.payload.lineIDs.has(item.id)) {
+            if (lineIDset.has(item.id)) {
                 return {
                     ...item,
                     deletedAt: action.payload.deletedAt
+                }
+            } else {
+                return item
+            }
+        })
+}
+
+function doUnRemoveLines(state, action) {
+    var lineIDset = new Set(action.payload.lineIDs)
+
+    return state.map((item) => {
+            if (lineIDset.has(item.id)) {
+                return {
+                    ...item,
+                    deletedAt: null
                 }
             } else {
                 return item
@@ -80,12 +100,13 @@ export function selectLineGivenID(state,id){
 
 export function selectLinesGivenOperatorId (state, operatorID){
     return state.lines.filter(line =>{
-        line.operatorID = operatorID
+        return line.operatorID == operatorID
     })
 }
 
 export function lineIDsGivenOperatorId (state, operatorID){
-    return selectLinesGivenOperatorId(state,operatorID).map(
-        line => line.id
+    return selectLinesGivenOperatorId(state,operatorID).map(line => {
+            return line.id
+        }
     )
 }
