@@ -1,0 +1,3 @@
+export const IN_STATION = "IN_STATION"
+export const FREE_OUT_STATION = "FREE_OUT_STATION"
+export const PAID_OUT_STATION = "PAID_OUT_STATION"

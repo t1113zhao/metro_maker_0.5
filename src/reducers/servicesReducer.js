@@ -1,4 +1,4 @@
-import { nextIDForArray } from './mapReducer.js'
+import { nextIDForArray } from '../utils/utils'
 import {lineIDsGivenOperatorId} from './linesReducer.js'
 import {ADD_SERVICE,
     EDIT_SERVICE,
@@ -8,8 +8,7 @@ import {ADD_SERVICE,
     UNDO_REMOVE_LINE,
     REMOVE_OPERATOR,
     UNDO_REMOVE_OPERATOR} from '../actions/actionTypes'
-import { selectOperatorsGivenId } from './operatorsReducer.js';
-
+    
 const initialServicesState = []
 
 export default function serviceReducer(state = initialServicesState, action){
@@ -40,9 +39,10 @@ function doAddService(state, action) {
         ...state,
         {
             id: nextIDForArray(state),
-            lineID: parseInt(action.payload.lineID),
+            lineID: action.payload.lineID,
             name: action.payload.name,
-            serviceType: action.payload.serviceType,
+            servicePeriod: action.payload.servicePeriod,
+            frequency: action.payload.frequency,
             deletedAt: null
         }
     ]
@@ -56,7 +56,8 @@ function doEditService(state, action) {
             return {
                 ...item,
                 name: action.payload.name,
-                serviceType: action.payload.serviceType
+                servicePeriod: action.payload.serviceType,
+                frequency: action.payload.frequency
             }
         })
 }

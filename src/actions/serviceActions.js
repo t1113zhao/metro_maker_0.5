@@ -5,24 +5,26 @@ import {
     UNDO_REMOVE_SERVICE
 } from './actionTypes'
 
-export function addService(lineID, name, serviceType){
+export function addService(lineID, name, servicePeriod,frequency){
     return{
         type: ADD_SERVICE,
         payload :{
             lineID: parseInt(lineID),
             name: name,
-            serviceType: serviceType
+            servicePeriod: servicePeriod,
+            frequency: frequency
         }
     }
 }
 
-export function editService(id, name, serviceType){
+export function editService(id, name, servicePeriod,frequency){
     return{
         type: EDIT_SERVICE,
         payload: {
             id: parseInt(id),
             name: name,
-            serviceType: serviceType
+            servicePeriod: servicePeriod,
+            frequency: frequency
         }
     }
 }

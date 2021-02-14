@@ -1,4 +1,4 @@
-import { nextIDForArray } from './mapReducer.js'
+import { nextIDForArray } from '../utils/utils'
 import {ADD_LINE,
     EDIT_LINE,
     REMOVE_LINE,
