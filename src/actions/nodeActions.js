@@ -1,3 +1,4 @@
+import { stationsGivenNodeID } from '../reducers/stationsReducer'
 import {
     ADD_NODE,
     EDIT_NODE,
@@ -32,7 +33,8 @@ export function removeNode(id) {
         type: REMOVE_NODE,
         payload: {
             id: parseInt(id),
-            deletedAt: new Date().toISOString()
+            deletedAt: new Date().toISOString(),
+            stationIDs: stationsGivenNodeID(id)
         }
     }
 }
@@ -41,7 +43,8 @@ export function undoRemoveNode(id) {
     return {
         type: UNDO_REMOVE_NODE,
         payload: {
-            id: parseInt(id)
+            id: parseInt(id),
+            stationIDs: stationsGivenNodeID(id)
         }
     }
 }
