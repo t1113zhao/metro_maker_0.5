@@ -2,14 +2,39 @@ import {combineReducers} from 'redux';
 import operatorReducer from '../reducers/operatorsReducer';
 import linesReducer from '../reducers/linesReducer';
 import servicesReducer from '../reducers/servicesReducer';
+import {nodesReducer, addNodeExtern}from '../reducers/nodesReducer';
+import {stationReducer, addStation} from '../reducers/stationsReducer';
+import { nextIDForArray } from '../utils/utils';
 
 const rootReducer = combineReducers({
     operators: operatorReducer,
     lines: linesReducer,
-    services: servicesReducer
+    services: servicesReducer,
+    nodes: nodesReducer,
+    stations: stationReducer
 });
 
-export default rootReducer;
+function crossSliceReducer(state, action){
+    switch(action.type) {
+        case ADD_STATION:{
+
+            let nodeID = nextIDForArray(state.nodes);
+            return{
+                ...state,
+                nodes: addNodeExtern(state.nodes,action),
+                stations: addStation(state.stations,nodeID,action)
+            }
+        } 
+        default:
+            return state
+    }
+}
+
+export default function rootReducer(state, action){
+    const intermediateState = rootReducer(state,action);
+    const finalState = crossSliceReducer(intermediateState,action);
+    return finalState;
+}
 
 export function selectOperatorsLinesAndServicesAsTreeObject(state, isSelectable){
     return state.operators.map( operator =>{

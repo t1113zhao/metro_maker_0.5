@@ -3,9 +3,9 @@ import {ADD_OPERATOR,
     EDIT_OPERATOR,
     REMOVE_OPERATOR,
     UNDO_REMOVE_OPERATOR} from '../actions/actionTypes'
-const initialOperatorState = []
+const initialState = []
 
-export default function operatorReducer (state= initialOperatorState, action){
+export default function operatorReducer (state= initialState, action){
     switch(action.type){
         case ADD_OPERATOR:{
             return doAddOperator(state,action);
