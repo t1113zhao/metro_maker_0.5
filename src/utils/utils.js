@@ -3,14 +3,14 @@ export function nextIDForArray(array){
     return maxID + 1
 };
 
-export function genericSingleDelete(array, id){
+export function genericSingleDelete(array, id, deletedAt){
     return array.map(item => {
         if (item.id != id) {
             return item
         }
         return {
             ...item,
-            deletedAt: action.payload.deletedAt
+            deletedAt: deletedAt
         }
     })
 }
