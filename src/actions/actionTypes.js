@@ -35,3 +35,9 @@ export const EDIT_NODE = "EDIT_NODE" // MOVE NODE
 export const REMOVE_NODE = "REMOVE_NODE"
 export const UNDO_REMOVE_NODE = "UNDO_REMOVE_NODE"
 
+//Station Action Types  
+export const ADD_STATION = "ADD_STATION"
+export const EDIT_STATION = "EDIT_STATION"
+export const REMOVE_STATION = "REMOVE_STATION"
+export const UNDO_REMOVE_STATION = "UNDO_REMOVE_STATION"
+
