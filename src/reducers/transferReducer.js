@@ -1,5 +1,5 @@
 import _ from 'underscore';
-import { nextIDForArray } from '../utils/utils'
+import { genericMultiDelete, genericMultiRestore, genericSingleDelete, genericSingleRestore, nextIDForArray } from '../utils/utils'
 
 import {
     ADD_TRANSFER,
@@ -22,16 +22,59 @@ export default function transferReducer(state = initialState, action) {
         case EDIT_TRANSFER: {
             return doEditTransfer(state, action);
         }
-        case REMOVE_TRANSFER:
-        case REMOVE_STATION: {
-            return doRemoveTransferStation(state, action)
-        }
         case REMOVE_NODE: {
-            return doRemoveTransferDirect(state, action);
+            if(action.payload.stationID){
+                return genericMultiDelete(
+                    state,
+                    selectAllTransfersGivenStationID(
+                        state,
+                        action.payload.stationID
+                    ),
+                    action.payload.deletedAt
+                )
+            }
         }
-        case UNDO_REMOVE_TRANSFER:
+        case REMOVE_STATION: {
+            return genericMultiDelete(
+                state,
+                selectAllTransfersGivenStationID(
+                    state,
+                    action.payload.id
+                ),
+                action.payload.deletedAt
+            )
+        }
+        case REMOVE_TRANSFER:{
+            return genericSingleDelete(
+                state,
+                action.payload.id,
+                action.payload.deletedAt)
+        }
         case UNDO_REMOVE_NODE: {
-            return doUndoRemoveTransferStation(state, action);
+            if(action.payload.stationID){
+                return genericMultiRestore(
+                    state,
+                    selectAllTransfersGivenStationID(
+                        state,
+                        action.payload.stationID
+                    )
+                )
+            }
+        }
+        case UNDO_REMOVE_STATION:{
+            return genericMultiRestore(
+                state,
+                selectAllTransfersGivenStationID(
+                    state,
+                    action.payload.id
+                )
+            )
+        }
+        case UNDO_REMOVE_TRANSFER:{
+            return genericSingleRestore(
+                state,
+                action.payload.id
+            )
         }
         case REMOVE_NODE: {
             return doUndoRemoveTransferDirect(state, action);
@@ -151,4 +194,12 @@ export function selectAllConnectedStations(state, stationID){
     }
 
     return connectedIDs
+}
+
+export function selectAllTransfersGivenStationID(state, stationID) {
+    return state.filter(item =>{
+        return (transfer.stationIDs.contains(stationID)).map(transfer =>{
+                return transfer.id
+            })
+    })
 }

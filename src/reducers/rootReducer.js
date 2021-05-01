@@ -1,15 +1,18 @@
 import {combineReducers} from 'redux';
-import operatorReducer from '../reducers/operatorsReducer';
-import linesReducer from '../reducers/linesReducer';
-import servicesReducer from '../reducers/servicesReducer';
+import {operatorReducer,selectAllOperators} from '../reducers/operatorsReducer';
+import {linesReducer,selectLinesGivenOperatorId} from '../reducers/linesReducer';
+import {servicesReducer, doAddService, selectServicesGivenLineID} from '../reducers/servicesReducer';
+import {serviceRouteReducer, doAddServiceRoute} from './serviceRouteReducer'
 import {nodesReducer, addNodeExtern}from '../reducers/nodesReducer';
 import {stationReducer, addStation} from '../reducers/stationsReducer';
 import { nextIDForArray } from '../utils/utils';
+import { ADD_SERVICE } from '../actions/actionTypes';
 
 const rootReducer = combineReducers({
     operators: operatorReducer,
     lines: linesReducer,
     services: servicesReducer,
+    serviceRoutes: serviceRouteReducer,
     nodes: nodesReducer,
     stations: stationReducer
 });
@@ -24,7 +27,7 @@ function crossSliceReducer(state, action){
                 nodes: addNodeExtern(state.nodes,action),
                 stations: addStation(state.stations,nodeID,action)
             }
-        } 
+        }
         default:
             return state
     }
@@ -37,7 +40,7 @@ export default function rootReducer(state, action){
 }
 
 export function selectOperatorsLinesAndServicesAsTreeObject(state, isSelectable){
-    return state.operators.map( operator =>{
+    return selectAllOperators(state).map( operator =>{
         return {
             title: operator.name,
             key: operator.id,
@@ -48,9 +51,7 @@ export function selectOperatorsLinesAndServicesAsTreeObject(state, isSelectable)
 }
 
 export function selectLinesAndServicesAsTreeObject(state, isSelectable, operatorID){
-    return state.lines.filter(line =>{
-        return line.operatorID === operatorID
-    }).map(line =>{
+    return selectLinesGivenOperatorId(state,operatorID).map(line =>{
         return {
             title: line.name,
             key: operatorID + "-" + line.id,
@@ -61,9 +62,7 @@ export function selectLinesAndServicesAsTreeObject(state, isSelectable, operator
 }
 
 export function selectServicesAsTreeObject(state, isSelectable,operatorID,lineID){
-    return state.services.filter(service=>{
-        return service.lineID === lineID
-    }).map(service=>{
+    return selectServicesGivenLineID(state,lineID).map(service=>{
         return{
             title: service.name,
             key: operatorID + "-" + lineID + "-" + service.id,

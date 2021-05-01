@@ -66,8 +66,14 @@ function doEditStation(state, action) {
     })
 }
 
-export function stationsGivenNodeID(state, nodeID){
-    return state.stations.filter(station =>{
-        return station.nodeID == nodeID
-    })
+export function stationGivenNodeID(state, nodeID, includeDeleted){
+    if(includeDeleted){
+        return state.stations.filter(station =>{
+            return station.nodeID == nodeID
+        })[0]
+    } else {
+        return state.stations.filter(station =>{
+            return station.nodeID == nodeID && !station.deleted
+        })[0]
+    }
 }

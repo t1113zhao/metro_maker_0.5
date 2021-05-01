@@ -1,4 +1,4 @@
-import { nextIDForArray } from '../utils/utils'
+import { genericSingleDelete, genericSingleRestore, nextIDForArray } from '../utils/utils'
 import {ADD_OPERATOR,
     EDIT_OPERATOR,
     REMOVE_OPERATOR,
@@ -14,10 +14,17 @@ export default function operatorReducer (state= initialState, action){
             return doEditOperator(state,action);
         }
         case REMOVE_OPERATOR:{
-            return doRemoveOperator(state,action);
+            return genericSingleDelete(
+                state,
+                action.payload.id,
+                action.payload.deletedAt
+                );
         }
         case UNDO_REMOVE_OPERATOR:{
-            return doUnRemoveOperator(state,action);
+            return genericSingleRestore(
+                state,
+                action.payload.id
+                );
         }
         default:
             return state;
@@ -49,36 +56,14 @@ function doEditOperator(state, action) {
     })
 }
 
-function doRemoveOperator(state, action) {
-    return state.map(item => {
-        if (item.id != action.payload.id) {
-            return item
-        }
-        return {
-            ...item,
-            deletedAt: action.payload.deletedAt
-        }
-    })
-}
-
-function doUnRemoveOperator(state, action) {
-    return state.map(item => {
-        if (item.id != action.payload.id) {
-            return item
-        }
-        return {
-            ...item,
-            deletedAt: null
-        }
-    })
-}
-
 export function selectAllOperators(state) {
-    return state.operators
+    return state.operators.filter(operator =>{
+        return !operator.deletedAt
+    })
 }
 
 export function selectOperatorsGivenId(state,id){
     return state.operators.filter(operator =>{
-        return operator.id == id  
+        return operator.id == id && !operator.deletedAt
     })
 }

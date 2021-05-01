@@ -13,7 +13,7 @@ export function addLine(operatorID, name, color, linetype){
     return{
         type: ADD_LINE,
         payload :{
-            operatorID:parseInt(operatorID),
+            operatorID: parseInt(operatorID),
             name: name,
             color: color,
             linetype: linetype
@@ -33,24 +33,22 @@ export function editLine(lineID, name, color, linetype){
     }
 }
 
-export function removeLine(removeID){
-    let lineIDs = [parseInt(removeID)]
+export function removeLine(id){
     return{
         type:REMOVE_LINE,
         payload :{
-            lineIDs: lineIDs,
+            id: parseInt(id),
             deletedAt: new Date().toISOString(),
             serviceIDs: serviceIDsGivenLineID(store.getState(),removeID)
         }
     }
 }
 
-export function undoRemoveLine(removeID){
-    let lineIDs = [parseInt(removeID)]
+export function undoRemoveLine(id){
     return{
         type:UNDO_REMOVE_LINE,
         payload :{
-            lineIDs: lineIDs,
+            id: parseInt(id),
             serviceIDs: serviceIDsGivenLineID(store.getState(),removeID)
         }
     }

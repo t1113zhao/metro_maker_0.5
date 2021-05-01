@@ -6,6 +6,8 @@ import {
     UNDO_REMOVE_NODE
 } from './actionTypes'
 
+import store from '../app/store'
+
 export function addNode(latitude, longitude) {
     return {
         type: ADD_NODE,
@@ -34,7 +36,7 @@ export function removeNode(id) {
         payload: {
             id: parseInt(id),
             deletedAt: new Date().toISOString(),
-            stationIDs: stationsGivenNodeID(id)
+            stationID: stationGivenNodeID(store.getState(),id, false)
         }
     }
 }
@@ -44,7 +46,7 @@ export function undoRemoveNode(id) {
         type: UNDO_REMOVE_NODE,
         payload: {
             id: parseInt(id),
-            stationIDs: stationsGivenNodeID(id)
+            stationID: stationGivenNodeID(store.getState(),id, false)
         }
     }
 }

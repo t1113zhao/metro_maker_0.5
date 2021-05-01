@@ -1,4 +1,4 @@
-import { nextIDForArray } from '../utils/utils'
+import { genericMultiDelete, genericMultiRestore, genericSingleDelete, genericSingleRestore, nextIDForArray } from '../utils/utils'
 import {lineIDsGivenOperatorId} from './linesReducer.js'
 import {ADD_SERVICE,
     EDIT_SERVICE,
@@ -13,28 +13,47 @@ const initialServicesState = []
 
 export default function serviceReducer(state = initialServicesState, action){
     switch(action.type){
-        case ADD_SERVICE:{
-            return doAddService(state,action);
-        }
+        // case ADD_SERVICE:{
+        //     return doAddService(state,action);
+        // }
         case EDIT_SERVICE:{
             return doEditService(state,action);
         }
         case REMOVE_OPERATOR:
-        case REMOVE_LINE:
+        case REMOVE_LINE:{
+            return genericMultiDelete(
+                state,
+                action.payload.serviceIDs,
+                action.payload.deletedAt
+            )
+        }
         case REMOVE_SERVICE:{
-            return doRemoveServices(state,action);
+            return genericSingleDelete(
+                state,
+                action.payload.id,
+                action.payload.deletedAt
+            )
         }
         case UNDO_REMOVE_OPERATOR:
-        case UNDO_REMOVE_LINE:
+        case UNDO_REMOVE_LINE:{
+            return genericMultiRestore(
+                state,
+                action.payload.serviceIDs
+            )
+        }
+        
         case UNDO_REMOVE_SERVICE:{
-            return doUnRemoveServices(state,action);
+            return genericSingleRestore(
+                state,
+                action.payload.id
+            )
         }
         default:
             return state;
     }
 }
 
-function doAddService(state, action) {
+export function doAddService(state, action) {
     return [
         ...state,
         {
@@ -62,49 +81,21 @@ function doEditService(state, action) {
         })
 }
 
-//Multiple Services are removed when lines and operators are removed
-function doRemoveServices(state, action) {
-    var serviceIDSet = new Set(action.payload.serviceIDs)
-    return state.map((item) => {
-            if (serviceIDSet.has(item.id)) {
-                return {
-                    ...item,
-                    deletedAt: action.payload.deletedAt
-                }
-            } else {
-                return item
-            }   
-        })
-}
-  
-function doUnRemoveServices(state, action) {
-    var serviceIDSet = new Set(action.payload.serviceIDs)
-    return state.map((item) => {
-            if (serviceIDSet.has(item.id)) {
-                return {
-                    ...item,
-                    deletedAt: null
-                }
-            } else {
-                return item
-            }
-        })
-}
-
-
 export function selectAllServices(state){
-    return state.services;
+    return state.services.filter(service =>{
+        return !service.deletedAt
+    });
 }
 
 export function selectServiceGivenID(state,id){
     return state.services.filter(service =>{
-        return service.id == id
+        return service.id == id && !service.deletedAt
     })
 }
 
 export function selectServicesGivenLineID(state,lineID){
     return state.services.filter(service =>{
-        return service.lineID == lineID
+        return service.lineID == lineID && !service.deletedAt
     })
 }
 

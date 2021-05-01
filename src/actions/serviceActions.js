@@ -29,25 +29,21 @@ export function editService(id, name, servicePeriod,frequency){
     }
 }
 
-export function removeService(removeId){
-    let serviceIDs = [parseInt(removeId)];
+export function removeService(id){
     return {
         type: REMOVE_SERVICE,
         payload: {
-            serviceIDs:serviceIDs,
+            id: parseInt(id),
             deletedAt: new Date().toISOString()
         }
     }
 }
 
-export function undoRemoveService(removeId){
-    let serviceIDs = [parseInt(removeId)]
-
+export function undoRemoveService(id){
     return {
         type: UNDO_REMOVE_SERVICE,
         payload: {
-            serviceIDs:serviceIDs
+            id: parseInt(id),
         }
     }
- 
 }

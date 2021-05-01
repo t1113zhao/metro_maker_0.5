@@ -1,4 +1,4 @@
-import { nextIDForArray } from '../utils/utils'
+import { genericMultiDelete, genericMultiRestore, genericSingleDelete, genericSingleRestore, nextIDForArray } from '../utils/utils'
 import {ADD_LINE,
     EDIT_LINE,
     REMOVE_LINE,
@@ -16,13 +16,31 @@ export default function lineReducer (state = initialLineState, action){
         case EDIT_LINE:{
             return doEditLine(state,action);
         }
-        case REMOVE_OPERATOR:
-        case REMOVE_LINE:{
-            return doRemoveLines(state,action);
+        case REMOVE_OPERATOR:{
+            return genericMultiDelete(
+                state,
+                action.payload.lineIDs,
+                action.payload.deletedAt
+            )
         }
-        case UNDO_REMOVE_OPERATOR:
+        case REMOVE_LINE:{
+            return genericSingleDelete(
+                state,
+                action.payload.id,
+                action.payload.deletedAt
+            )
+        }
+        case UNDO_REMOVE_OPERATOR:{
+            return genericMultiRestore(
+                state,
+                action.payload.lineIDs
+            )
+        }
         case UNDO_REMOVE_LINE:{
-            return doUnRemoveLines(state,action);
+            return genericSingleRestore(
+                state,
+                action.payload.id
+            )
         }
         default:
             return state;
@@ -57,50 +75,21 @@ function doEditLine(state, action) {
         })
 }
 
-// Remove Operators calls this for every line that Operator contains
-function doRemoveLines(state, action) {
-    var lineIDset = new Set(action.payload.lineIDs)
-
-    return state.map((item) => {
-            if (lineIDset.has(item.id)) {
-                return {
-                    ...item,
-                    deletedAt: action.payload.deletedAt
-                }
-            } else {
-                return item
-            }
-        })
-}
-
-function doUnRemoveLines(state, action) {
-    var lineIDset = new Set(action.payload.lineIDs)
-
-    return state.map((item) => {
-            if (lineIDset.has(item.id)) {
-                return {
-                    ...item,
-                    deletedAt: null
-                }
-            } else {
-                return item
-            }
-        })
-}
-
 export function selectAllLines (state){
-    return state.lines
+    return state.lines.filter(line =>{
+        return !line.deletedAt
+    })
 }
 
 export function selectLineGivenID(state,id){
     return state.lines.filter(line =>{
-        return line.id == id
+        return line.id === id && !line.deletedAt
     })
 }
 
 export function selectLinesGivenOperatorId (state, operatorID){
     return state.lines.filter(line =>{
-        return line.operatorID == operatorID
+        return line.operatorID === operatorID && !line.deletedAt
     })
 }
 
