@@ -7,12 +7,12 @@ import {
 
 import store from '../app/store'
 
-import {serviceIDsGivenLineID} from '../reducers/servicesReducer'
+import { serviceIDsGivenLineID } from '../reducers/servicesReducer'
 
-export function addLine(operatorID, name, color, linetype){
-    return{
+export function addLine(operatorID, name, color, linetype) {
+    return {
         type: ADD_LINE,
-        payload :{
+        payload: {
             operatorID: parseInt(operatorID),
             name: name,
             color: color,
@@ -21,10 +21,10 @@ export function addLine(operatorID, name, color, linetype){
     }
 }
 
-export function editLine(lineID, name, color, linetype){
-    return{
+export function editLine(lineID, name, color, linetype) {
+    return {
         type: EDIT_LINE,
-        payload :{
+        payload: {
             id: parseInt(lineID),
             name: name,
             color: color,
@@ -33,23 +33,23 @@ export function editLine(lineID, name, color, linetype){
     }
 }
 
-export function removeLine(id){
-    return{
-        type:REMOVE_LINE,
-        payload :{
+export function removeLine(id) {
+    return {
+        type: REMOVE_LINE,
+        payload: {
             id: parseInt(id),
             deletedAt: new Date().toISOString(),
-            serviceIDs: serviceIDsGivenLineID(store.getState(),removeID)
+            serviceIDs: serviceIDsGivenLineID(store.getState(), removeID)
         }
     }
 }
 
-export function undoRemoveLine(id){
-    return{
-        type:UNDO_REMOVE_LINE,
-        payload :{
+export function undoRemoveLine(id) {
+    return {
+        type: UNDO_REMOVE_LINE,
+        payload: {
             id: parseInt(id),
-            serviceIDs: serviceIDsGivenLineID(store.getState(),removeID)
+            serviceIDs: serviceIDsGivenLineID(store.getState(), removeID)
         }
     }
 }

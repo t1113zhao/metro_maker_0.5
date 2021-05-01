@@ -6,23 +6,23 @@ import {
 } from './actionTypes'
 import store from '../app/store'
 
-import {lineIDsGivenOperatorId} from '../reducers/linesReducer'
-import {serviceIDsGivenOperatorID} from '../reducers/servicesReducer'
+import { lineIDsGivenOperatorId } from '../reducers/linesReducer'
+import { serviceIDsGivenOperatorID } from '../reducers/servicesReducer'
 
-export function addOperator(name, color){
-    return{
+export function addOperator(name, color) {
+    return {
         type: ADD_OPERATOR,
-        payload :{
+        payload: {
             name: name,
             color: color
         }
     }
 }
 
-export function editOperator(id, name, color){
-    return{
+export function editOperator(id, name, color) {
+    return {
         type: EDIT_OPERATOR,
-        payload :{
+        payload: {
             id: parseInt(id),
             name: name,
             color: color
@@ -30,25 +30,25 @@ export function editOperator(id, name, color){
     }
 }
 
-export function removeOperator(removeID){
-    return{
-        type:REMOVE_OPERATOR,
-        payload :{
+export function removeOperator(removeID) {
+    return {
+        type: REMOVE_OPERATOR,
+        payload: {
             id: parseInt(removeID),
             deletedAt: new Date().toISOString(),
-            lineIDs: lineIDsGivenOperatorId(store.getState(),removeID),
-            serviceIDs: serviceIDsGivenOperatorID(store.getState(),removeID)
+            lineIDs: lineIDsGivenOperatorId(store.getState(), removeID),
+            serviceIDs: serviceIDsGivenOperatorID(store.getState(), removeID)
         }
     }
 }
 
-export function undoRemoveOperator(removeID){
-    return{
-        type:UNDO_REMOVE_OPERATOR,
-        payload :{
+export function undoRemoveOperator(removeID) {
+    return {
+        type: UNDO_REMOVE_OPERATOR,
+        payload: {
             id: parseInt(removeID),
-            lineIDs: lineIDsGivenOperatorId(store.getState(),removeID),
-            serviceIDs: serviceIDsGivenOperatorID(store.getState(),removeID)
+            lineIDs: lineIDsGivenOperatorId(store.getState(), removeID),
+            serviceIDs: serviceIDsGivenOperatorID(store.getState(), removeID)
         }
     }
 }

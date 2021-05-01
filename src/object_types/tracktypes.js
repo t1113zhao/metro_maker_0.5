@@ -8,4 +8,3 @@ export const CABLE_CAR_TRACK = "CABLE_CAR_TRACK"
 export const BUS_LANE = "BUS_LANE"
 export const FERRY_ROUTE = "FERRY_ROUTE"
 export const AERIAL_LIFT = "AERIAL_LIFT"
-

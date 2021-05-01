@@ -15,7 +15,7 @@ import {
 const initialState = []
 
 export default function transferReducer(state = initialState, action) {
-    switch (action.type){
+    switch (action.type) {
         case ADD_TRANSFER: {
             return doAddTransfer(state, action);
         }
@@ -23,7 +23,7 @@ export default function transferReducer(state = initialState, action) {
             return doEditTransfer(state, action);
         }
         case REMOVE_NODE: {
-            if(action.payload.stationID){
+            if (action.payload.stationID) {
                 return genericMultiDelete(
                     state,
                     selectAllTransfersGivenStationID(
@@ -44,14 +44,14 @@ export default function transferReducer(state = initialState, action) {
                 action.payload.deletedAt
             )
         }
-        case REMOVE_TRANSFER:{
+        case REMOVE_TRANSFER: {
             return genericSingleDelete(
                 state,
                 action.payload.id,
                 action.payload.deletedAt)
         }
         case UNDO_REMOVE_NODE: {
-            if(action.payload.stationID){
+            if (action.payload.stationID) {
                 return genericMultiRestore(
                     state,
                     selectAllTransfersGivenStationID(
@@ -61,7 +61,7 @@ export default function transferReducer(state = initialState, action) {
                 )
             }
         }
-        case UNDO_REMOVE_STATION:{
+        case UNDO_REMOVE_STATION: {
             return genericMultiRestore(
                 state,
                 selectAllTransfersGivenStationID(
@@ -70,7 +70,7 @@ export default function transferReducer(state = initialState, action) {
                 )
             )
         }
-        case UNDO_REMOVE_TRANSFER:{
+        case UNDO_REMOVE_TRANSFER: {
             return genericSingleRestore(
                 state,
                 action.payload.id
@@ -79,11 +79,11 @@ export default function transferReducer(state = initialState, action) {
         case REMOVE_NODE: {
             return doUndoRemoveTransferDirect(state, action);
         }
-            
+
     }
 }
 
-function doAddTransfer(state, action){
+function doAddTransfer(state, action) {
     return [
         ...state,
         {
@@ -95,9 +95,9 @@ function doAddTransfer(state, action){
     ]
 }
 
-function doEditTransfer(state, action){
+function doEditTransfer(state, action) {
     return state.map(item => {
-        if(item.id!= action.payload.id) {
+        if (item.id != action.payload.id) {
             return item
         }
         return {
@@ -108,9 +108,9 @@ function doEditTransfer(state, action){
 }
 
 //Deleting a transfer that connects to a deleted station
-function doRemoveTransferStation(state, action){
-    return state.map(transfer =>{
-        if(transfer.stationIDs.contains(action.payload.stationID)){
+function doRemoveTransferStation(state, action) {
+    return state.map(transfer => {
+        if (transfer.stationIDs.contains(action.payload.stationID)) {
             return {
                 ...transfer,
                 deletedAt: action.payload.deletedAt
@@ -121,8 +121,8 @@ function doRemoveTransferStation(state, action){
 
 //Deleting exactly 1 transfer
 function doRemoveTransferDirect(state, action) {
-    return state.map(item =>{
-        if(item.id != action.payload.id ){
+    return state.map(item => {
+        if (item.id != action.payload.id) {
             return item
         }
         return {
@@ -132,10 +132,10 @@ function doRemoveTransferDirect(state, action) {
     })
 }
 
-function doUndoRemoveTransferStation(state, action){
-    return state.map(transfer =>{
-        if(transfer.stationIDs.contains(action.payload.stationID) 
-            && transfer.deletedAt !== null){
+function doUndoRemoveTransferStation(state, action) {
+    return state.map(transfer => {
+        if (transfer.stationIDs.contains(action.payload.stationID)
+            && transfer.deletedAt !== null) {
             return {
                 ...transfer,
                 deletedAt: null
@@ -146,8 +146,8 @@ function doUndoRemoveTransferStation(state, action){
 
 //UnDeleting exactly one transfer
 function doUndoRemoveTransferDirect(state, action) {
-    return state.map(item =>{
-        if(item.id != action.payload.id ){
+    return state.map(item => {
+        if (item.id != action.payload.id) {
             return item
         }
         return {
@@ -157,7 +157,7 @@ function doUndoRemoveTransferDirect(state, action) {
     })
 }
 
-export function selectAllConnectedStations(state, stationID){
+export function selectAllConnectedStations(state, stationID) {
     //for each transfer, create hashmap of station to station
     //then do a BFS search
 
@@ -166,15 +166,15 @@ export function selectAllConnectedStations(state, stationID){
         let A = element.stationIDs[0];
         let B = element.stationIDs[1];
 
-        if(!map.has(A)){
-            map.set(A,[B]);
-        } else if(!map.get(A).includes(B)){
+        if (!map.has(A)) {
+            map.set(A, [B]);
+        } else if (!map.get(A).includes(B)) {
             map.get(A).push(B);
         }
 
-        if(!map.has(B)){
-            map.set(B,[A]);
-        } else if(!map.get(B).includes(A)){
+        if (!map.has(B)) {
+            map.set(B, [A]);
+        } else if (!map.get(B).includes(A)) {
             map.get(B).push(A);
         }
     })
@@ -183,11 +183,11 @@ export function selectAllConnectedStations(state, stationID){
     let searchQueue = [];
 
     searchQueue.push(stationID);
-    while(searchQueue.length()>0){
+    while (searchQueue.length() > 0) {
         let cur = searchQueue.shift();
 
         let connected = map.get(cur);
-        connected.foreach(element =>{
+        connected.foreach(element => {
             searchQueue.push(element);
             connectedIDs.push(element);
         })
@@ -197,9 +197,9 @@ export function selectAllConnectedStations(state, stationID){
 }
 
 export function selectAllTransfersGivenStationID(state, stationID) {
-    return state.filter(item =>{
-        return (transfer.stationIDs.contains(stationID)).map(transfer =>{
-                return transfer.id
-            })
+    return state.filter(item => {
+        return (transfer.stationIDs.contains(stationID)).map(transfer => {
+            return transfer.id
+        })
     })
 }

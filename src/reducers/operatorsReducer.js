@@ -1,30 +1,32 @@
 import { genericSingleDelete, genericSingleRestore, nextIDForArray } from '../utils/utils'
-import {ADD_OPERATOR,
+import {
+    ADD_OPERATOR,
     EDIT_OPERATOR,
     REMOVE_OPERATOR,
-    UNDO_REMOVE_OPERATOR} from '../actions/actionTypes'
+    UNDO_REMOVE_OPERATOR
+} from '../actions/actionTypes'
 const initialState = []
 
-export default function operatorReducer (state= initialState, action){
-    switch(action.type){
-        case ADD_OPERATOR:{
-            return doAddOperator(state,action);
+export default function operatorReducer(state = initialState, action) {
+    switch (action.type) {
+        case ADD_OPERATOR: {
+            return doAddOperator(state, action);
         }
-        case EDIT_OPERATOR:{
-            return doEditOperator(state,action);
+        case EDIT_OPERATOR: {
+            return doEditOperator(state, action);
         }
-        case REMOVE_OPERATOR:{
+        case REMOVE_OPERATOR: {
             return genericSingleDelete(
                 state,
                 action.payload.id,
                 action.payload.deletedAt
-                );
+            );
         }
-        case UNDO_REMOVE_OPERATOR:{
+        case UNDO_REMOVE_OPERATOR: {
             return genericSingleRestore(
                 state,
                 action.payload.id
-                );
+            );
         }
         default:
             return state;
@@ -57,13 +59,13 @@ function doEditOperator(state, action) {
 }
 
 export function selectAllOperators(state) {
-    return state.operators.filter(operator =>{
+    return state.operators.filter(operator => {
         return !operator.deletedAt
     })
 }
 
-export function selectOperatorsGivenId(state,id){
-    return state.operators.filter(operator =>{
+export function selectOperatorsGivenId(state, id) {
+    return state.operators.filter(operator => {
         return operator.id == id && !operator.deletedAt
     })
 }

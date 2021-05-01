@@ -5,10 +5,10 @@ import {
     UNDO_REMOVE_SERVICE
 } from './actionTypes'
 
-export function addService(lineID, name, servicePeriod,frequency){
-    return{
+export function addService(lineID, name, servicePeriod, frequency) {
+    return {
         type: ADD_SERVICE,
-        payload :{
+        payload: {
             lineID: parseInt(lineID),
             name: name,
             servicePeriod: servicePeriod,
@@ -17,8 +17,8 @@ export function addService(lineID, name, servicePeriod,frequency){
     }
 }
 
-export function editService(id, name, servicePeriod,frequency){
-    return{
+export function editService(id, name, servicePeriod, frequency) {
+    return {
         type: EDIT_SERVICE,
         payload: {
             id: parseInt(id),
@@ -29,7 +29,7 @@ export function editService(id, name, servicePeriod,frequency){
     }
 }
 
-export function removeService(id){
+export function removeService(id) {
     return {
         type: REMOVE_SERVICE,
         payload: {
@@ -39,7 +39,7 @@ export function removeService(id){
     }
 }
 
-export function undoRemoveService(id){
+export function undoRemoveService(id) {
     return {
         type: UNDO_REMOVE_SERVICE,
         payload: {

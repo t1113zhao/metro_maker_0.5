@@ -10,7 +10,9 @@ export function addStation(description, name, latitude, longitude) {
         type: ADD_STATION,
         payload: {
             name: name,
-            description: description
+            description: description,
+            latitude: latitude,
+            longitude: longitude
         }
     }
 }

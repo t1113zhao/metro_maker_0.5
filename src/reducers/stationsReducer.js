@@ -4,27 +4,28 @@ import {
     REMOVE_STATION,
     UNDO_REMOVE_STATION,
     REMOVE_NODE,
-    UNDO_REMOVE_NODE} from '../actions/actionTypes'
+    UNDO_REMOVE_NODE
+} from '../actions/actionTypes'
 const initialState = []
 
-export default function stationReducer(state = initialState, action){
-    switch(action.type){
+export default function stationReducer(state = initialState, action) {
+    switch (action.type) {
         case EDIT_STATION: {
-            return doEditStation(state,action)
+            return doEditStation(state, action)
         }
         case REMOVE_NODE: {
             return genericMultiDelete(
                 state,
                 action.payload.stationIDs,
                 action.payload.deletedAt
-                )
+            )
         }
         case REMOVE_STATION: {
             return genericSingleDelete(
-                state, 
-                action.payload.id, 
+                state,
+                action.payload.id,
                 action.payload.deletedAt
-                )
+            )
         }
         case UNDO_REMOVE_NODE: {
             return genericMultiRestore(
@@ -32,11 +33,11 @@ export default function stationReducer(state = initialState, action){
                 action.payload.stationIDs
             )
         }
-        case UNDO_REMOVE_STATION:{
+        case UNDO_REMOVE_STATION: {
             return genericSingleRestore(
                 state,
                 action.payload.id
-                )
+            )
         }
     }
 }
@@ -54,8 +55,8 @@ export function addStation(state, nodeID, action) {
 }
 
 function doEditStation(state, action) {
-    return state.map(item =>{
-        if(item.id!= action.payload.id){
+    return state.map(item => {
+        if (item.id != action.payload.id) {
             return item
         }
         return {
@@ -66,13 +67,13 @@ function doEditStation(state, action) {
     })
 }
 
-export function stationGivenNodeID(state, nodeID, includeDeleted){
-    if(includeDeleted){
-        return state.stations.filter(station =>{
+export function stationGivenNodeID(state, nodeID, includeDeleted) {
+    if (includeDeleted) {
+        return state.stations.filter(station => {
             return station.nodeID == nodeID
         })[0]
     } else {
-        return state.stations.filter(station =>{
+        return state.stations.filter(station => {
             return station.nodeID == nodeID && !station.deleted
         })[0]
     }
