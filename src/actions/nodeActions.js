@@ -3,7 +3,7 @@ import {
     ADD_NODE,
     EDIT_NODE,
     REMOVE_NODE,
-    UNDO_REMOVE_NODE
+    RESTORE_NODE
 } from './actionTypes'
 
 import store from '../app/store'
@@ -41,9 +41,9 @@ export function removeNode(id) {
     }
 }
 
-export function undoRemoveNode(id) {
+export function restoreNode(id) {
     return {
-        type: UNDO_REMOVE_NODE,
+        type: RESTORE_NODE,
         payload: {
             id: parseInt(id),
             stationID: stationGivenNodeID(store.getState(),id, false)

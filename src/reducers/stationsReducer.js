@@ -2,9 +2,9 @@ import { genericMultiDelete, genericSingleDelete, genericMultiRestore, genericSi
 import {
     EDIT_STATION,
     REMOVE_STATION,
-    UNDO_REMOVE_STATION,
+    RESTORE_STATION,
     REMOVE_NODE,
-    UNDO_REMOVE_NODE
+    RESTORE_NODE
 } from '../actions/actionTypes'
 const initialState = []
 
@@ -27,13 +27,13 @@ export default function stationReducer(state = initialState, action) {
                 action.payload.deletedAt
             )
         }
-        case UNDO_REMOVE_NODE: {
+        case RESTORE_NODE: {
             return genericMultiRestore(
                 state,
                 action.payload.stationIDs
             )
         }
-        case UNDO_REMOVE_STATION: {
+        case RESTORE_STATION: {
             return genericSingleRestore(
                 state,
                 action.payload.id

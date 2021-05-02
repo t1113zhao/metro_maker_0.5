@@ -3,9 +3,9 @@ import {
     ADD_LINE,
     EDIT_LINE,
     REMOVE_LINE,
-    UNDO_REMOVE_LINE,
+    RESTORE_LINE,
     REMOVE_OPERATOR,
-    UNDO_REMOVE_OPERATOR
+    RESTORE_OPERATOR
 } from '../actions/actionTypes'
 
 const initialLineState = [];
@@ -32,13 +32,13 @@ export default function lineReducer(state = initialLineState, action) {
                 action.payload.deletedAt
             )
         }
-        case UNDO_REMOVE_OPERATOR: {
+        case RESTORE_OPERATOR: {
             return genericMultiRestore(
                 state,
                 action.payload.lineIDs
             )
         }
-        case UNDO_REMOVE_LINE: {
+        case RESTORE_LINE: {
             return genericSingleRestore(
                 state,
                 action.payload.id

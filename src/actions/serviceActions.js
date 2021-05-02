@@ -2,7 +2,7 @@ import {
     ADD_SERVICE,
     EDIT_SERVICE,
     REMOVE_SERVICE,
-    UNDO_REMOVE_SERVICE
+    RESTORE_SERVICE
 } from './actionTypes'
 
 export function addService(lineID, name, servicePeriod, frequency) {
@@ -39,9 +39,9 @@ export function removeService(id) {
     }
 }
 
-export function undoRemoveService(id) {
+export function restoreService(id) {
     return {
-        type: UNDO_REMOVE_SERVICE,
+        type: RESTORE_SERVICE,
         payload: {
             id: parseInt(id),
         }

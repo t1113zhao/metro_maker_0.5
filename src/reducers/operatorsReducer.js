@@ -3,7 +3,7 @@ import {
     ADD_OPERATOR,
     EDIT_OPERATOR,
     REMOVE_OPERATOR,
-    UNDO_REMOVE_OPERATOR
+    RESTORE_OPERATOR
 } from '../actions/actionTypes'
 const initialState = []
 
@@ -22,7 +22,7 @@ export default function operatorReducer(state = initialState, action) {
                 action.payload.deletedAt
             );
         }
-        case UNDO_REMOVE_OPERATOR: {
+        case RESTORE_OPERATOR: {
             return genericSingleRestore(
                 state,
                 action.payload.id

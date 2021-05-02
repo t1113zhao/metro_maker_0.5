@@ -2,7 +2,7 @@ import {
     ADD_STATION,
     EDIT_STATION,
     REMOVE_STATION,
-    UNDO_REMOVE_STATION
+    RESTORE_STATION
 } from './actionTypes'
 
 export function addStation(description, name, latitude, longitude) {
@@ -38,9 +38,9 @@ export function removeNode(id) {
     }
 }
 
-export function undoRemoveNode(id) {
+export function restoreNode(id) {
     return {
-        type: UNDO_REMOVE_STATION,
+        type: RESTORE_STATION,
         payload: {
             id: parseInt(id)
         }

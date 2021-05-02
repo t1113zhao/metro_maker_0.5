@@ -5,11 +5,11 @@ import {
     ADD_TRANSFER,
     EDIT_TRANSFER,
     REMOVE_TRANSFER,
-    UNDO_REMOVE_TRANSFER,
+    RESTORE_TRANSFER,
     REMOVE_STATION,
-    UNDO_REMOVE_STATION,
+    RESTORE_STATION,
     REMOVE_NODE,
-    UNDO_REMOVE_NODE,
+    RESTORE_NODE,
 } from './actionTypes'
 
 const initialState = []
@@ -50,7 +50,7 @@ export default function transferReducer(state = initialState, action) {
                 action.payload.id,
                 action.payload.deletedAt)
         }
-        case UNDO_REMOVE_NODE: {
+        case RESTORE_NODE: {
             if (action.payload.stationID) {
                 return genericMultiRestore(
                     state,
@@ -61,7 +61,7 @@ export default function transferReducer(state = initialState, action) {
                 )
             }
         }
-        case UNDO_REMOVE_STATION: {
+        case RESTORE_STATION: {
             return genericMultiRestore(
                 state,
                 selectAllTransfersGivenStationID(
@@ -70,16 +70,12 @@ export default function transferReducer(state = initialState, action) {
                 )
             )
         }
-        case UNDO_REMOVE_TRANSFER: {
+        case RESTORE_TRANSFER: {
             return genericSingleRestore(
                 state,
                 action.payload.id
             )
         }
-        case REMOVE_NODE: {
-            return doUndoRemoveTransferDirect(state, action);
-        }
-
     }
 }
 

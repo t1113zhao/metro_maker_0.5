@@ -2,7 +2,7 @@ import {
     ADD_LINE,
     EDIT_LINE,
     REMOVE_LINE,
-    UNDO_REMOVE_LINE
+    RESTORE_LINE
 } from './actionTypes'
 
 import store from '../app/store'
@@ -44,9 +44,9 @@ export function removeLine(id) {
     }
 }
 
-export function undoRemoveLine(id) {
+export function restoreLine(id) {
     return {
-        type: UNDO_REMOVE_LINE,
+        type: RESTORE_LINE,
         payload: {
             id: parseInt(id),
             serviceIDs: serviceIDsGivenLineID(store.getState(), removeID)

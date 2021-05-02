@@ -3,7 +3,11 @@ import {
     ADD_NODE,
     EDIT_NODE,
     REMOVE_NODE,
-    UNDO_REMOVE_NODE
+    RESTORE_NODE,
+    REMOVE_TRACK,
+    RESTORE_TRACK,
+    REMOVE_SEGMENT,
+    RESTORE_SEGMENT
 } from '../actions/actionTypes'
 
 const initialNodesState = []
@@ -19,7 +23,7 @@ export default function nodesReducer(state = initialNodesState, action) {
         case REMOVE_NODE: {
             return genericSingleDelete(state, action.payload.id)
         }
-        case UNDO_REMOVE_NODE: {
+        case RESTORE_NODE: {
             return genericSingleRestore(state, action)
         }
         default:
@@ -28,7 +32,7 @@ export default function nodesReducer(state = initialNodesState, action) {
     }
 }
 
-export function addNodeExtern(state, newID, action){
+export function addNodeExtern(state, newID, action) {
     return [
         ...state,
         {
@@ -62,5 +66,12 @@ function doEditNode(state, action) {
             latitude: action.payload.latitude,
             longitude: action.payload.longitude
         }
+    })
+}
+
+export function selectAllNodesGivenIDs(state, ids) {
+    let nodeIDs = new Set(ids)
+    return state.nodes.filter(node => {
+        return nodeIDs.has(node.id) && !node.deletedAt
     })
 }

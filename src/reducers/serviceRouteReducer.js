@@ -1,11 +1,11 @@
 import { genericMultiDelete, genericMultiRestore, genericSingleDelete, genericSingleRestore, nextIDForArray } from '../utils/utils'
-import {ADD_SERVICE, REMOVE_SERVICE, UNDO_REMOVE_SERVICE,
-    REMOVE_LINE, UNDO_REMOVE_LINE,
-    REMOVE_OPERATOR, UNDO_REMOVE_OPERATOR,
+import {ADD_SERVICE, REMOVE_SERVICE, RESTORE_SERVICE,
+    REMOVE_LINE, RESTORE_LINE,
+    REMOVE_OPERATOR, RESTORE_OPERATOR,
     ADD_SERVICETRACK_TWOWAY, ADD_SERVICETRACK_ONEWAY,
     SWITCH_ONEWAY_DIRECTION, TWOWAY_TO_ONEWAY,
-    REMOVE_SERVICE_TRACK, UNREMOVE_SERVICE_TRACK,
-    REMOVE_STOP, UNREMOVE_STOP
+    REMOVE_SERVICE_TRACK, RESTORE_SERVICE_TRACK,
+    REMOVE_STOP, RESTORE_STOP
 } from '../actions/actionTypes'
 
 //an array of serviceRoute objects
@@ -72,14 +72,14 @@ export default function serviceRouteReducer(state = initialState, action){
                 action.payload.deletedAt
             )
         }
-        case UNDO_REMOVE_OPERATOR:
-        case UNDO_REMOVE_LINE:{
+        case RESTORE_OPERATOR:
+        case RESTORE_LINE:{
             return genericMultiRestore(
                 state,
                 action.payload.serviceIDs
             )
         }
-        case UNDO_REMOVE_SERVICE:{
+        case RESTORE_SERVICE:{
             return genericSingleRestore(
                 state,
                 action.payload.id

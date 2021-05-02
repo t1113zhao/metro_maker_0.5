@@ -4,20 +4,17 @@ import {
     ADD_SERVICE,
     EDIT_SERVICE,
     REMOVE_SERVICE,
-    UNDO_REMOVE_SERVICE,
+    RESTORE_SERVICE,
     REMOVE_LINE,
-    UNDO_REMOVE_LINE,
+    RESTORE_LINE,
     REMOVE_OPERATOR,
-    UNDO_REMOVE_OPERATOR
+    RESTORE_OPERATOR
 } from '../actions/actionTypes'
 
 const initialServicesState = []
 
 export default function serviceReducer(state = initialServicesState, action) {
     switch (action.type) {
-        // case ADD_SERVICE:{
-        //     return doAddService(state,action);
-        // }
         case EDIT_SERVICE: {
             return doEditService(state, action);
         }
@@ -36,15 +33,15 @@ export default function serviceReducer(state = initialServicesState, action) {
                 action.payload.deletedAt
             )
         }
-        case UNDO_REMOVE_OPERATOR:
-        case UNDO_REMOVE_LINE: {
+        case RESTORE_OPERATOR:
+        case RESTORE_LINE: {
             return genericMultiRestore(
                 state,
                 action.payload.serviceIDs
             )
         }
 
-        case UNDO_REMOVE_SERVICE: {
+        case RESTORE_SERVICE: {
             return genericSingleRestore(
                 state,
                 action.payload.id

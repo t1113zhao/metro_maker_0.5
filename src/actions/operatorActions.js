@@ -2,7 +2,7 @@ import {
     ADD_OPERATOR,
     EDIT_OPERATOR,
     REMOVE_OPERATOR,
-    UNDO_REMOVE_OPERATOR
+    RESTORE_OPERATOR
 } from './actionTypes'
 import store from '../app/store'
 
@@ -42,9 +42,9 @@ export function removeOperator(removeID) {
     }
 }
 
-export function undoRemoveOperator(removeID) {
+export function restoreOperator(removeID) {
     return {
-        type: UNDO_REMOVE_OPERATOR,
+        type: RESTORE_OPERATOR,
         payload: {
             id: parseInt(removeID),
             lineIDs: lineIDsGivenOperatorId(store.getState(), removeID),

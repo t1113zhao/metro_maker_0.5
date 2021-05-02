@@ -2,7 +2,7 @@ import {
     ADD_TRANSFER,
     EDIT_TRANSFER,
     REMOVE_TRANSFER,
-    UNDO_REMOVE_TRANSFER
+    RESTORE_TRANSFER
 } from './actionTypes'
 
 export function addTransfer(stationIDs, type) {
@@ -35,9 +35,9 @@ export function removeTransfer(id) {
     }
 }
 
-export function undoRemoveTransfer(id) {
+export function restoreTransfer(id) {
     return {
-        type: UNDO_REMOVE_TRANSFER,
+        type: RESTORE_TRANSFER,
         payload: {
             id: parseInt(id)
         }
