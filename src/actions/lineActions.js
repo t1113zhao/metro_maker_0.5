@@ -9,11 +9,11 @@ import store from '../app/store'
 
 import { serviceIDsGivenLineID } from '../reducers/servicesReducer'
 
-export function addLine(operatorID, name, color, linetype) {
+export function addLine(agencyID, name, color, linetype) {
     return {
         type: ADD_LINE,
         payload: {
-            operatorID: parseInt(operatorID),
+            agencyID: parseInt(agencyID),
             name: name,
             color: color,
             linetype: linetype

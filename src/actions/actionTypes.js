@@ -1,9 +1,9 @@
 
-//Operator Management Action Types
-export const ADD_OPERATOR = "ADD_OPERATOR"
-export const EDIT_OPERATOR = "EDIT_OPERATOR"
-export const REMOVE_OPERATOR = "REMOVE_OPERATOR"
-export const RESTORE_OPERATOR = "RESTORE_OPERATOR"
+//Agency Management Action Types
+export const ADD_AGENCY = "ADD_AGENCY"
+export const EDIT_AGENCY = "EDIT_AGENCY"
+export const REMOVE_AGENCY = "REMOVE_AGENCY"
+export const RESTORE_AGENCY = "RESTORE_AGENCY"
 
 //Line Management Action Types
 export const ADD_LINE = "ADD_LINE"

@@ -1,5 +1,5 @@
 import { genericMultiDelete, genericMultiRestore, genericSingleDelete, genericSingleRestore, nextIDForArray } from '../utils/utils'
-import { lineIDsGivenOperatorId } from './linesReducer.js'
+import { lineIDsGivenAgencyId } from './linesReducer.js'
 import {
     ADD_SERVICE,
     EDIT_SERVICE,
@@ -7,18 +7,21 @@ import {
     RESTORE_SERVICE,
     REMOVE_LINE,
     RESTORE_LINE,
-    REMOVE_OPERATOR,
-    RESTORE_OPERATOR
+    REMOVE_AGENCY,
+    RESTORE_AGENCY
 } from '../actions/actionTypes'
 
 const initialServicesState = []
 
 export default function serviceReducer(state = initialServicesState, action) {
     switch (action.type) {
+        case ADD_SERVICE:{
+            return doAddService(state, action)
+        }
         case EDIT_SERVICE: {
             return doEditService(state, action);
         }
-        case REMOVE_OPERATOR:
+        case REMOVE_AGENCY:
         case REMOVE_LINE: {
             return genericMultiDelete(
                 state,
@@ -33,7 +36,7 @@ export default function serviceReducer(state = initialServicesState, action) {
                 action.payload.deletedAt
             )
         }
-        case RESTORE_OPERATOR:
+        case RESTORE_AGENCY:
         case RESTORE_LINE: {
             return genericMultiRestore(
                 state,
@@ -104,16 +107,16 @@ export function serviceIDsGivenLineID(state, lineID) {
     })
 }
 
-export function selectServicesGivenOperatorID(state, operatorID) {
-    let lineIDs = new Set(lineIDsGivenOperatorId(state, operatorID))
+export function selectServicesGivenAgencyID(state, agencyID) {
+    let lineIDs = new Set(lineIDsGivenAgencyId(state, agencyID))
 
     return state.services.filter(service => {
         return lineIDs.has(service.lineID)
     })
 }
 
-export function serviceIDsGivenOperatorID(state, operatorID) {
-    return selectServicesGivenOperatorID(state, operatorID).map(service => {
+export function serviceIDsGivenAgencyID(state, agencyID) {
+    return selectServicesGivenAgencyID(state, agencyID).map(service => {
         return service.id
     })
 }

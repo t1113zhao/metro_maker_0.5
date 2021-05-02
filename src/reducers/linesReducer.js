@@ -4,8 +4,8 @@ import {
     EDIT_LINE,
     REMOVE_LINE,
     RESTORE_LINE,
-    REMOVE_OPERATOR,
-    RESTORE_OPERATOR
+    REMOVE_AGENCY,
+    RESTORE_AGENCY
 } from '../actions/actionTypes'
 
 const initialLineState = [];
@@ -18,7 +18,7 @@ export default function lineReducer(state = initialLineState, action) {
         case EDIT_LINE: {
             return doEditLine(state, action);
         }
-        case REMOVE_OPERATOR: {
+        case REMOVE_AGENCY: {
             return genericMultiDelete(
                 state,
                 action.payload.lineIDs,
@@ -32,7 +32,7 @@ export default function lineReducer(state = initialLineState, action) {
                 action.payload.deletedAt
             )
         }
-        case RESTORE_OPERATOR: {
+        case RESTORE_AGENCY: {
             return genericMultiRestore(
                 state,
                 action.payload.lineIDs
@@ -54,7 +54,7 @@ function doAddLine(state, action) {
         ...state,
         {
             id: nextIDForArray(state),
-            operatorID: action.payload.operatorID,
+            agencyID: action.payload.agencyID,
             name: action.payload.name,
             color: action.payload.color,
             linetype: action.payload.linetype,
@@ -89,15 +89,14 @@ export function selectLineGivenID(state, id) {
     })
 }
 
-export function selectLinesGivenOperatorId(state, operatorID) {
+export function selectLinesGivenAgencyId(state, agencyID) {
     return state.lines.filter(line => {
-        return line.operatorID === operatorID && !line.deletedAt
+        return line.agencyID === agencyID && !line.deletedAt
     })
 }
 
-export function lineIDsGivenOperatorId(state, operatorID) {
-    return selectLinesGivenOperatorId(state, operatorID).map(line => {
+export function lineIDsGivenAgencyId(state, agencyID) {
+    return selectLinesGivenAgencyId(state, agencyID).map(line => {
         return line.id
-    }
-    )
+    })
 }

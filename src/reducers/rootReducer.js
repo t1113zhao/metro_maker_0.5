@@ -1,6 +1,6 @@
 import { combineReducers } from 'redux';
-import { operatorReducer, selectAllOperators } from '../reducers/operatorsReducer';
-import { linesReducer, selectLinesGivenOperatorId } from '../reducers/linesReducer';
+import { agencyReducer, selectAllAgencies } from '../reducers/agenciesReducer';
+import { linesReducer, selectLinesGivenAgencyId } from '../reducers/linesReducer';
 import { servicesReducer, doAddService, selectServicesGivenLineID } from '../reducers/servicesReducer';
 import { serviceRouteReducer, doAddServiceRoute } from './serviceRouteReducer'
 import { nodesReducer, addNodeExtern } from '../reducers/nodesReducer';
@@ -9,7 +9,7 @@ import { nextIDForArray } from '../utils/utils';
 import { ADD_SERVICE } from '../actions/actionTypes';
 
 const rootReducer = combineReducers({
-    operators: operatorReducer,
+    agencies: agencyReducer,
     lines: linesReducer,
     services: servicesReducer,
     serviceRoutes: serviceRouteReducer,
@@ -39,33 +39,33 @@ export default function rootReducer(state, action) {
     return finalState;
 }
 
-export function selectOperatorsLinesAndServicesAsTreeObject(state, isSelectable) {
-    return selectAllOperators(state).map(operator => {
+export function selectAgenciesLinesAndServicesAsTreeObject(state, isSelectable) {
+    return selectAllAgencies(state).map(agency => {
         return {
-            title: operator.name,
-            key: operator.id,
-            children: selectLinesAndServicesAsTreeObject(state, false, operator.id),
+            title: agency.name,
+            key: agency.id,
+            children: selectLinesAndServicesAsTreeObject(state, false, agency.id),
             selectable: isSelectable
         }
     })
 }
 
-export function selectLinesAndServicesAsTreeObject(state, isSelectable, operatorID) {
-    return selectLinesGivenOperatorId(state, operatorID).map(line => {
+export function selectLinesAndServicesAsTreeObject(state, isSelectable, agencyID) {
+    return selectLinesGivenAgencyId(state, agencyID).map(line => {
         return {
             title: line.name,
-            key: operatorID + "-" + line.id,
-            children: selectServicesAsTreeObject(state, false, operatorID, line.id),
+            key: agencyID + "-" + line.id,
+            children: selectServicesAsTreeObject(state, false, agencyID, line.id),
             selectable: isSelectable
         }
     })
 }
 
-export function selectServicesAsTreeObject(state, isSelectable, operatorID, lineID) {
+export function selectServicesAsTreeObject(state, isSelectable, agencyID, lineID) {
     return selectServicesGivenLineID(state, lineID).map(service => {
         return {
             title: service.name,
-            key: operatorID + "-" + lineID + "-" + service.id,
+            key: agencyID + "-" + lineID + "-" + service.id,
             isLeaf: true,
             selectable: isSelectable
         }
