@@ -103,56 +103,6 @@ function doEditTransfer(state, action) {
     })
 }
 
-//Deleting a transfer that connects to a deleted station
-function doRemoveTransferStation(state, action) {
-    return state.map(transfer => {
-        if (transfer.stationIDs.contains(action.payload.stationID)) {
-            return {
-                ...transfer,
-                deletedAt: action.payload.deletedAt
-            }
-        }
-    })
-}
-
-//Deleting exactly 1 transfer
-function doRemoveTransferDirect(state, action) {
-    return state.map(item => {
-        if (item.id != action.payload.id) {
-            return item
-        }
-        return {
-            ...item,
-            deletedAt: action.payload.deletedAt
-        }
-    })
-}
-
-function doUndoRemoveTransferStation(state, action) {
-    return state.map(transfer => {
-        if (transfer.stationIDs.contains(action.payload.stationID)
-            && transfer.deletedAt !== null) {
-            return {
-                ...transfer,
-                deletedAt: null
-            }
-        }
-    })
-}
-
-//UnDeleting exactly one transfer
-function doUndoRemoveTransferDirect(state, action) {
-    return state.map(item => {
-        if (item.id != action.payload.id) {
-            return item
-        }
-        return {
-            ...item,
-            deletedAt: null
-        }
-    })
-}
-
 export function selectAllConnectedStations(state, stationID) {
     //for each transfer, create hashmap of station to station
     //then do a BFS search
