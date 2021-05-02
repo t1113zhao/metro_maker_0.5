@@ -20,10 +20,8 @@ const initialState = [];
 
     1. This is done with a simple list 
     (rare for service to pass through and not stop and later pass through and stop at a station)
-    2. This is done with a list of service Route objects and their ids
-        service Route object consists of
-            service-unique id
-            service id
+    2. This is done with a list of servicetrack objects and their ids
+        service track object consists of
             track id
             from station id
             to station id
