@@ -1,3 +1,5 @@
+import { Provider } from "react-redux"
+
 export function nextIDForArray(array) {
     const maxID = array.reduce((maxID, element) => Math.max(element.id, maxID), -1)
     return maxID + 1
@@ -54,5 +56,17 @@ export function genericMultiRestore(array, ids) {
         } else {
             return item
         }
+    })
+}
+
+export function filterDeleted(array) {
+    return array.filter(item => {
+        return !item.deletedAt
+    })
+}
+
+export function filterById(array, id) {
+    return array.filter(item => {
+        return item.id == id
     })
 }

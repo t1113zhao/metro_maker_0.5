@@ -1,4 +1,4 @@
-import { genericSingleDelete, genericSingleRestore, nextIDForArray } from '../utils/utils'
+import { filterDeleted, genericSingleDelete, genericSingleRestore, nextIDForArray } from '../utils/utils'
 import {
     ADD_NODE,
     EDIT_NODE,
@@ -69,9 +69,14 @@ function doEditNode(state, action) {
     })
 }
 
-export function selectAllNodesGivenIDs(state, ids) {
+export function selectAllNodesGivenIDs(state, ids, includeDeleted) {
     let nodeIDs = new Set(ids)
-    return state.nodes.filter(node => {
-        return nodeIDs.has(node.id) && !node.deletedAt
+    let output = state.nodes.filter(node => {
+        return nodeIDs.has(node.id)
     })
+
+    if (!includeDeleted) {
+        output = filterDeleted(output)
+    }
+    return output
 }

@@ -1,5 +1,5 @@
 import _ from 'underscore';
-import { genericMultiDelete, genericMultiRestore, genericSingleDelete, genericSingleRestore, nextIDForArray } from '../utils/utils'
+import { filterDeleted, genericMultiDelete, genericMultiRestore, genericSingleDelete, genericSingleRestore, nextIDForArray } from '../utils/utils'
 
 import {
     ADD_TRANSFER,
@@ -142,10 +142,14 @@ export function selectAllConnectedStations(state, stationID) {
     return connectedIDs
 }
 
-export function selectAllTransfersGivenStationID(state, stationID) {
-    return state.filter(item => {
-        return (transfer.stationIDs.contains(stationID)).map(transfer => {
-            return transfer.id
-        })
+export function selectAllTransfersGivenStationID(transfers, stationID, includeDeleted) {
+    let output = transfers.filter(transfer => {
+        return (transfer.stationIDs.contains(stationID))
+    }).map(transfer => {
+        return transfer.id
     })
+    if (!includeDeleted) {
+        output = filterDeleted(output)
+    }
+    return output
 }

@@ -1,4 +1,4 @@
-import { genericSingleDelete, genericSingleRestore, nextIDForArray } from '../utils/utils'
+import { filterById, filterDeleted, genericSingleDelete, genericSingleRestore, nextIDForArray } from '../utils/utils'
 import {
     ADD_AGENCY,
     EDIT_AGENCY,
@@ -58,14 +58,18 @@ function doEditAgency(state, action) {
     })
 }
 
-export function selectAllAgencies(state) {
-    return state.agencies.filter(agency => {
-        return !agency.deletedAt
-    })
+export function selectAllAgencies(state, includeDeleted) {
+    let output = state.agencies
+    if (!includeDeleted) {
+        output = filterDeleted(output)
+    }
+    return output
 }
 
-export function selectAgenciesGivenId(state, id) {
-    return state.agencies.filter(agency => {
-        return agency.id == id && !agency.deletedAt
-    })
+export function selectAgenciesGivenId(state, id, includeDeleted) {
+    let output = filterById(state.agencies, id)
+    if (!includeDeleted) {
+        return filterDeleted(output);
+    }
+    return output
 }

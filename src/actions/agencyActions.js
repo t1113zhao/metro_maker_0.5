@@ -36,8 +36,8 @@ export function removeAgency(removeID) {
         payload: {
             id: parseInt(removeID),
             deletedAt: new Date().toISOString(),
-            lineIDs: lineIDsGivenAgencyId(store.getState(), removeID),
-            serviceIDs: serviceIDsGivenAgencyID(store.getState(), removeID)
+            lineIDs: lineIDsGivenAgencyId(store.getState(), removeID, false),
+            serviceIDs: serviceIDsGivenAgencyID(store.getState(), removeID, false)
         }
     }
 }
@@ -47,8 +47,8 @@ export function restoreAgency(removeID) {
         type: RESTORE_AGENCY,
         payload: {
             id: parseInt(removeID),
-            lineIDs: lineIDsGivenAgencyId(store.getState(), removeID),
-            serviceIDs: serviceIDsGivenAgencyID(store.getState(), removeID)
+            lineIDs: lineIDsGivenAgencyId(store.getState(), removeID, true),
+            serviceIDs: serviceIDsGivenAgencyID(store.getState(), removeID, true)
         }
     }
 }

@@ -1,4 +1,4 @@
-import { genericMultiDelete, genericMultiRestore, genericSingleDelete, genericSingleRestore, nextIDForArray } from '../utils/utils'
+import { filterById, filterDeleted, genericMultiDelete, genericMultiRestore, genericSingleDelete, genericSingleRestore, nextIDForArray } from '../utils/utils'
 import {
     ADD_LINE,
     EDIT_LINE,
@@ -77,26 +77,35 @@ function doEditLine(state, action) {
     })
 }
 
-export function selectAllLines(state) {
-    return state.lines.filter(line => {
-        return !line.deletedAt
-    })
+export function selectAllLines(state, includeDeleted) {
+    let output = state.lines
+    if (!includeDeleted) {
+        output = filterDeleted(output)
+    }
+    return output
 }
 
-export function selectLineGivenID(state, id) {
-    return state.lines.filter(line => {
-        return line.id === id && !line.deletedAt
-    })
+export function selectLineGivenID(state, id, includeDeleted) {
+    let output = filterById(state.lines, id)
+    if (!includeDeleted) {
+        output = filterDeleted(output)
+    }
+    return output
 }
 
-export function selectLinesGivenAgencyId(state, agencyID) {
-    return state.lines.filter(line => {
-        return line.agencyID === agencyID && !line.deletedAt
+export function selectLinesGivenAgencyId(state, agencyID, includeDeleted) {
+    let output = state.lines.filter(line => {
+        return line.agencyID === agencyID
     })
+
+    if (!includeDeleted) {
+        output = filterDeleted(output)
+    }
+    return output
 }
 
-export function lineIDsGivenAgencyId(state, agencyID) {
-    return selectLinesGivenAgencyId(state, agencyID).map(line => {
+export function lineIDsGivenAgencyId(state, agencyID, includeDeleted) {
+    return selectLinesGivenAgencyId(state, agencyID, includeDeleted).map(line => {
         return line.id
     })
 }

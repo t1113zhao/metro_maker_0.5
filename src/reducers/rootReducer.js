@@ -40,7 +40,7 @@ export default function rootReducer(state, action) {
 }
 
 export function selectAgenciesLinesAndServicesAsTreeObject(state, isSelectable) {
-    return selectAllAgencies(state).map(agency => {
+    return selectAllAgencies(state,false).map(agency => {
         return {
             title: agency.name,
             key: agency.id,
@@ -51,7 +51,7 @@ export function selectAgenciesLinesAndServicesAsTreeObject(state, isSelectable) 
 }
 
 export function selectLinesAndServicesAsTreeObject(state, isSelectable, agencyID) {
-    return selectLinesGivenAgencyId(state, agencyID).map(line => {
+    return selectLinesGivenAgencyId(state, agencyID, false).map(line => {
         return {
             title: line.name,
             key: agencyID + "-" + line.id,
@@ -62,7 +62,7 @@ export function selectLinesAndServicesAsTreeObject(state, isSelectable, agencyID
 }
 
 export function selectServicesAsTreeObject(state, isSelectable, agencyID, lineID) {
-    return selectServicesGivenLineID(state, lineID).map(service => {
+    return selectServicesGivenLineID(state, lineID, false).map(service => {
         return {
             title: service.name,
             key: agencyID + "-" + lineID + "-" + service.id,

@@ -39,7 +39,7 @@ export function removeLine(id) {
         payload: {
             id: parseInt(id),
             deletedAt: new Date().toISOString(),
-            serviceIDs: serviceIDsGivenLineID(store.getState(), removeID)
+            serviceIDs: serviceIDsGivenLineID(store.getState(), removeID, false)
         }
     }
 }
@@ -49,7 +49,7 @@ export function restoreLine(id) {
         type: RESTORE_LINE,
         payload: {
             id: parseInt(id),
-            serviceIDs: serviceIDsGivenLineID(store.getState(), removeID)
+            serviceIDs: serviceIDsGivenLineID(store.getState(), removeID, true)
         }
     }
 }

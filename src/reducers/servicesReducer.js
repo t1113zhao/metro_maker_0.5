@@ -1,4 +1,4 @@
-import { genericMultiDelete, genericMultiRestore, genericSingleDelete, genericSingleRestore, nextIDForArray } from '../utils/utils'
+import { filterById, filterDeleted, genericMultiDelete, genericMultiRestore, genericSingleDelete, genericSingleRestore, nextIDForArray } from '../utils/utils'
 import { lineIDsGivenAgencyId } from './linesReducer.js'
 import {
     ADD_SERVICE,
@@ -10,12 +10,13 @@ import {
     REMOVE_AGENCY,
     RESTORE_AGENCY
 } from '../actions/actionTypes'
+import { filter } from 'underscore'
 
 const initialServicesState = []
 
 export default function serviceReducer(state = initialServicesState, action) {
     switch (action.type) {
-        case ADD_SERVICE:{
+        case ADD_SERVICE: {
             return doAddService(state, action)
         }
         case EDIT_SERVICE: {
@@ -83,40 +84,55 @@ function doEditService(state, action) {
     })
 }
 
-export function selectAllServices(state) {
-    return state.services.filter(service => {
-        return !service.deletedAt
-    });
+export function selectAllServices(state, includeDeleted) {
+    let output = state.services
+    if (!includeDeleted) {
+        output = filterDeleted(output)
+    }
+    return output
 }
 
-export function selectServiceGivenID(state, id) {
-    return state.services.filter(service => {
-        return service.id == id && !service.deletedAt
+export function selectServiceGivenID(state, id, includeDeleted) {
+    let output = filterById(state.services, id)
+    if (!includeDeleted) {
+        output = filterDeleted(output)
+    }
+    return output
+}
+
+export function selectServicesGivenLineID(state, lineID, includeDeleted) {
+    let output = state.services.filter(service => {
+        return service.lineID == lineID
     })
+
+    if (!includeDeleted) {
+        output = filterDeleted(output)
+    }
+    return output
 }
 
-export function selectServicesGivenLineID(state, lineID) {
-    return state.services.filter(service => {
-        return service.lineID == lineID && !service.deletedAt
-    })
-}
-
-export function serviceIDsGivenLineID(state, lineID) {
-    return selectServicesGivenLineID(state, lineID).map(service => {
+export function serviceIDsGivenLineID(state, lineID, includeDeleted) {
+    return selectServicesGivenLineID(state, lineID, includeDeleted).map(service => {
         return service.id
     })
 }
 
-export function selectServicesGivenAgencyID(state, agencyID) {
+export function selectServicesGivenAgencyID(state, agencyID, includeDeleted) {
     let lineIDs = new Set(lineIDsGivenAgencyId(state, agencyID))
 
-    return state.services.filter(service => {
+    let output = state.services.filter(service => {
         return lineIDs.has(service.lineID)
     })
+
+    if (!includeDeleted) {
+        output = filterDeleted(output)
+    }
+
+    return output
 }
 
-export function serviceIDsGivenAgencyID(state, agencyID) {
-    return selectServicesGivenAgencyID(state, agencyID).map(service => {
+export function serviceIDsGivenAgencyID(state, agencyID, includeDeleted) {
+    return selectServicesGivenAgencyID(state, agencyID, includeDeleted).map(service => {
         return service.id
     })
 }

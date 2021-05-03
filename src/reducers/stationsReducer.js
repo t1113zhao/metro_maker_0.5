@@ -1,4 +1,4 @@
-import { genericMultiDelete, genericSingleDelete, genericMultiRestore, genericSingleRestore, nextIDForArray } from '../utils/utils'
+import { genericMultiDelete, genericSingleDelete, genericMultiRestore, genericSingleRestore, nextIDForArray, filterDeleted } from '../utils/utils'
 import {
     EDIT_STATION,
     REMOVE_STATION,
@@ -68,13 +68,12 @@ function doEditStation(state, action) {
 }
 
 export function stationGivenNodeID(state, nodeID, includeDeleted) {
-    if (includeDeleted) {
-        return state.stations.filter(station => {
-            return station.nodeID == nodeID
-        })[0]
-    } else {
-        return state.stations.filter(station => {
-            return station.nodeID == nodeID && !station.deleted
-        })[0]
+    let output = state.stations.filter(station => {
+        return station.nodeID == nodeID
+    })
+
+    if (!includeDeleted) {
+        output = filterDeleted(output)
     }
+    return output
 }
