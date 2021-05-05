@@ -39,6 +39,9 @@ export default function stationReducer(state = initialState, action) {
                 action.payload.id
             )
         }
+        default : {
+            return state
+        }
     }
 }
 

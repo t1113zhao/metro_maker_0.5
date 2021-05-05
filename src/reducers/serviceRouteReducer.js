@@ -111,7 +111,7 @@ function doAdd2WayServiceTrack(state,action){
         }
 
         let newStops = item.stopsByID.slice(0);
-        for (stationID in action.payload.stationIDs){
+        for (const stationID in action.payload.stationIDs){
             if(newStops.indexOf(stationID) === -1){
                 newStops.push(stationID)
             }
@@ -121,20 +121,18 @@ function doAdd2WayServiceTrack(state,action){
 
         let newBlock = [
                 {
-                    id: nextIDForArray(newServiceTracks),
                     trackID: action.payload.trackID,
                     fromStationID: action.payload.endStation,
                     toStationID: action.payload.extStation
                 },
                 {
-                    id: nextIDForArray(newServiceTracks),
                     trackID: action.payload.trackID,
                     fromStationID: action.payload.extStation,
                     toStationID: action.payload.endStation
                 }
             ];
 
-        serviceTracks.splice(index,0,newBlock)
+        serviceTracks.splice(action.payload.index,0,newBlock)
  
         return {
             ...item,

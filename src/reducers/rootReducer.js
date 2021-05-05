@@ -1,14 +1,19 @@
 import { combineReducers } from 'redux';
-import { agencyReducer, selectAllAgencies } from '../reducers/agenciesReducer';
-import { linesReducer, selectLinesGivenAgencyId } from '../reducers/linesReducer';
-import { servicesReducer, doAddService, selectServicesGivenLineID } from '../reducers/servicesReducer';
-import { serviceRouteReducer, doAddServiceRoute } from './serviceRouteReducer'
-import { nodesReducer, addNodeExtern } from '../reducers/nodesReducer';
-import { stationReducer, addStation } from '../reducers/stationsReducer';
+import agencyReducer from '../reducers/agenciesReducer';
+import {selectAllAgencies } from '../reducers/agenciesReducer';
+import linesReducer from '../reducers/linesReducer';
+import { selectLinesGivenAgencyId } from '../reducers/linesReducer';
+import servicesReducer from '../reducers/servicesReducer';
+import { selectServicesGivenLineID } from '../reducers/servicesReducer';
+import serviceRouteReducer from '../reducers/serviceRouteReducer';
+import nodesReducer from '../reducers/nodesReducer';
+import { addNodeExtern } from '../reducers/nodesReducer';
+import stationReducer from '../reducers/stationsReducer';
+import { addStation } from '../reducers/stationsReducer';
 import { nextIDForArray } from '../utils/utils';
-import { ADD_SERVICE } from '../actions/actionTypes';
+import { ADD_STATION } from '../actions/actionTypes';
 
-const rootReducer = combineReducers({
+const combinedReducers = combineReducers({
     agencies: agencyReducer,
     lines: linesReducer,
     services: servicesReducer,
@@ -34,7 +39,7 @@ function crossSliceReducer(state, action) {
 }
 
 export default function rootReducer(state, action) {
-    const intermediateState = rootReducer(state, action);
+    const intermediateState = combinedReducers(state, action);
     const finalState = crossSliceReducer(intermediateState, action);
     return finalState;
 }
