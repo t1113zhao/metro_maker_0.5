@@ -3,15 +3,15 @@ import agencyReducer from '../reducers/agenciesReducer';
 import {selectAllAgencies } from '../reducers/agenciesReducer';
 import linesReducer from '../reducers/linesReducer';
 import { selectLinesGivenAgencyId } from '../reducers/linesReducer';
-import servicesReducer from '../reducers/servicesReducer';
+import servicesReducer, { doAddService } from '../reducers/servicesReducer';
 import { selectServicesGivenLineID } from '../reducers/servicesReducer';
-import serviceRouteReducer from '../reducers/serviceRouteReducer';
+import serviceRouteReducer, { doAddServiceRoute } from '../reducers/serviceRouteReducer';
 import nodesReducer from '../reducers/nodesReducer';
 import { addNodeExtern } from '../reducers/nodesReducer';
 import stationReducer from '../reducers/stationsReducer';
 import { addStation } from '../reducers/stationsReducer';
 import { nextIDForArray } from '../utils/utils';
-import { ADD_STATION } from '../actions/actionTypes';
+import { ADD_SERVICE, ADD_STATION } from '../actions/actionTypes';
 
 const combinedReducers = combineReducers({
     agencies: agencyReducer,
@@ -31,6 +31,14 @@ function crossSliceReducer(state, action) {
                 ...state,
                 nodes: addNodeExtern(state.nodes, action),
                 stations: addStation(state.stations, nodeID, action)
+            }
+        }
+        case ADD_SERVICE:{
+            let serviceID = nextIDForArray(state.services);
+            return {
+                ...state,
+                services:doAddService(state.services,action),
+                serviceRoutes: doAddServiceRoute(state.serviceRoutes,serviceID)
             }
         }
         default:

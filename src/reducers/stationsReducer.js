@@ -59,7 +59,7 @@ export function addStation(state, nodeID, action) {
 
 function doEditStation(state, action) {
     return state.map(item => {
-        if (item.id != action.payload.id) {
+        if (item.id !== action.payload.id) {
             return item
         }
         return {
@@ -72,11 +72,8 @@ function doEditStation(state, action) {
 
 export function stationGivenNodeID(state, nodeID, includeDeleted) {
     let output = state.stations.filter(station => {
-        return station.nodeID == nodeID
+        return station.nodeID === nodeID
     })
-
-    if (!includeDeleted) {
-        output = filterDeleted(output)
-    }
+    filterDeleted(output, includeDeleted)
     return output
 }

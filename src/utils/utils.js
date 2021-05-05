@@ -19,7 +19,7 @@ export function genericSingleDelete(array, id, deletedAt) {
 
 export function genericSingleRestore(array, id) {
     return array.map(item => {
-        if (item.id != id) {
+        if (item.id !== id) {
             return item
         }
         return {
@@ -59,7 +59,10 @@ export function genericMultiRestore(array, ids) {
     })
 }
 
-export function filterDeleted(array) {
+export function filterDeleted(array, includeDeleted) {
+    if (includeDeleted === true) {
+        return array
+    }
     return array.filter(item => {
         return !item.deletedAt
     })
@@ -67,6 +70,6 @@ export function filterDeleted(array) {
 
 export function filterById(array, id) {
     return array.filter(item => {
-        return item.id == id
+        return item.id === id
     })
 }

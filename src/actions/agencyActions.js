@@ -30,25 +30,25 @@ export function editAgency(id, name, color) {
     }
 }
 
-export function removeAgency(removeID) {
+export function removeAgency(id) {
     return {
         type: REMOVE_AGENCY,
         payload: {
-            id: parseInt(removeID),
+            id: parseInt(id),
             deletedAt: new Date().toISOString(),
-            lineIDs: lineIDsGivenAgencyId(store.getState(), removeID, false),
-            serviceIDs: serviceIDsGivenAgencyID(store.getState(), removeID, false)
+            lineIDs: lineIDsGivenAgencyId(store.getState(), parseInt(id), false),
+            serviceIDs: serviceIDsGivenAgencyID(store.getState(), parseInt(id), false)
         }
     }
 }
 
-export function restoreAgency(removeID) {
+export function restoreAgency(id) {
     return {
         type: RESTORE_AGENCY,
         payload: {
-            id: parseInt(removeID),
-            lineIDs: lineIDsGivenAgencyId(store.getState(), removeID, true),
-            serviceIDs: serviceIDsGivenAgencyID(store.getState(), removeID, true)
+            id: parseInt(id),
+            lineIDs: lineIDsGivenAgencyId(store.getState(), parseInt(id), true),
+            serviceIDs: serviceIDsGivenAgencyID(store.getState(), parseInt(id), true)
         }
     }
 }

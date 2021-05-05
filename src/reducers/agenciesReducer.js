@@ -47,7 +47,7 @@ function doAddAgency(state, action) {
 
 function doEditAgency(state, action) {
     return state.map(item => {
-        if (item.id != action.payload.id) {
+        if (item.id !== action.payload.id) {
             return item
         }
         return {
@@ -60,16 +60,12 @@ function doEditAgency(state, action) {
 
 export function selectAllAgencies(state, includeDeleted) {
     let output = state.agencies
-    if (!includeDeleted) {
-        output = filterDeleted(output)
-    }
+    filterDeleted(output, includeDeleted)
     return output
 }
 
 export function selectAgenciesGivenId(state, id, includeDeleted) {
     let output = filterById(state.agencies, id)
-    if (!includeDeleted) {
-        return filterDeleted(output);
-    }
+    filterDeleted(output, includeDeleted)
     return output
 }

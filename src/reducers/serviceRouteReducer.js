@@ -52,9 +52,6 @@ const initialState = [];
 
 export default function serviceRouteReducer(state = initialState, action){
     switch(action.type){
-        case ADD_SERVICE:{
-            return doAddServiceRoute(state)
-        }
         case REMOVE_AGENCY:
         case REMOVE_LINE: {
             return genericMultiDelete(
@@ -92,11 +89,11 @@ export default function serviceRouteReducer(state = initialState, action){
 
 }
 
-export function doAddServiceRoute(state){
+export function doAddServiceRoute(state, serviceID){
     return[
         ... state,
         {
-            serviceID: nextIDForArray(state),
+            serviceID: serviceID,
             deletedAt: null,
             stopsByID:[],
             serviceTracks:[]        
@@ -106,7 +103,7 @@ export function doAddServiceRoute(state){
 
 function doAdd2WayServiceTrack(state,action){
     return state.map( item => {
-        if(item.serviceID != action.payload.serviceID){
+        if(item.serviceID !== action.payload.serviceID){
             return item
         }
 

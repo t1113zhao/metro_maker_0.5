@@ -16,9 +16,6 @@ const initialServicesState = []
 
 export default function serviceReducer(state = initialServicesState, action) {
     switch (action.type) {
-        case ADD_SERVICE: {
-            return doAddService(state, action)
-        }
         case EDIT_SERVICE: {
             return doEditService(state, action);
         }
@@ -86,17 +83,13 @@ function doEditService(state, action) {
 
 export function selectAllServices(state, includeDeleted) {
     let output = state.services
-    if (!includeDeleted) {
-        output = filterDeleted(output)
-    }
+    filterDeleted(output, includeDeleted)
     return output
 }
 
 export function selectServiceGivenID(state, id, includeDeleted) {
     let output = filterById(state.services, id)
-    if (!includeDeleted) {
-        output = filterDeleted(output)
-    }
+    filterDeleted(output, includeDeleted)
     return output
 }
 
@@ -104,10 +97,7 @@ export function selectServicesGivenLineID(state, lineID, includeDeleted) {
     let output = state.services.filter(service => {
         return service.lineID == lineID
     })
-
-    if (!includeDeleted) {
-        output = filterDeleted(output)
-    }
+    filterDeleted(output, includeDeleted)
     return output
 }
 
@@ -123,11 +113,7 @@ export function selectServicesGivenAgencyID(state, agencyID, includeDeleted) {
     let output = state.services.filter(service => {
         return lineIDs.has(service.lineID)
     })
-
-    if (!includeDeleted) {
-        output = filterDeleted(output)
-    }
-
+    filterDeleted(output, includeDeleted)
     return output
 }
 

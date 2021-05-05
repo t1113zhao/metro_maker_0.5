@@ -36,7 +36,7 @@ export function removeNode(id) {
         payload: {
             id: parseInt(id),
             deletedAt: new Date().toISOString(),
-            stationID: stationGivenNodeID(store.getState(),id, false)
+            stationID: stationGivenNodeID(store.getState(),parseInt(id), false)
         }
     }
 }
@@ -46,7 +46,7 @@ export function restoreNode(id) {
         type: RESTORE_NODE,
         payload: {
             id: parseInt(id),
-            stationID: stationGivenNodeID(store.getState(),id, false)
+            stationID: stationGivenNodeID(store.getState(),parseInt(id), false)
         }
     }
 }

@@ -74,9 +74,6 @@ export function selectAllNodesGivenIDs(state, ids, includeDeleted) {
     let output = state.nodes.filter(node => {
         return nodeIDs.has(node.id)
     })
-
-    if (!includeDeleted) {
-        output = filterDeleted(output)
-    }
+    filterDeleted(output, includeDeleted)
     return output
 }
