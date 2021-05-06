@@ -16,7 +16,7 @@ export default function stationReducer(state = initialState, action) {
         case REMOVE_NODE: {
             return genericMultiDelete(
                 state,
-                action.payload.stationIDs,
+                action.payload.stationID,
                 action.payload.deletedAt
             )
         }
@@ -30,7 +30,7 @@ export default function stationReducer(state = initialState, action) {
         case RESTORE_NODE: {
             return genericMultiRestore(
                 state,
-                action.payload.stationIDs
+                action.payload.stationID
             )
         }
         case RESTORE_STATION: {

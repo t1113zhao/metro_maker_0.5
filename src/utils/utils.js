@@ -7,7 +7,7 @@ export function nextIDForArray(array) {
 
 export function genericSingleDelete(array, id, deletedAt) {
     return array.map(item => {
-        if (item.id != id) {
+        if (item.id !== id) {
             return item
         }
         return {
@@ -44,11 +44,11 @@ export function genericMultiDelete(array, ids, deletedAt) {
     })
 }
 
-export function genericMultiRestore(array, ids) {
+export function genericMultiRestore(array, ids, deletedAt) {
     var restoreSet = new Set(ids)
 
     return array.map((item) => {
-        if (restoreSet.has(item.id)) {
+        if (restoreSet.has(item.id) && item.deletedAt == deletedAt) {
             return {
                 ...item,
                 deletedAt: null
