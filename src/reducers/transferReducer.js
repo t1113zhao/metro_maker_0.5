@@ -151,3 +151,9 @@ export function selectAllTransfersGivenStationID(transfers, stationID, includeDe
     filterDeleted(output, includeDeleted)
     return output
 }
+
+export function transferIDsGivenStationID(transfers, stationID, includeDeleted){
+    return selectAllTransfersGivenStationID(transfers, stationID, includeDeleted).map(transfer =>{
+        return transfer.id
+    })
+}
