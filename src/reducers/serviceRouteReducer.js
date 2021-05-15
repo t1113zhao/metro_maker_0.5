@@ -93,7 +93,8 @@ export function doAddServiceRoute(state, serviceID){
     return[
         ... state,
         {
-            serviceID: serviceID,
+            //serviceID
+            id: serviceID,
             deletedAt: null,
             stopsByID:[],
             serviceTracks:[]        
@@ -103,7 +104,7 @@ export function doAddServiceRoute(state, serviceID){
 
 function doAdd2WayServiceTrack(state,action){
     return state.map( item => {
-        if(item.serviceID !== action.payload.serviceID){
+        if(item.id !== action.payload.id){
             return item
         }
 
