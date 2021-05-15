@@ -14,7 +14,7 @@ import {
     ADD_TRACK,
 } from '../actions/actionTypes';
 import trackReducer, { doAddTrack } from './trackReducer';
-import trackRouteReducer, { doAddTrackRoute } from './trackSegmentReducer'
+import trackRouteReducer, { doAddTrackRoute } from './trackRouteReducer'
 
 const combinedReducers = combineReducers({
     agencies: agencyReducer,
@@ -87,3 +87,19 @@ function rootAddService(state, action) {
     }
 }
 
+function rootAddTrack(state, action) {
+
+    let stations = selectStationsGivenStationIDs(state.stations, action.payload.stationIDs)
+
+    let trackID = nextIDForArray(state.tracks)
+    return {
+        ...state,
+        tracks: doAddTrack(state.tracks, action),
+        trackRoutes: doAddTrackRoute(
+            state.trackRoutes,
+            action,
+            trackID,
+            stations
+        )
+    }
+}

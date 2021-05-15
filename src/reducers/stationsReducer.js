@@ -61,10 +61,7 @@ function doEditStation(state, action) {
     })
 }
 
-export function stationGivenNodeID(state, nodeID, includeDeleted) {
-    let output = state.stations.filter(station => {
-        return station.nodeID === nodeID
-    })
-    filterDeleted(output, includeDeleted)
-    return output
+export function selectStationsGivenStationIDs(state, stationIDs, includeDeleted) {
+    let output = filterByIds(state.stations, stationIDs)
+    return filterDeleted(output, includeDeleted)
 }

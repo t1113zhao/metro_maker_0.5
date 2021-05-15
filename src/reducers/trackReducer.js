@@ -1,4 +1,3 @@
-import { REMOVE_STATION } from '../actions/actionTypes'
 import { filterById, filterDeleted, genericMultiDelete, genericMultiRestore, genericSingleDelete, genericSingleRestore, nextIDForArray } from '../utils/utils'
 import {
     ADD_TRACK,
@@ -8,15 +7,12 @@ import {
     RESTORE_STATION,
     REMOVE_NODE,
     RESTORE_NODE
-} from './actionTypes'
+} from '../actions/actionTypes'
 
-initialState = []
+const initialState = []
 
 export default function trackReducer(state = initialState, action) {
     switch (action.type) {
-        case ADD_TRACK: {
-            return doAddTrack(state, action)
-        }
         case REMOVE_NODE: {
             return genericMultiDelete(
                 state,
@@ -74,13 +70,13 @@ export default function trackReducer(state = initialState, action) {
     }
 }
 
-function doAddTrack(state, action) {
+export function doAddTrack(state, action) {
     let trackID = nextIDForArray()
     return [
         ...state,
         {
             id: trackID,
-            stationIDs: [action.stationIDs],
+            stationIDs: action.payload.stationIDs,
             deletedAt: null
         }
     ]
