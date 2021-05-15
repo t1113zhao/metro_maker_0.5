@@ -1,24 +1,19 @@
-import { genericMultiDelete, genericSingleDelete, genericMultiRestore, genericSingleRestore, nextIDForArray, filterDeleted } from '../utils/utils'
+import { genericSingleDelete, genericSingleRestore, nextIDForArray, filterDeleted, filterByIds } from '../utils/utils'
 import {
     EDIT_STATION,
     REMOVE_STATION,
     RESTORE_STATION,
-    REMOVE_NODE,
-    RESTORE_NODE
+    ADD_STATION
 } from '../actions/actionTypes'
 const initialState = []
 
 export default function stationReducer(state = initialState, action) {
     switch (action.type) {
+        case ADD_STATION: {
+            return doAddStation(state, action)
+        }
         case EDIT_STATION: {
             return doEditStation(state, action)
-        }
-        case REMOVE_NODE: {
-            return genericMultiDelete(
-                state,
-                action.payload.stationID,
-                action.payload.deletedAt
-            )
         }
         case REMOVE_STATION: {
             return genericSingleDelete(
@@ -27,32 +22,28 @@ export default function stationReducer(state = initialState, action) {
                 action.payload.deletedAt
             )
         }
-        case RESTORE_NODE: {
-            return genericMultiRestore(
-                state,
-                action.payload.stationID
-            )
-        }
         case RESTORE_STATION: {
             return genericSingleRestore(
                 state,
                 action.payload.id
             )
         }
-        default : {
+        default: {
             return state
         }
     }
 }
 
-export function addStation(state, nodeID, action) {
+function doAddStation(state, action) {
     return [
         ...state,
         {
             id: nextIDForArray,
-            nodeID: nodeID,
             name: action.payload.name,
-            description: action.payload.description
+            description: action.payload.description,
+            latitude: action.payload.latitude,
+            longitude: action.payload.longitude,
+            deletedAt: null
         }
     ]
 }

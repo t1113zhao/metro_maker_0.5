@@ -29,12 +29,6 @@ export const RESTORE_SERVICE_TRACK_BLOCK = "RESTORE_SERVICE_TRACK_BLOCK"
 export const REMOVE_STOP = "REMOVE_STOP"
 export const RESTORE_STOP = "RESTORE_STOP"
 
-//Node Action Types
-export const ADD_NODE = "ADD_NODE"
-export const EDIT_NODE = "EDIT_NODE" // MOVE NODE
-export const REMOVE_NODE = "REMOVE_NODE"
-export const RESTORE_NODE = "RESTORE_NODE"
-
 //Station Action Types  
 export const ADD_STATION = "ADD_STATION"
 export const EDIT_STATION = "EDIT_STATION"
@@ -55,6 +49,12 @@ export const CURVED_TO_STRAIGHT = "CURVED_TO_STRAIGHT"
 export const BREAK_STRAIGHT_SEGMENT = "BREAK_STRAIGHT_SEGMENT"
 export const REMOVE_SEGMENT = "REMOVE_SEGMENT"
 export const RESTORE_SEGMENT = "RESTORE_SEGMENT"
+
+//Node Action Types
+export const ADD_NODE = "ADD_NODE"
+export const EDIT_NODE = "EDIT_NODE" // MOVE NODE
+export const REMOVE_NODE = "REMOVE_NODE"
+export const RESTORE_NODE = "RESTORE_NODE"
 
 //Track Action Types
 export const ADD_TRACK = "ADD_TRACK"

@@ -10,7 +10,6 @@ import {
     REMOVE_AGENCY,
     RESTORE_AGENCY
 } from '../actions/actionTypes'
-import { filter } from 'underscore'
 
 const initialServicesState = []
 

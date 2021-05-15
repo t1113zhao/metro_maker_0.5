@@ -3,7 +3,8 @@ import {
     ADD_STATION,
     EDIT_STATION,
     REMOVE_STATION,
-    RESTORE_STATION
+    RESTORE_STATION,
+    MOVE_STATION
 } from './actionTypes'
 
 import store from '../app/store'
@@ -20,13 +21,24 @@ export function addStation(description, name, latitude, longitude) {
     }
 }
 
+export function moveStation(id, latitude, longitude) {
+    return {
+        type: MOVE_STATION,
+        payload: {
+            id: parseInt(id),
+            latitude: latitude,
+            longitude: longitude
+        }
+    }
+}
+
 export function editStation(id, description, name) {
     return {
         type: EDIT_STATION,
         payload: {
             id: parseInt(id),
             name: name,
-            description: description
+            description: description,
         }
     }
 }

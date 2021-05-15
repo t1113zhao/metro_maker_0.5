@@ -8,21 +8,23 @@ import {
 
 import store from '../app/store'
 
-export function addNode(latitude, longitude) {
+export function addNode(latitude, longitude, trackID) {
     return {
         type: ADD_NODE,
         payload: {
+            trackID: parseInt(trackID),
             latitude: latitude,
             longitude: longitude
         }
     }
 }
 
-export function editNode(id, latitude, longitude) {
+export function editNode(id, latitude, longitude, trackID) {
     return {
         type: EDIT_NODE,
         payload: {
             id: parseInt(id),
+            trackID: parseInt(trackID),
             latitude: latitude,
             longitude: longitude
         }
@@ -30,23 +32,23 @@ export function editNode(id, latitude, longitude) {
 }
 
 //TODO insert the dependencies for a Node.
-export function removeNode(id) {
+export function removeNode(id, trackID) {
     return {
         type: REMOVE_NODE,
         payload: {
             id: parseInt(id),
-            deletedAt: new Date().toISOString(),
-            stationID: stationGivenNodeID(store.getState(),parseInt(id), false)
+            trackID: parseInt(trackID),
+            deletedAt: new Date().toISOString()
         }
     }
 }
 
-export function restoreNode(id) {
+export function restoreNode(id, trackID) {
     return {
         type: RESTORE_NODE,
         payload: {
             id: parseInt(id),
-            stationID: stationGivenNodeID(store.getState(),parseInt(id), false)
+            trackID: parseInt(trackID)
         }
     }
 }
