@@ -124,7 +124,7 @@ function doAddSegmentToTrackRoute(state, action) {
         }
         let givenNodeIDs = action.payload.nodeIDs
         let newNodeID = nextIDForArray(trackRoute.nodes)
-        let newNodes = trackRoute.nodes
+        let newNodes = trackRoute.nodes.slice(0)
 
         for (var i = 0; i < givenNodeIDs; i++) {
             if (!givenNodeIDs[i]) {
@@ -147,7 +147,7 @@ function doAddSegmentToTrackRoute(state, action) {
         }
         let newSegmentID = nextIDForArray(trackRoute.segments)
 
-        let newSegments = trackRoute.segments
+        let newSegments = trackRoute.segments.slice(0)
         newSegments.push(
             {
                 id: newSegmentID,
@@ -171,8 +171,8 @@ function doStraightToCurved(state, action) {
             return trackRoute
         }
 
-        let newNodes = trackRoute.nodes
-        let newSegments = trackRoute.segments
+        let newNodes = trackRoute.nodes.slice(0)
+        let newSegments = trackRoute.segments.slice(0)
 
         let targetSegment = trackRoute.segments[action.payload.id]
 
@@ -225,7 +225,7 @@ function doCurvedToStraight(state, action) {
         if (trackRoute.id != action.payload.trackID) {
             return trackRoute
         }
-        let newSegments = trackRoute.segments
+        let newSegments = trackRoute.segments.slice(0)
 
         newSegments = newSegments.map(segment => {
             if (segment.id != action.payload.id) {
@@ -245,8 +245,8 @@ function doBreakSegment(state, action) {
             return trackRoute
         }
         let targetSegment = trackRoute.segments[action.payload.id]
-        let newNodes = trackRoute.nodes
-        let newSegments = trackRoute.segments
+        let newNodes = trackRoute.nodes.slice(0)
+        let newSegments = trackRoute.segments.slice(0)
 
         let newCoords = haversineMidpoint(
             targetSegment.endNodes[0],
