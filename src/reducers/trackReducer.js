@@ -4,25 +4,13 @@ import {
     REMOVE_TRACK,
     RESTORE_TRACK,
     REMOVE_STATION,
-    RESTORE_STATION,
-    REMOVE_NODE,
-    RESTORE_NODE
+    RESTORE_STATION
 } from '../actions/actionTypes'
 
 const initialState = []
 
 export default function trackReducer(state = initialState, action) {
     switch (action.type) {
-        case REMOVE_NODE: {
-            return genericMultiDelete(
-                state,
-                getTrackIDsByStationID(
-                    state,
-                    action.payload.stationID[0]
-                ),
-                action.payload.deletedAt
-            )
-        }
         case REMOVE_STATION:{
             return genericMultiDelete(
                 state,
@@ -38,15 +26,6 @@ export default function trackReducer(state = initialState, action) {
                 state,
                 action.payload.id,
                 action.payload.deletedAt
-            )
-        }
-        case RESTORE_NODE :{
-            return genericMultiRestore(
-                state,
-                getTrackIDsByStationID(
-                    state,
-                    action.payload.stationID[0]
-                )
             )
         }
         case RESTORE_STATION :{
