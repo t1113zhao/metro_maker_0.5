@@ -81,6 +81,12 @@ export function filterById(array, id) {
     })
 }
 
+export function filterOutById(array, id) {
+    return array.filter(item => {
+        return item.id !== id
+    })
+}
+
 export function haversineMidpoint(node_A, node_B) {
 
     //http://jsfiddle.net/c1s6xgab/

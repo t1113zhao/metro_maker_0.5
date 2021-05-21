@@ -1,12 +1,24 @@
-import { filterById, genericMultiDelete, genericMultiRestore, genericSingleDelete, genericSingleRestore, nextIDForArray } from '../utils/utils'
+import { filterById, filterOutById, genericMultiDelete, genericMultiRestore, genericSingleDelete, genericSingleRestore, nextIDForArray } from '../utils/utils'
 import {
-    ADD_SERVICE, REMOVE_SERVICE, RESTORE_SERVICE,
+    REMOVE_SERVICE, RESTORE_SERVICE,
     REMOVE_LINE, RESTORE_LINE,
     REMOVE_AGENCY, RESTORE_AGENCY,
-    ADD_SERVICETRACK_TWOWAY, ADD_SERVICETRACK_ONEWAY,
-    SWITCH_ONEWAY_DIRECTION, TWOWAY_TO_ONEWAY,
-    REMOVE_SERVICE_TRACK, RESTORE_SERVICE_TRACK,
-    REMOVE_STOP, RESTORE_STOP
+    REMOVE_STATION, RESTORE_STATION,
+    REMOVE_TRACK, RESTORE_TRACK,
+
+    ADD_SERVICETRACK_TWOWAY,
+    ADD_SERVICETRACK_ONEWAY,
+    SWITCH_ONEWAY_DIRECTION,
+    ONEWAY_TO_TWOWAY,
+    TWOWAY_TO_ONEWAY,
+    CLEAR_SERVICE_ROUTE,
+    UNDO_CLEAR_SERVICE_ROUTE,
+    CLEAR_SERVICE_TRACK_BLOCK,
+    UNDO_CLEAR_SERVICE_TRACK_BLOCK,
+    REMOVE_SERVICE_TRACK_BLOCK,
+    RESTORE_SERVICE_TRACK_BLOCK,
+    REMOVE_STOP,
+    RESTORE_STOP
 } from '../actions/actionTypes'
 import _ from 'underscore';
 
@@ -90,6 +102,36 @@ export default function serviceRouteReducer(state = initialState, action) {
         }
         case SWITCH_ONEWAY_DIRECTION: {
             return doSwitchOneWayDirection(state, action)
+        }
+        case ONEWAY_TO_TWOWAY: {
+            return doOneWayToTwoWay(state, action)
+        }
+        case TWOWAY_TO_ONEWAY: {
+            return doTwoWayToOneWay(state, action)
+        }
+        case CLEAR_SERVICE_ROUTE: {
+            return doClearServiceRoute(state, action)
+        }
+        case UNDO_CLEAR_SERVICE_ROUTE: {
+            return doUndoClearServiceRoute(state, action)
+        }
+        case CLEAR_SERVICE_TRACK_BLOCK: {
+            return doClearTrackBlock(state, action)
+        }
+        case UNDO_CLEAR_SERVICE_TRACK_BLOCK: {
+            return undoClearTrackBlock(state, action)
+        }
+        case REMOVE_SERVICE_TRACK_BLOCK: {
+            return doRemoveTrackBlock(state, action)
+        }
+        case RESTORE_SERVICE_TRACK_BLOCK: {
+            return doRestoreTrackBlock(state, action)
+        }
+        case REMOVE_STOP: {
+            return doRemoveStop(state, action)
+        }
+        case RESTORE_STOP: {
+            return doRestoreStop(state, action)
         }
         default:
             return state;
@@ -234,6 +276,83 @@ function doSwitchOneWayDirection(state, action) {
             newBlock.push(newEdge)
             serviceTracks.splice(action.payload.index, 1, newBlock)
 
+            return {
+                ...serviceRoute,
+                serviceTracks: serviceTracks
+            }
+        }
+    })
+}
+
+function doOneWayToTwoWay(state, action) {
+    return state.map(serviceRoute => {
+        if (serviceRoute.id !== action.payload.serviceID) {
+            return serviceRoute
+        }
+
+        let serviceTracks = serviceRoute.serviceTracks.slice(0)
+        if (action.payload.index >= serviceTracks.length || action.payload.index < 0) {
+            return serviceRoute
+        }
+        let targetBlock = serviceTracks[action.payload.index]
+
+        let targetEdges = targetBlock.filter(edge => {
+            return edge.trackID === action.payload.trackID
+        })
+        if (targetEdges.length !== 1) {
+            return serviceRoute
+        } else {
+            let targetEdge = targetEdges[0]
+
+            let newBlock = [
+                {
+                    trackID: action.payload.trackID,
+                    fromStationID: parseInt(targetEdge.fromStationID),
+                    toStationID: parseInt(targetEdge.toStationID)
+                },
+                {
+                    trackID: action.payload.trackID,
+                    fromStationID: parseInt(targetEdge.toStationID),
+                    toStationID: parseInt(targetEdge.fromStationID)
+                }
+            ]
+            serviceTracks.splice(action.payload.index, 1, newBlock)
+            return {
+                ...serviceRoute,
+                serviceTracks: serviceTracks
+            }
+        }
+    })
+}
+
+function doTwoWayToOneWay(state, action) {
+    return state.map(serviceRoute => {
+        if (serviceRoute.id !== action.payload.serviceID) {
+            return serviceRoute
+        }
+
+        let serviceTracks = serviceRoute.serviceTracks.slice(0)
+        if (action.payload.index >= serviceTracks.length || action.payload.index < 0) {
+            return serviceRoute
+        }
+        let targetBlock = serviceTracks[action.payload.index]
+
+        let targetEdges = targetBlock.filter(edge => {
+            return edge.trackID === action.payload.trackID
+        })
+        if (targetEdges.length !== 2) {
+            return serviceRoute
+        } else {
+            let targetEdge = targetEdges[0]
+
+            let newBlock = [
+                {
+                    trackID: action.payload.trackID,
+                    fromStationID: parseInt(targetEdge.fromStationID),
+                    toStationID: parseInt(targetEdge.toStationID)
+                }
+            ]
+            serviceTracks.splice(action.payload.index, 1, newBlock)
             return {
                 ...serviceRoute,
                 serviceTracks: serviceTracks
