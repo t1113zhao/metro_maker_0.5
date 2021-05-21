@@ -361,6 +361,187 @@ function doTwoWayToOneWay(state, action) {
     })
 }
 
+export function doClearServiceRoute(state, action) {
+    return state.map(serviceRoute => {
+        if (serviceRoute.id !== action.payload.serviceID) {
+            return serviceRoute
+        }
+        return {
+            ...serviceRoute,
+            stopsByID: [],
+            serviceTracks: []
+        }
+    })
+}
+
+export function doUndoClearServiceRoute(state, action) {
+    return state.map(serviceRoute => {
+        if (serviceRoute.id !== action.payload.serviceID) {
+            return serviceRoute
+        }
+        return {
+            ...serviceRoute,
+            stopsByID: action.payload.stops,
+            serviceTracks: action.payload.serviceTracks
+        }
+    })
+}
+
+export function doClearTrackBlock(state, action) {
+    return state.map(serviceRoute => {
+        if (serviceRoute.id !== action.payload.serviceID) {
+            return serviceRoute
+        }
+
+        let serviceTracks = serviceRoute.serviceTracks.slice(0)
+        if (action.payload.index >= serviceTracks.length || action.payload.index < 0) {
+            return serviceRoute
+        }
+        let targetBlock = serviceTracks[action.payload.index]
+
+        let targetEdges = targetBlock.filter(edge => {
+            return edge.trackID === action.payload.trackID
+        })
+        if (targetEdges.length === 0) {
+            return serviceRoute
+        } else {
+            let newBlock = []
+            serviceTracks.splice(action.payload.index, 1, newBlock)
+            return {
+                ...serviceRoute,
+                serviceTracks: serviceTracks
+            }
+        }
+    })
+}
+
+export function undoClearTrackBlock(state, action) {
+    return state.map(serviceRoute => {
+        if (serviceRoute.id !== action.payload.serviceID) {
+            return serviceRoute
+        }
+        let serviceTracks = serviceRoute.serviceTracks.slice(0)
+        if (action.payload.index >= serviceTracks.length || action.payload.index < 0) {
+            return serviceRoute
+        }
+        let targetBlock = serviceTracks[action.payload.index]
+
+        let targetEdges = targetBlock.filter(edge => {
+            return edge.trackID === action.payload.trackID
+        })
+        if (targetEdges.length === 0) {
+            return serviceRoute
+        } else {
+            serviceTracks.splice(action.payload.index, 1, action.payload.block)
+            return {
+                ...serviceRoute,
+                serviceTracks: serviceTracks
+            }
+        }
+    })
+}
+
+export function doRemoveTrackBlock(state, action) {
+    return state.map(serviceRoute => {
+        if (serviceRoute.id !== action.payload.serviceID) {
+            return serviceRoute
+        }
+
+        let serviceTracks = serviceRoute.serviceTracks.slice(0)
+        if (action.payload.index >= serviceTracks.length || action.payload.index < 0) {
+            return serviceRoute
+        }
+        let targetBlock = serviceTracks[action.payload.index]
+
+        let targetEdges = targetBlock.filter(edge => {
+            return edge.trackID === action.payload.trackID
+        })
+        if (targetEdges.length === 0) {
+            return serviceRoute
+        } else {
+            serviceTracks = [...serviceTracks.slice(0, action.payload.index),
+            ...serviceTracks.slice(action.payload.index + 1)]
+            return {
+                ...serviceRoute,
+                serviceTracks: serviceTracks
+            }
+        }
+    })
+}
+
+export function doRestoreTrackBlock(state, action) {
+    return state.map(serviceRoute => {
+        if (serviceRoute.id !== action.payload.serviceID) {
+            return serviceRoute
+        }
+
+        let serviceTracks = serviceRoute.serviceTracks.slice(0)
+        if (action.payload.index >= serviceTracks.length || action.payload.index < 0) {
+            return serviceRoute
+        }
+        let targetBlock = serviceTracks[action.payload.index]
+
+        let targetEdges = targetBlock.filter(edge => {
+            return edge.trackID === action.payload.trackID
+        })
+        if (targetEdges.length === 0) {
+            return serviceRoute
+        } else {
+            serviceTracks.splice(action.payload.index, 1, action.payload.block)
+            return {
+                ...serviceRoute,
+                serviceTracks: serviceTracks
+            }
+        }
+    })
+}
+
+function doRemoveStop(state, action) {
+    return state.map(serviceRoute => {
+        if (serviceRoute.id !== action.payload.serviceID) {
+            return serviceRoute
+        }
+        let newStopsByID = filterOutById(serviceRoute.stopsByID, action.payload.stationID)
+        return {
+            ...serviceRoute,
+            stopsByID: newStopsByID
+        }
+    })
+}
+
+function doRestoreStop(state, action) {
+    return state.map(serviceRoute => {
+        if (serviceRoute.id !== action.payload.serviceID) {
+            return serviceRoute
+        }
+        if(serviceRoutePassesThroughStation(serviceRoute, action.payload.stationID) === false){
+            return serviceRoute
+        }
+
+        let newStopsByID = serviceRoute.stopsByID.slice(0)
+        newStopsByID.push(action.payload.stationID)
+        return {
+            ...serviceRoute,
+            stopsByID: newStopsByID
+        }
+    })
+
+}
+
+function serviceRoutePassesThroughStation(serviceRoute, stationID) {
+    let serviceTracks = serviceRoute.serviceTracks
+
+    for (var i = 0; i < serviceTracks.length; i++) {
+        for (var j =0; j< serviceTracks[i].length; j++) {
+            let edge = serviceTracks[i][j]
+            if(edge.fromStationID === stationID || edge.toStationID === stationID) {
+                return true
+            }
+        }
+    }
+    return true
+}
+
 function validActionsForServiceRoute(serviceRoute, stations) {
     //so when the serviceRoute is empty, this is not called.
 

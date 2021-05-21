@@ -73,3 +73,87 @@ export function twoWayToOneWay(trackID, serviceID, index) {
 }
 
 export function clearServiceRoute(serviceID) {
+    return {
+        type: CLEAR_SERVICE_ROUTE,
+        payload: {
+            serviceID: serviceID
+        }
+    }
+}
+
+export function undoClearServiceRoute(serviceID, stops, serviceTracks) {
+    return {
+        type: UNDO_CLEAR_SERVICE_ROUTE,
+        payload: {
+            serviceID: serviceID,
+            stops: stops,
+            serviceTracks: serviceTracks
+        }
+    }
+}
+
+export function clearTrackBlock(serviceID, trackID, index) {
+    return {
+        type: CLEAR_SERVICE_TRACK_BLOCK,
+        payload: {
+            serviceID: serviceID,
+            trackID: trackID,
+            index: index
+        }
+    }
+}
+
+export function undoClearTrackBlock(serviceID, trackID, index, block) {
+    return {
+        type: UNDO_CLEAR_SERVICE_TRACK_BLOCK,
+        payload: {
+            serviceID: serviceID,
+            trackID: trackID,
+            index: index,
+            block: block
+        }
+    }
+}
+
+export function removeTrackBlock(serviceID, trackID, index) {
+    return {
+        type: REMOVE_SERVICE_TRACK_BLOCK,
+        payload: {
+            serviceID: serviceID,
+            trackID: trackID,
+            index: index
+        }
+    }
+}
+
+export function restoreTrackBlock(serviceID, trackID, index, block) {
+    return {
+        type: RESTORE_SERVICE_TRACK_BLOCK,
+        payload: {
+            serviceID: serviceID,
+            trackID: trackID,
+            index: index,
+            block: block
+        }
+    }
+}
+
+export function removeStop(serviceID, stationID) {
+    return {
+        type: REMOVE_STOP,
+        payload: {
+            serviceID: serviceID,
+            stationID: stationID
+        }
+    }
+}
+
+export function restoreStop(serviceID, stationID) {
+    return {
+        type: RESTORE_STOP,
+        payload: {
+            serviceID: serviceID,
+            stationID: stationID
+        }
+    }
+}
