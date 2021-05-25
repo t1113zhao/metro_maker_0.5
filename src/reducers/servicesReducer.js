@@ -107,12 +107,12 @@ export function serviceIDsGivenLineID(state, lineID, includeDeleted) {
 }
 
 export function selectServicesGivenAgencyID(state, agencyID, includeDeleted) {
-    let lineIDs = new Set(lineIDsGivenAgencyId(state, agencyID))
+    let lineIDs = new Set(lineIDsGivenAgencyId(state, agencyID, includeDeleted))
 
     let output = state.services.filter(service => {
         return lineIDs.has(service.lineID)
     })
-    filterDeleted(output, includeDeleted)
+    output = filterDeleted(output, includeDeleted)
     return output
 }
 

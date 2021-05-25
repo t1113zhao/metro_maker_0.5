@@ -93,7 +93,7 @@ export function selectLinesGivenAgencyId(state, agencyID, includeDeleted) {
     let output = state.lines.filter(line => {
         return line.agencyID === agencyID
     })
-    filterDeleted(output, includeDeleted)
+    output = filterDeleted(output, includeDeleted)
     return output
 }
 
