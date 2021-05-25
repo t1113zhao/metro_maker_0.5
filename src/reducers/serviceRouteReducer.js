@@ -3,8 +3,6 @@ import {
     REMOVE_SERVICE, RESTORE_SERVICE,
     REMOVE_LINE, RESTORE_LINE,
     REMOVE_AGENCY, RESTORE_AGENCY,
-    REMOVE_STATION, RESTORE_STATION,
-    REMOVE_TRACK, RESTORE_TRACK,
 
     ADD_SERVICETRACK_TWOWAY,
     ADD_SERVICETRACK_ONEWAY,
@@ -548,9 +546,6 @@ function validActionsForServiceRoute(serviceRoute, stations) {
     // stationIDs where a new block can be added, along with the associated trackBlockIndex
     // stationIds where an incomplete block can be added to, needs associated trackBlockIndex
     // trackBlockIndices which are not complete and can be edited
-
-
-
 }
 
 function isTrackBlockComplete(serviceRoute, serviceID, index) {
