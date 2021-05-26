@@ -75,7 +75,40 @@ it('Remove Agency Action Creator', () => {
             serviceIDs: []
         }
     })
+})
 
+it('Restore Agency Action Creator', () => {
+    var MockDate = require('mockdate')
+    MockDate.set(1434319925275);
+
+    let store = mockStore({
+        agencies: [
+            { id: 0 }, { id: 1 }, { id: 2 }, { id: 3 }],
+        lines: [
+            { id: 0, agencyID: 0, deletedAt: null },
+            { id: 1, agencyID: 0, deletedAt: null },
+            { id: 2, agencyID: 0, deletedAt: null },
+            { id: 3, agencyID: 1, deletedAt: null },
+            { id: 4, agencyID: 1, deletedAt: null },
+            { id: 5, agencyID: 1, deletedAt: '2021-05-23T18:47:02.436Z' },
+            { id: 6, agencyID: 2, deletedAt: '2021-05-23T18:47:02.436Z' },
+            { id: 7, agencyID: 2, deletedAt: '2021-05-23T18:47:02.436Z' },
+            { id: 8, agencyID: 2, deletedAt: '2021-05-23T18:47:02.436Z' },
+        ],
+        services: [
+            { id: 0, lineID: 0, deletedAt: null },
+            { id: 1, lineID: 1, deletedAt: null },
+            { id: 2, lineID: 2, deletedAt: null },
+            { id: 3, lineID: 2, deletedAt: null },
+            { id: 4, lineID: 3, deletedAt: null },
+            { id: 5, lineID: 4, deletedAt: null },
+            { id: 6, lineID: 4, deletedAt: null },
+            { id: 7, lineID: 5, deletedAt: '2021-05-23T18:47:02.436Z' },
+            { id: 8, lineID: 6, deletedAt: '2021-05-23T18:47:02.436Z' },
+            { id: 9, lineID: 7, deletedAt: '2021-05-23T18:47:02.436Z' },
+            { id: 10, lineID: 8, deletedAt: '2021-05-23T18:47:02.436Z' }
+        ]
+    })
     expect(store.dispatch(actions.restoreAgency(0))).toEqual({
         type: type.RESTORE_AGENCY,
         payload: {
@@ -83,6 +116,38 @@ it('Remove Agency Action Creator', () => {
             lineIDs: [], // can't figure out why the selector isn't working within tests
             serviceIDs: []
         }
+    })
+
+})
+
+it('Get Correct Line IDs for Remove/Restore', () => {
+    let store = mockStore({
+        agencies: [
+            { id: 0 }, { id: 1 }, { id: 2 }, { id: 3 }],
+        lines: [
+            { id: 0, agencyID: 0, deletedAt: null },
+            { id: 1, agencyID: 0, deletedAt: null },
+            { id: 2, agencyID: 0, deletedAt: null },
+            { id: 3, agencyID: 1, deletedAt: null },
+            { id: 4, agencyID: 1, deletedAt: null },
+            { id: 5, agencyID: 1, deletedAt: '2021-05-23T18:47:02.436Z' },
+            { id: 6, agencyID: 2, deletedAt: '2021-05-23T18:47:02.436Z' },
+            { id: 7, agencyID: 2, deletedAt: '2021-05-23T18:47:02.436Z' },
+            { id: 8, agencyID: 2, deletedAt: '2021-05-23T18:47:02.436Z' },
+        ],
+        services: [
+            { id: 0, lineID: 0, deletedAt: null },
+            { id: 1, lineID: 1, deletedAt: null },
+            { id: 2, lineID: 2, deletedAt: null },
+            { id: 3, lineID: 2, deletedAt: null },
+            { id: 4, lineID: 3, deletedAt: null },
+            { id: 5, lineID: 4, deletedAt: null },
+            { id: 6, lineID: 4, deletedAt: null },
+            { id: 7, lineID: 5, deletedAt: '2021-05-23T18:47:02.436Z' },
+            { id: 8, lineID: 6, deletedAt: '2021-05-23T18:47:02.436Z' },
+            { id: 9, lineID: 7, deletedAt: '2021-05-23T18:47:02.436Z' },
+            { id: 10, lineID: 8, deletedAt: '2021-05-23T18:47:02.436Z' }
+        ]
     })
 
     expect(lineIDsGivenAgencyId(store.getState(), parseInt(0), false)).toEqual([0, 1, 2])
@@ -95,6 +160,38 @@ it('Remove Agency Action Creator', () => {
 
     expect(lineIDsGivenAgencyId(store.getState(), parseInt(3), false)).toEqual([])
 
+})
+
+it('Get Correct Service IDs for Remove/Replace', () => {
+    let store = mockStore({
+        agencies: [
+            { id: 0 }, { id: 1 }, { id: 2 }, { id: 3 }],
+        lines: [
+            { id: 0, agencyID: 0, deletedAt: null },
+            { id: 1, agencyID: 0, deletedAt: null },
+            { id: 2, agencyID: 0, deletedAt: null },
+            { id: 3, agencyID: 1, deletedAt: null },
+            { id: 4, agencyID: 1, deletedAt: null },
+            { id: 5, agencyID: 1, deletedAt: '2021-05-23T18:47:02.436Z' },
+            { id: 6, agencyID: 2, deletedAt: '2021-05-23T18:47:02.436Z' },
+            { id: 7, agencyID: 2, deletedAt: '2021-05-23T18:47:02.436Z' },
+            { id: 8, agencyID: 2, deletedAt: '2021-05-23T18:47:02.436Z' },
+        ],
+        services: [
+            { id: 0, lineID: 0, deletedAt: null },
+            { id: 1, lineID: 1, deletedAt: null },
+            { id: 2, lineID: 2, deletedAt: null },
+            { id: 3, lineID: 2, deletedAt: null },
+            { id: 4, lineID: 3, deletedAt: null },
+            { id: 5, lineID: 4, deletedAt: null },
+            { id: 6, lineID: 4, deletedAt: null },
+            { id: 7, lineID: 5, deletedAt: '2021-05-23T18:47:02.436Z' },
+            { id: 8, lineID: 6, deletedAt: '2021-05-23T18:47:02.436Z' },
+            { id: 9, lineID: 7, deletedAt: '2021-05-23T18:47:02.436Z' },
+            { id: 10, lineID: 8, deletedAt: '2021-05-23T18:47:02.436Z' }
+        ]
+    })
+
     expect(serviceIDsGivenAgencyID(store.getState(), parseInt(0), false)).toEqual([0, 1, 2, 3])
 
     expect(serviceIDsGivenAgencyID(store.getState(), parseInt(0), false)).toEqual([0, 1, 2, 3])
@@ -103,4 +200,3 @@ it('Remove Agency Action Creator', () => {
 
     expect(serviceIDsGivenAgencyID(store.getState(), parseInt(1), true)).toEqual([4, 5, 6, 7])
 })
-
