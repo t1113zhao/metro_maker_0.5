@@ -79,22 +79,19 @@ function doEditLine(state, action) {
 
 export function selectAllLines(state, includeDeleted) {
     let output = state.lines
-    filterDeleted(output, includeDeleted)
-    return output
+    return filterDeleted(output, includeDeleted)
 }
 
 export function selectLineGivenID(state, id, includeDeleted) {
     let output = filterById(state.lines, id)
-    filterDeleted(output, includeDeleted)
-    return output
+    return filterDeleted(output, includeDeleted)
 }
 
 export function selectLinesGivenAgencyId(state, agencyID, includeDeleted) {
     let output = state.lines.filter(line => {
         return line.agencyID === agencyID
     })
-    output = filterDeleted(output, includeDeleted)
-    return output
+    return filterDeleted(output, includeDeleted)
 }
 
 export function lineIDsGivenAgencyId(state, agencyID, includeDeleted) {

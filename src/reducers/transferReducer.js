@@ -148,8 +148,7 @@ export function selectAllTransfersGivenStationID(transfers, stationID, includeDe
     }).map(transfer => {
         return transfer.id
     })
-    filterDeleted(output, includeDeleted)
-    return output
+    return filterDeleted(output, includeDeleted)
 }
 
 export function transferIDsGivenStationID(transfers, stationID, includeDeleted){

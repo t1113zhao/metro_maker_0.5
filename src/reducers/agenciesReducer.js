@@ -60,12 +60,10 @@ function doEditAgency(state, action) {
 
 export function selectAllAgencies(state, includeDeleted) {
     let output = state.agencies
-    filterDeleted(output, includeDeleted)
-    return output
+    return filterDeleted(output, includeDeleted)
 }
 
 export function selectAgenciesGivenId(state, id, includeDeleted) {
     let output = filterById(state.agencies, id)
-    filterDeleted(output, includeDeleted)
-    return output
+    return filterDeleted(output, includeDeleted)
 }

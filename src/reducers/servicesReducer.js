@@ -82,22 +82,19 @@ function doEditService(state, action) {
 
 export function selectAllServices(state, includeDeleted) {
     let output = state.services
-    filterDeleted(output, includeDeleted)
-    return output
+    return filterDeleted(output, includeDeleted)
 }
 
 export function selectServiceGivenID(state, id, includeDeleted) {
     let output = filterById(state.services, id)
-    filterDeleted(output, includeDeleted)
-    return output
+    return filterDeleted(output, includeDeleted)
 }
 
 export function selectServicesGivenLineID(state, lineID, includeDeleted) {
     let output = state.services.filter(service => {
         return service.lineID == lineID
     })
-    filterDeleted(output, includeDeleted)
-    return output
+    return filterDeleted(output, includeDeleted)
 }
 
 export function serviceIDsGivenLineID(state, lineID, includeDeleted) {
@@ -112,8 +109,7 @@ export function selectServicesGivenAgencyID(state, agencyID, includeDeleted) {
     let output = state.services.filter(service => {
         return lineIDs.has(service.lineID)
     })
-    output = filterDeleted(output, includeDeleted)
-    return output
+    return filterDeleted(output, includeDeleted)
 }
 
 export function serviceIDsGivenAgencyID(state, agencyID, includeDeleted) {
