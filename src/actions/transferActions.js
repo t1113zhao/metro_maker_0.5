@@ -5,11 +5,11 @@ import {
     RESTORE_TRANSFER
 } from './actionTypes'
 
-export function addTransfer(stationIDs, type) {
+export function addTransfer(stationA_ID, stationB_ID, type) {
     return {
         type: ADD_TRANSFER,
         payload: {
-            stationIDs: stationIDs,
+            stationIDs: [stationA_ID, stationB_ID],
             type: type
         }
     }

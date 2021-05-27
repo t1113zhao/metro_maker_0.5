@@ -1,12 +1,9 @@
-import { stationsGivenNodeID } from '../reducers/stationsReducer'
 import {
     ADD_NODE,
     EDIT_NODE,
     REMOVE_NODE,
     RESTORE_NODE
 } from './actionTypes'
-
-import store from '../app/store'
 
 export function addNode(latitude, longitude, trackID) {
     return {

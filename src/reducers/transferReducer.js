@@ -10,7 +10,7 @@ import {
     RESTORE_STATION,
     REMOVE_NODE,
     RESTORE_NODE,
-} from './actionTypes'
+} from '../actions/actionTypes'
 
 const initialState = []
 
@@ -75,6 +75,9 @@ export default function transferReducer(state = initialState, action) {
                 state,
                 action.payload.id
             )
+        }
+        default: {
+            return state
         }
     }
 }
@@ -144,9 +147,7 @@ export function selectAllConnectedStations(state, stationID) {
 
 export function selectAllTransfersGivenStationID(transfers, stationID, includeDeleted) {
     let output = transfers.filter(transfer => {
-        return (transfer.stationIDs.contains(stationID))
-    }).map(transfer => {
-        return transfer.id
+        return (transfer.stationIDs[0] == stationID || transfer.stationIDs[1] == stationID)
     })
     return filterDeleted(output, includeDeleted)
 }

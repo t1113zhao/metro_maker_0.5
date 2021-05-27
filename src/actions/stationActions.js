@@ -49,7 +49,7 @@ export function removeStation(id) {
         payload: {
             id: parseInt(id),
             deletedAt: new Date().toISOString(),
-            transferIDs: transferIDsGivenStationID(store.getState(), parseInt(id), false)
+            transferIDs: transferIDsGivenStationID(store.getState().transfers, parseInt(id), false)
         }
     }
 }
@@ -59,7 +59,7 @@ export function restoreStation(id) {
         type: RESTORE_STATION,
         payload: {
             id: parseInt(id),
-            transferIDs: transferIDsGivenStationID(store.getState(), parseInt(id), true)
+            transferIDs: transferIDsGivenStationID(store.getState().transfers, parseInt(id), true)
         }
     }
 }

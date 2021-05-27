@@ -15,6 +15,7 @@ import {
 } from '../actions/actionTypes';
 import trackReducer, { doAddTrack } from './trackReducer';
 import trackRouteReducer, { doAddTrackRoute } from './trackRouteReducer'
+import transferReducer from './transferReducer';
 
 const combinedReducers = combineReducers({
     agencies: agencyReducer,
@@ -23,7 +24,8 @@ const combinedReducers = combineReducers({
     serviceRoutes: serviceRouteReducer,
     stations: stationReducer,
     tracks: trackReducer,
-    trackRoutes: trackRouteReducer, //implement separate track segment reducer, trackSegmentNode Reducer just coordinates the actions needed
+    trackRoutes: trackRouteReducer,
+    transfers: transferReducer
 });
 
 function crossSliceReducer(state, action) {

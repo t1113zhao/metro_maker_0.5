@@ -12,7 +12,7 @@ export function addService(lineID, name, servicePeriod, frequency) {
             lineID: parseInt(lineID),
             name: name,
             servicePeriod: servicePeriod,
-            frequency: frequency
+            frequency: frequency // trains per hour
         }
     }
 }
