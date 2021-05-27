@@ -55,17 +55,17 @@ export function straightToCurved(segmentID, trackID) {
     }
 }
 
-export function curvedToStraight(segmentID) {
+export function curvedToStraight(segmentID, trackID) {
     return {
         type: CURVED_TO_STRAIGHT,
         payload: {
-            id: segmentID,
-            trackID: trackID
+            id: parseInt(segmentID),
+            trackID: parseInt(trackID)
         }
     }
 }
 
-export function breakSegment(segmentID) {
+export function breakSegment(segmentID, trackID) {
     return {
         type: BREAK_SEGMENT,
         payload: {
@@ -75,7 +75,7 @@ export function breakSegment(segmentID) {
     }
 }
 
-export function removeSegment(trackID, segmentID) {
+export function removeSegment(segmentID, trackID) {
     return {
         type: REMOVE_SEGMENT,
         payload: {
@@ -86,7 +86,7 @@ export function removeSegment(trackID, segmentID) {
     }
 }
 
-export function restoreSegment(segmentID) {
+export function restoreSegment(segmentID, trackID) {
     return {
         type: RESTORE_SEGMENT,
         payload: {
