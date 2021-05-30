@@ -17,8 +17,8 @@ export function addStraightSegment(
     return {
         type: ADD_STRAIGHT_SEGMENT,
         payload: {
-            latitudes: [latA, latB],
-            longitudes: [lngA, lngB],
+            latitudes: [parseFloat(latA), parseFloat(latB)],
+            longitudes: [parseFloat(lngA), parseFloat(lngB)],
             nodeIDs: [parseInt(node_A_ID), parseInt(node_B_ID)],
             trackID: parseInt(trackID)
         }
@@ -37,8 +37,8 @@ export function addCurvedSegment(
     return {
         type: ADD_CURVED_SEGMENT,
         payload: {
-            latitudes: [latA, latB, latC],
-            longitudes: [lngA, lngB, lngC],
+            latitudes: [parseFloat(latA), parseFloat(latB),  parseFloat(latC)],
+            longitudes: [parseFloat(lngA), parseFloat(lngB),  parseFloat(lngC)],
             nodeIDs: [parseInt(node_A_ID), parseInt(node_B_ID), parseInt(node_C_ID)],
             trackID: parseInt(trackID)
         }

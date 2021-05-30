@@ -10,8 +10,8 @@ export function addNode(latitude, longitude, trackID) {
         type: ADD_NODE,
         payload: {
             trackID: parseInt(trackID),
-            latitude: latitude,
-            longitude: longitude
+            latitude: parseFloat(latitude),
+            longitude: parseFloat(longitude)
         }
     }
 }
@@ -22,8 +22,8 @@ export function editNode(id, latitude, longitude, trackID) {
         payload: {
             id: parseInt(id),
             trackID: parseInt(trackID),
-            latitude: latitude,
-            longitude: longitude
+            latitude: parseFloat(latitude),
+            longitude: parseFloat(longitude)
         }
     }
 }

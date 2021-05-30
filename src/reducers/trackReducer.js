@@ -1,6 +1,5 @@
-import { filterById, filterDeleted, genericMultiDelete, genericMultiRestore, genericSingleDelete, genericSingleRestore, nextIDForArray } from '../utils/utils'
+import { filterDeleted, genericMultiDelete, genericMultiRestore, genericSingleDelete, genericSingleRestore, nextIDForArray } from '../utils/utils'
 import {
-    ADD_TRACK,
     REMOVE_TRACK,
     RESTORE_TRACK,
     REMOVE_STATION,
@@ -11,13 +10,10 @@ const initialState = []
 
 export default function trackReducer(state = initialState, action) {
     switch (action.type) {
-        case REMOVE_STATION:{
+        case REMOVE_STATION: {
             return genericMultiDelete(
                 state,
-                getTrackIDsByStationID(
-                    state,
-                    action.payload.id
-                ),
+                action.payload.trackIDs,
                 action.payload.deletedAt
             )
         }
@@ -28,16 +24,13 @@ export default function trackReducer(state = initialState, action) {
                 action.payload.deletedAt
             )
         }
-        case RESTORE_STATION :{
+        case RESTORE_STATION: {
             return genericMultiRestore(
                 state,
-                getTrackIDsByStationID(
-                    state,
-                    action.payload.id
-                )
+                action.payload.trackIDs
             )
         }
-        case RESTORE_TRACK :{
+        case RESTORE_TRACK: {
             return genericSingleRestore(
                 state,
                 action.payload.id
@@ -50,7 +43,7 @@ export default function trackReducer(state = initialState, action) {
 }
 
 export function doAddTrack(state, action) {
-    let trackID = nextIDForArray()
+    let trackID = nextIDForArray(state)
     return [
         ...state,
         {
@@ -61,11 +54,12 @@ export function doAddTrack(state, action) {
     ]
 }
 
-function getTrackIDsByStationID(tracks, stationID){
-    return tracks.filter(track =>{
+export function getTrackIDsByStationID(tracks, stationID, includeDeleted) {
+    let output = tracks.filter(track => {
         return track.stationIDs[0] === stationID ||
-        track.stationIDs[1] === stationID
-    }).map(track =>{
+            track.stationIDs[1] === stationID
+    }).map(track => {
         return track.id
     })
+    return filterDeleted(output, includeDeleted)
 }

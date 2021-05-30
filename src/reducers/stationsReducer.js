@@ -1,9 +1,10 @@
 import { genericSingleDelete, genericSingleRestore, nextIDForArray, filterDeleted, filterByIds } from '../utils/utils'
 import {
+    ADD_STATION,
     EDIT_STATION,
+    MOVE_STATION,
     REMOVE_STATION,
     RESTORE_STATION,
-    ADD_STATION
 } from '../actions/actionTypes'
 const initialState = []
 
@@ -14,6 +15,9 @@ export default function stationReducer(state = initialState, action) {
         }
         case EDIT_STATION: {
             return doEditStation(state, action)
+        }
+        case MOVE_STATION: {
+            return doMoveStation(state, action)
         }
         case REMOVE_STATION: {
             return genericSingleDelete(
@@ -38,7 +42,7 @@ function doAddStation(state, action) {
     return [
         ...state,
         {
-            id: nextIDForArray,
+            id: nextIDForArray(state),
             name: action.payload.name,
             description: action.payload.description,
             latitude: action.payload.latitude,
@@ -57,6 +61,19 @@ function doEditStation(state, action) {
             ...item,
             name: action.payload.name,
             description: action.payload.description
+        }
+    })
+}
+
+function doMoveStation(state, action) {
+    return state.map(item => {
+        if (item.id !== action.payload.id) {
+            return item
+        }
+        return {
+            ...item,
+            latitude: action.payload.latitude,
+            longitude: action.payload.longitude,
         }
     })
 }

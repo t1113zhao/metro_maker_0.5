@@ -8,8 +8,6 @@ import {
     RESTORE_TRANSFER,
     REMOVE_STATION,
     RESTORE_STATION,
-    REMOVE_NODE,
-    RESTORE_NODE,
 } from '../actions/actionTypes'
 
 const initialState = []
@@ -21,18 +19,6 @@ export default function transferReducer(state = initialState, action) {
         }
         case EDIT_TRANSFER: {
             return doEditTransfer(state, action);
-        }
-        case REMOVE_NODE: {
-            if (action.payload.stationID) {
-                return genericMultiDelete(
-                    state,
-                    selectAllTransfersGivenStationID(
-                        state,
-                        action.payload.stationID
-                    ),
-                    action.payload.deletedAt
-                )
-            }
         }
         case REMOVE_STATION: {
             return genericMultiDelete(
@@ -49,17 +35,6 @@ export default function transferReducer(state = initialState, action) {
                 state,
                 action.payload.id,
                 action.payload.deletedAt)
-        }
-        case RESTORE_NODE: {
-            if (action.payload.stationID) {
-                return genericMultiRestore(
-                    state,
-                    selectAllTransfersGivenStationID(
-                        state,
-                        action.payload.stationID
-                    )
-                )
-            }
         }
         case RESTORE_STATION: {
             return genericMultiRestore(
@@ -87,8 +62,8 @@ function doAddTransfer(state, action) {
         ...state,
         {
             id: nextIDForArray(state),
-            stationIDs: action.stationIDs,
-            type: action.type,
+            stationIDs: action.payload.stationIDs,
+            type: action.payload.type,
             deletedAt: null
         }
     ]
@@ -101,7 +76,7 @@ function doEditTransfer(state, action) {
         }
         return {
             ...item,
-            type: action.type
+            type: action.payload.type,
         }
     })
 }
@@ -152,8 +127,8 @@ export function selectAllTransfersGivenStationID(transfers, stationID, includeDe
     return filterDeleted(output, includeDeleted)
 }
 
-export function transferIDsGivenStationID(transfers, stationID, includeDeleted){
-    return selectAllTransfersGivenStationID(transfers, stationID, includeDeleted).map(transfer =>{
+export function transferIDsGivenStationID(transfers, stationID, includeDeleted) {
+    return selectAllTransfersGivenStationID(transfers, stationID, includeDeleted).map(transfer => {
         return transfer.id
     })
 }

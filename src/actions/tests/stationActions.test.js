@@ -97,6 +97,7 @@ it('Remove Station', () => {
         payload: {
             id: id,
             deletedAt: deletedAt,
+            trackIDs: [],
             transferIDs: []
         }
     })
@@ -140,6 +141,7 @@ it('Restore Station', () => {
         type: type.RESTORE_STATION,
         payload: {
             id: 0,
+            trackIDs: [],
             transferIDs: []
         }
     })

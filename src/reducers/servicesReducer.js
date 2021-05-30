@@ -74,7 +74,7 @@ function doEditService(state, action) {
         return {
             ...item,
             name: action.payload.name,
-            servicePeriod: action.payload.serviceType,
+            servicePeriod: action.payload.servicePeriod,
             frequency: action.payload.frequency
         }
     })

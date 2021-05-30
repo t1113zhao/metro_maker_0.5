@@ -1,4 +1,5 @@
 import { transferIDsGivenStationID } from '../reducers/transferReducer'
+import { getTrackIDsByStationID } from '../reducers/trackReducer'
 import {
     ADD_STATION,
     EDIT_STATION,
@@ -15,8 +16,8 @@ export function addStation(description, name, latitude, longitude) {
         payload: {
             name: name,
             description: description,
-            latitude: latitude,
-            longitude: longitude
+            latitude: parseFloat(latitude),
+            longitude: parseFloat(longitude)
         }
     }
 }
@@ -26,8 +27,8 @@ export function moveStation(id, latitude, longitude) {
         type: MOVE_STATION,
         payload: {
             id: parseInt(id),
-            latitude: latitude,
-            longitude: longitude
+            latitude: parseFloat(latitude),
+            longitude: parseFloat(longitude)
         }
     }
 }
@@ -49,6 +50,7 @@ export function removeStation(id) {
         payload: {
             id: parseInt(id),
             deletedAt: new Date().toISOString(),
+            trackIDs: getTrackIDsByStationID(store.getState().tracks, parseInt(id), false),
             transferIDs: transferIDsGivenStationID(store.getState().transfers, parseInt(id), false)
         }
     }
@@ -59,6 +61,7 @@ export function restoreStation(id) {
         type: RESTORE_STATION,
         payload: {
             id: parseInt(id),
+            trackIDs: getTrackIDsByStationID(store.getState().tracks, parseInt(id), true),
             transferIDs: transferIDsGivenStationID(store.getState().transfers, parseInt(id), true)
         }
     }
