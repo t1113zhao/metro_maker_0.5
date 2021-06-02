@@ -4,12 +4,13 @@ import {
     SWITCH_ONEWAY_DIRECTION,
     ONEWAY_TO_TWOWAY,
     TWOWAY_TO_ONEWAY,
+    REMOVE_SERVICE_ALONG_TRACK,
     CLEAR_SERVICE_ROUTE,
     UNDO_CLEAR_SERVICE_ROUTE,
-    CLEAR_SERVICE_TRACK_BLOCK,
-    UNDO_CLEAR_SERVICE_TRACK_BLOCK,
-    REMOVE_SERVICE_TRACK_BLOCK,
-    RESTORE_SERVICE_TRACK_BLOCK,
+    // CLEAR_SERVICE_TRACK_BLOCK,
+    // UNDO_CLEAR_SERVICE_TRACK_BLOCK,
+    // REMOVE_SERVICE_TRACK_BLOCK,
+    // RESTORE_SERVICE_TRACK_BLOCK,
     REMOVE_STOP,
     RESTORE_STOP
 } from '../actionTypes'
@@ -101,6 +102,21 @@ it('Two Way to One Way Service Action Creator', () => {
     })
 })
 
+it('Remove Service on Track Action Creator', () => {
+    let trackID = 0
+    let serviceID = 0
+    let index = 0
+
+    expect(actions.removeServiceAlongTrack(trackID, serviceID, index)).toEqual({
+        type: REMOVE_SERVICE_ALONG_TRACK,
+        payload: {
+            trackID: trackID,
+            serviceID: serviceID,
+            index: index
+        }
+    })
+})
+
 it('Clear Service Route Action Creator', () => {
     let serviceID = 0
     expect(actions.clearServiceRoute(serviceID)).toEqual({
@@ -121,66 +137,6 @@ it('Undo Clear Service Route Action Creator', () => {
             serviceID: serviceID,
             stops: stops,
             serviceTracks: serviceTracks
-        }
-    })
-})
-
-it('Clear Track Block Action Creator', () => {
-    let trackID = 0
-    let serviceID = 0
-    let index = 0
-    expect(actions.clearTrackBlock(serviceID, trackID, index)).toEqual({
-        type: CLEAR_SERVICE_TRACK_BLOCK,
-        payload: {
-            trackID: trackID,
-            serviceID: serviceID,
-            index: index
-        }
-    })
-})
-
-it('Undo Clear Track Block Action Creator', () => {
-    let trackID = 0
-    let serviceID = 0
-    let index = 0
-    let block = [0 ,1]
-    expect(actions.undoClearTrackBlock(serviceID, trackID, index, block)).toEqual({
-        type: UNDO_CLEAR_SERVICE_TRACK_BLOCK,
-        payload: {
-            trackID: trackID,
-            serviceID: serviceID,
-            index: index,
-            block: block
-        }
-    })
-})
-
-it('Remove Track Block Action Creator', () => {
-    let trackID = 0
-    let serviceID = 0
-    let index = 0
-    expect(actions.removeTrackBlock(serviceID, trackID, index)).toEqual({
-        type: REMOVE_SERVICE_TRACK_BLOCK,
-        payload: {
-            trackID: trackID,
-            serviceID: serviceID,
-            index: index
-        }
-    })
-})
-
-it('Restore Track Block Action Creator', () => {
-    let trackID = 0
-    let serviceID = 0
-    let index = 0
-    let block = [0, 1]
-    expect(actions.restoreTrackBlock(serviceID, trackID, index, block)).toEqual({
-        type: RESTORE_SERVICE_TRACK_BLOCK,
-        payload: {
-            trackID: trackID,
-            serviceID: serviceID,
-            index: index,
-            block: block
         }
     })
 })

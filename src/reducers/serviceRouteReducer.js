@@ -9,12 +9,9 @@ import {
     SWITCH_ONEWAY_DIRECTION,
     ONEWAY_TO_TWOWAY,
     TWOWAY_TO_ONEWAY,
+    REMOVE_SERVICE_ALONG_TRACK,
     CLEAR_SERVICE_ROUTE,
     UNDO_CLEAR_SERVICE_ROUTE,
-    CLEAR_SERVICE_TRACK_BLOCK,
-    UNDO_CLEAR_SERVICE_TRACK_BLOCK,
-    REMOVE_SERVICE_TRACK_BLOCK,
-    RESTORE_SERVICE_TRACK_BLOCK,
     REMOVE_STOP,
     RESTORE_STOP
 } from '../actions/actionTypes'
@@ -113,18 +110,26 @@ export default function serviceRouteReducer(state = initialState, action) {
         case UNDO_CLEAR_SERVICE_ROUTE: {
             return doUndoClearServiceRoute(state, action)
         }
-        case CLEAR_SERVICE_TRACK_BLOCK: {
-            return doClearTrackBlock(state, action)
-        }
-        case UNDO_CLEAR_SERVICE_TRACK_BLOCK: {
-            return undoClearTrackBlock(state, action)
-        }
-        case REMOVE_SERVICE_TRACK_BLOCK: {
-            return doRemoveTrackBlock(state, action)
-        }
-        case RESTORE_SERVICE_TRACK_BLOCK: {
-            return doRestoreTrackBlock(state, action)
-        }
+        // case CLEAR_SERVICE_TRACK_BLOCK: {
+        //     return editServiceTracks(state, action, (targetEdges) => {
+        //         return targetEdges.length === 0
+        //     }, doClearTrackBlock)
+        // }
+        // case UNDO_CLEAR_SERVICE_TRACK_BLOCK: {
+        //     return editServiceTracks(state, action, (targetEdges) => {
+        //         return targetEdges.length === 0
+        //     }, undoClearTrackBlock)
+        // }
+        // case REMOVE_SERVICE_TRACK_BLOCK: {
+        //     return editServiceTracks(state, action, (targetEdges) => {
+        //         return targetEdges.length === 0
+        //     }, doRemoveTrackBlock)
+        // }
+        // case RESTORE_SERVICE_TRACK_BLOCK: {
+        //     return editServiceTracks(state, action, (targetEdges) => {
+        //         return targetEdges.length === 0
+        //     }, doRestoreTrackBlock)
+        // }
         case REMOVE_STOP: {
             return doRemoveStop(state, action)
         }
@@ -385,114 +390,39 @@ export function doUndoClearServiceRoute(state, action) {
     })
 }
 
-export function doClearTrackBlock(state, action) {
-    return state.map(serviceRoute => {
-        if (serviceRoute.id !== action.payload.serviceID) {
-            return serviceRoute
-        }
+// export function doClearTrackBlock(serviceRoute, action, serviceTracks, targetBlock, targetEdges) {
+//     let newBlock = []
+//     serviceTracks.splice(action.payload.index, 1, newBlock)
+//     return {
+//         ...serviceRoute,
+//         serviceTracks: serviceTracks
+//     }
+// }
 
-        let serviceTracks = serviceRoute.serviceTracks.slice(0)
-        if (action.payload.index >= serviceTracks.length || action.payload.index < 0) {
-            return serviceRoute
-        }
-        let targetBlock = serviceTracks[action.payload.index]
+// export function undoClearTrackBlock(serviceRoute, action, serviceTracks, targetBlock, targetEdges) {
+//     serviceTracks.splice(action.payload.index, 1, action.payload.block)
+//     return {
+//         ...serviceRoute,
+//         serviceTracks: serviceTracks
+//     }
+// }
 
-        let targetEdges = targetBlock.filter(edge => {
-            return edge.trackID === action.payload.trackID
-        })
-        if (targetEdges.length === 0) {
-            return serviceRoute
-        } else {
-            let newBlock = []
-            serviceTracks.splice(action.payload.index, 1, newBlock)
-            return {
-                ...serviceRoute,
-                serviceTracks: serviceTracks
-            }
-        }
-    })
-}
+// export function doRemoveTrackBlock(serviceRoute, action, serviceTracks, targetBlock, targetEdges) {
+//     serviceTracks = [...serviceTracks.slice(0, action.payload.index),
+//     ...serviceTracks.slice(action.payload.index + 1)]
+//     return {
+//         ...serviceRoute,
+//         serviceTracks: serviceTracks
+//     }
+// }
 
-export function undoClearTrackBlock(state, action) {
-    return state.map(serviceRoute => {
-        if (serviceRoute.id !== action.payload.serviceID) {
-            return serviceRoute
-        }
-        let serviceTracks = serviceRoute.serviceTracks.slice(0)
-        if (action.payload.index >= serviceTracks.length || action.payload.index < 0) {
-            return serviceRoute
-        }
-        let targetBlock = serviceTracks[action.payload.index]
-
-        let targetEdges = targetBlock.filter(edge => {
-            return edge.trackID === action.payload.trackID
-        })
-        if (targetEdges.length === 0) {
-            return serviceRoute
-        } else {
-            serviceTracks.splice(action.payload.index, 1, action.payload.block)
-            return {
-                ...serviceRoute,
-                serviceTracks: serviceTracks
-            }
-        }
-    })
-}
-
-export function doRemoveTrackBlock(state, action) {
-    return state.map(serviceRoute => {
-        if (serviceRoute.id !== action.payload.serviceID) {
-            return serviceRoute
-        }
-
-        let serviceTracks = serviceRoute.serviceTracks.slice(0)
-        if (action.payload.index >= serviceTracks.length || action.payload.index < 0) {
-            return serviceRoute
-        }
-        let targetBlock = serviceTracks[action.payload.index]
-
-        let targetEdges = targetBlock.filter(edge => {
-            return edge.trackID === action.payload.trackID
-        })
-        if (targetEdges.length === 0) {
-            return serviceRoute
-        } else {
-            serviceTracks = [...serviceTracks.slice(0, action.payload.index),
-            ...serviceTracks.slice(action.payload.index + 1)]
-            return {
-                ...serviceRoute,
-                serviceTracks: serviceTracks
-            }
-        }
-    })
-}
-
-export function doRestoreTrackBlock(state, action) {
-    return state.map(serviceRoute => {
-        if (serviceRoute.id !== action.payload.serviceID) {
-            return serviceRoute
-        }
-
-        let serviceTracks = serviceRoute.serviceTracks.slice(0)
-        if (action.payload.index >= serviceTracks.length || action.payload.index < 0) {
-            return serviceRoute
-        }
-        let targetBlock = serviceTracks[action.payload.index]
-
-        let targetEdges = targetBlock.filter(edge => {
-            return edge.trackID === action.payload.trackID
-        })
-        if (targetEdges.length === 0) {
-            return serviceRoute
-        } else {
-            serviceTracks.splice(action.payload.index, 1, action.payload.block)
-            return {
-                ...serviceRoute,
-                serviceTracks: serviceTracks
-            }
-        }
-    })
-}
+// export function doRestoreTrackBlock(serviceRoute, action, serviceTracks, targetBlock, targetEdges) {
+//     serviceTracks.splice(action.payload.index, 1, action.payload.block)
+//     return {
+//         ...serviceRoute,
+//         serviceTracks: serviceTracks
+//     }
+// }
 
 function doRemoveStop(state, action) {
     return state.map(serviceRoute => {
