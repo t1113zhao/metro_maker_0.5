@@ -15,7 +15,7 @@ import {
     REMOVE_STOP,
     RESTORE_STOP
 } from '../actions/actionTypes'
-import _ from 'underscore';
+import _, { difference, union } from 'underscore';
 
 //an array of serviceRoute objects
 const initialState = [];
@@ -96,13 +96,24 @@ export default function serviceRouteReducer(state = initialState, action) {
             return doAddOneWayServiceTrack(state, action)
         }
         case SWITCH_ONEWAY_DIRECTION: {
-            return doSwitchOneWayDirection(state, action)
+            return editServiceTracks(state, action, (targetEdges) => {
+                return targetEdges.length !== 1
+            }, doSwitchOneWayDirection)
         }
         case ONEWAY_TO_TWOWAY: {
-            return doOneWayToTwoWay(state, action)
+            return editServiceTracks(state, action, (targetEdges) => {
+                return targetEdges.length !== 1
+            }, doOneWayToTwoWay)
         }
         case TWOWAY_TO_ONEWAY: {
-            return doTwoWayToOneWay(state, action)
+            return editServiceTracks(state, action, (targetEdges) => {
+                return targetEdges.length !== 2
+            }, doTwoWayToOneWay)
+        }
+        case REMOVE_SERVICE_ALONG_TRACK: {
+            return editServiceTracks(state, action, (targetEdges) => {
+                return targetEdges.length === 0
+            }, doRemoveServiceAlongTrack)
         }
         case CLEAR_SERVICE_ROUTE: {
             return doClearServiceRoute(state, action)
@@ -162,12 +173,8 @@ function doAddTwoWayServiceTrack(state, action) {
         }
 
         let newStops = serviceRoute.stopsByID.slice(0);
-        let stopsSet = new Set(newStops)
-        for (const stationID in action.payload.stationIDs) {
-            if (stopsSet.has(stationID) == false) {
-                newStops.push(stationID)
-            }
-        }
+
+        newStops = union(newStops, action.payload.stationIDs)
 
         let serviceTracks = serviceRoute.serviceTracks.slice(0);
 
@@ -230,12 +237,19 @@ function doAddOneWayServiceTrack(state, action) {
         } else {
             let currentBlock = serviceTracks[action.payload.index].slice(0)
 
-            currentBlock.push({
-                trackID: action.payload.trackID,
-                fromStationID: action.payload.fromID,
-                toStationID: action.payload.toID
-            })
-            serviceTracks.splice(action.payload.index, 1, currentBlock)
+            // Adding to a complete block is not allowed
+            if (!isTrackBlockComplete(currentBlock)) {
+                currentBlock.push({
+                    trackID: action.payload.trackID,
+                    fromStationID: action.payload.fromID,
+                    toStationID: action.payload.toID
+                })
+                serviceTracks.splice(action.payload.index, 1, currentBlock)
+            } else {
+                return {
+                    ...serviceRoute
+                }
+            }
         }
         return {
             ...serviceRoute,
@@ -245,7 +259,7 @@ function doAddOneWayServiceTrack(state, action) {
     })
 }
 
-function doSwitchOneWayDirection(state, action) {
+function editServiceTracks(state, action, predicate, callback) {
     return state.map(serviceRoute => {
         if (serviceRoute.id !== action.payload.serviceID) {
             return serviceRoute
@@ -261,107 +275,108 @@ function doSwitchOneWayDirection(state, action) {
             return edge.trackID === action.payload.trackID
         })
 
-        if (targetEdges.length !== 1) {
+        if (predicate(targetEdges)) {
             return serviceRoute
         } else {
-            let newBlock = targetBlock.filter(edge => {
-                return edge.trackID !== action.payload.trackID
-            }).slice(0)
-
-            let targetEdge = targetEdges[0]
-
-            let newEdge = {
-                trackID: targetEdge.trackID,
-                fromStationID: targetEdge.toID,
-                toStationID: targetEdge.fromID
-            }
-
-            newBlock.push(newEdge)
-            serviceTracks.splice(action.payload.index, 1, newBlock)
-
-            return {
-                ...serviceRoute,
-                serviceTracks: serviceTracks
-            }
+            return callback(serviceRoute, action, serviceTracks, targetBlock, targetEdges)
         }
     })
 }
 
-function doOneWayToTwoWay(state, action) {
-    return state.map(serviceRoute => {
-        if (serviceRoute.id !== action.payload.serviceID) {
-            return serviceRoute
-        }
+function doSwitchOneWayDirection(serviceRoute, action, serviceTracks, targetBlock, targetEdges) {
+    let newBlock = targetBlock.filter(edge => {
+        return edge.trackID !== action.payload.trackID
+    }).slice(0)
 
-        let serviceTracks = serviceRoute.serviceTracks.slice(0)
-        if (action.payload.index >= serviceTracks.length || action.payload.index < 0) {
-            return serviceRoute
-        }
-        let targetBlock = serviceTracks[action.payload.index]
+    let targetEdge = targetEdges[0]
 
-        let targetEdges = targetBlock.filter(edge => {
-            return edge.trackID === action.payload.trackID
-        })
-        if (targetEdges.length !== 1) {
-            return serviceRoute
-        } else {
-            let targetEdge = targetEdges[0]
+    let newEdge = {
+        trackID: targetEdge.trackID,
+        fromStationID: targetEdge.toStationID,
+        toStationID: targetEdge.fromStationID
+    }
 
-            let newBlock = [
-                {
-                    trackID: action.payload.trackID,
-                    fromStationID: parseInt(targetEdge.fromStationID),
-                    toStationID: parseInt(targetEdge.toStationID)
-                },
-                {
-                    trackID: action.payload.trackID,
-                    fromStationID: parseInt(targetEdge.toStationID),
-                    toStationID: parseInt(targetEdge.fromStationID)
-                }
-            ]
-            serviceTracks.splice(action.payload.index, 1, newBlock)
-            return {
-                ...serviceRoute,
-                serviceTracks: serviceTracks
-            }
-        }
-    })
+    newBlock.push(newEdge)
+    serviceTracks.splice(action.payload.index, 1, newBlock)
+
+    return {
+        ...serviceRoute,
+        serviceTracks: serviceTracks
+    }
 }
 
-function doTwoWayToOneWay(state, action) {
-    return state.map(serviceRoute => {
-        if (serviceRoute.id !== action.payload.serviceID) {
-            return serviceRoute
-        }
+function doOneWayToTwoWay(serviceRoute, action, serviceTracks, targetBlock, targetEdges) {
+    let targetEdge = targetEdges[0]
 
-        let serviceTracks = serviceRoute.serviceTracks.slice(0)
-        if (action.payload.index >= serviceTracks.length || action.payload.index < 0) {
-            return serviceRoute
+    let newBlock = [
+        {
+            trackID: action.payload.trackID,
+            fromStationID: parseInt(targetEdge.fromStationID),
+            toStationID: parseInt(targetEdge.toStationID)
+        },
+        {
+            trackID: action.payload.trackID,
+            fromStationID: parseInt(targetEdge.toStationID),
+            toStationID: parseInt(targetEdge.fromStationID)
         }
-        let targetBlock = serviceTracks[action.payload.index]
+    ]
+    serviceTracks.splice(action.payload.index, 1, newBlock)
+    return {
+        ...serviceRoute,
+        serviceTracks: serviceTracks
+    }
+}
 
-        let targetEdges = targetBlock.filter(edge => {
-            return edge.trackID === action.payload.trackID
-        })
-        if (targetEdges.length !== 2) {
-            return serviceRoute
-        } else {
-            let targetEdge = targetEdges[0]
+function doTwoWayToOneWay(serviceRoute, action, serviceTracks, targetBlock, targetEdges) {
+    let targetEdge = targetEdges[0]
 
-            let newBlock = [
-                {
-                    trackID: action.payload.trackID,
-                    fromStationID: parseInt(targetEdge.fromStationID),
-                    toStationID: parseInt(targetEdge.toStationID)
-                }
-            ]
-            serviceTracks.splice(action.payload.index, 1, newBlock)
-            return {
-                ...serviceRoute,
-                serviceTracks: serviceTracks
-            }
+    let newBlock = [
+        {
+            trackID: action.payload.trackID,
+            fromStationID: parseInt(targetEdge.fromStationID),
+            toStationID: parseInt(targetEdge.toStationID)
         }
+    ]
+    serviceTracks.splice(action.payload.index, 1, newBlock)
+    return {
+        ...serviceRoute,
+        serviceTracks: serviceTracks
+    }
+}
+
+function doRemoveServiceAlongTrack(serviceRoute, action, serviceTracks, targetBlock, targetEdges) {
+    let checkStops = []
+    
+    let newBlock = targetBlock.filter(edge => {
+        if(edge.trackID === action.payload.trackID) {
+            checkStops = [edge.fromStationID, edge.toStationID]
+        }
+        return edge.trackID !== action.payload.trackID
     })
+
+    if(newBlock.length > 0) {
+        serviceTracks.splice(action.payload.index, 1, newBlock)
+    } else {
+        serviceTracks = [
+            ...serviceTracks.slice(0, action.payload.index),
+            ...serviceTracks.slice(action.payload.index + 1)
+        ]
+    }
+
+    let removeStops = []
+
+    if (!serviceRoutePassesThroughStation(serviceTracks, checkStops[0])){
+        removeStops.push(checkStops[0])
+    }
+    if (!serviceRoutePassesThroughStation(serviceTracks, checkStops[1])){
+        removeStops.push(checkStops[1])
+    }
+    let newStops = difference(serviceRoute.stopsByID, removeStops)
+    return {
+        ...serviceRoute,
+        stopsByID: newStops,
+        serviceTracks: serviceTracks
+    }
 }
 
 export function doClearServiceRoute(state, action) {
@@ -429,7 +444,9 @@ function doRemoveStop(state, action) {
         if (serviceRoute.id !== action.payload.serviceID) {
             return serviceRoute
         }
-        let newStopsByID = filterOutById(serviceRoute.stopsByID, action.payload.stationID)
+        let newStopsByID = serviceRoute.stopsByID.filter(stop => {
+            return stop !== action.payload.stationID
+        })
         return {
             ...serviceRoute,
             stopsByID: newStopsByID
@@ -442,12 +459,13 @@ function doRestoreStop(state, action) {
         if (serviceRoute.id !== action.payload.serviceID) {
             return serviceRoute
         }
-        if(serviceRoutePassesThroughStation(serviceRoute, action.payload.stationID) === false){
+        if (!serviceRoutePassesThroughStation(serviceRoute.serviceTracks, action.payload.stationID)) {
             return serviceRoute
         }
 
         let newStopsByID = serviceRoute.stopsByID.slice(0)
         newStopsByID.push(action.payload.stationID)
+        newStopsByID.sort((a, b) => a - b)
         return {
             ...serviceRoute,
             stopsByID: newStopsByID
@@ -456,18 +474,17 @@ function doRestoreStop(state, action) {
 
 }
 
-function serviceRoutePassesThroughStation(serviceRoute, stationID) {
-    let serviceTracks = serviceRoute.serviceTracks
+export function serviceRoutePassesThroughStation(serviceTracks, stationID) {
 
     for (var i = 0; i < serviceTracks.length; i++) {
-        for (var j =0; j< serviceTracks[i].length; j++) {
+        for (var j = 0; j < serviceTracks[i].length; j++) {
             let edge = serviceTracks[i][j]
-            if(edge.fromStationID === stationID || edge.toStationID === stationID) {
+            if (edge.fromStationID === stationID || edge.toStationID === stationID) {
                 return true
             }
         }
     }
-    return true
+    return false
 }
 
 function validActionsForServiceRoute(serviceRoute, stations) {
@@ -478,7 +495,7 @@ function validActionsForServiceRoute(serviceRoute, stations) {
     // trackBlockIndices which are not complete and can be edited
 }
 
-function isTrackBlockComplete(serviceRoute, serviceID, index) {
+export function isTrackBlockAtIndexComplete(serviceRoute, serviceID, index) {
     let targetServiceRoute = filterById(serviceRoute, serviceID)[0]
 
     if (!targetServiceRoute) {
@@ -486,8 +503,11 @@ function isTrackBlockComplete(serviceRoute, serviceID, index) {
     }
 
     let targetBlock = targetServiceRoute.serviceTracks[index]
+    return isTrackBlockComplete(targetBlock)
+}
 
-    if (!targetBlock) {
+export function isTrackBlockComplete(targetBlock) {
+    if (!targetBlock || targetBlock.length == 0) {
         return false
     }
 
@@ -507,11 +527,20 @@ function isTrackBlockComplete(serviceRoute, serviceID, index) {
             }
 
             if (fromIDs.has(to)) {
-                fromIDs.delete(from)
+                fromIDs.delete(to)
             } else {
                 toIDs.add(to)
             }
         }
     }
-    return fromIDs.length() === 0 && toIDs.length() === 0
+    return fromIDs.size === 0 && toIDs.size === 0
+}
+
+function isServiceRouteComplete(serviceRoute) {
+    //check, all stations in servicetracks = stops + passthrough
+    //check, each track block complete
+}
+
+function getStationsInOrder(serviceRoute) {
+    // first station is the 
 }
