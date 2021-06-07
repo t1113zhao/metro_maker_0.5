@@ -32,13 +32,6 @@ export const REMOVE_SERVICE_ALONG_TRACK = "REMOVE_SERVICE_ALONG_TRACK"
 export const CLEAR_SERVICE_ROUTE = "CLEAR_SERVICE_ROUTE"
 export const UNDO_CLEAR_SERVICE_ROUTE = "UNDO_CLEAR_SERVICE_ROUTE"
 
-// Clear track block = [...][...] => [...][]
-// Remove track block = [...][...] => [...]
-// export const CLEAR_SERVICE_TRACK_BLOCK = "CLEAR_SERVICE_TRACK_BLOCK"
-// export const UNDO_CLEAR_SERVICE_TRACK_BLOCK = "UNDO_CLEAR_SERVICE_TRACK_BLOCK"
-// export const REMOVE_SERVICE_TRACK_BLOCK = "REMOVE_SERVICE_TRACK_BLOCK"
-// export const RESTORE_SERVICE_TRACK_BLOCK = "RESTORE_SERVICE_TRACK_BLOCK"
-
 // Editing Stops
 export const REMOVE_STOP = "REMOVE_STOP"
 export const RESTORE_STOP = "RESTORE_STOP"
@@ -68,8 +61,6 @@ export const RESTORE_SEGMENT = "RESTORE_SEGMENT"
 //Node Action Types
 export const ADD_NODE = "ADD_NODE"
 export const EDIT_NODE = "EDIT_NODE" // MOVE NODE
-export const REMOVE_NODE = "REMOVE_NODE"
-export const RESTORE_NODE = "RESTORE_NODE"
 
 //Track Action Types
 export const ADD_TRACK = "ADD_TRACK"

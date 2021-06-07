@@ -10,10 +10,8 @@ import stationReducer, { selectStationsGivenStationIDs } from '../reducers/stati
 import { addStation, selectAllNodeIdsGivenStationIDs } from '../reducers/stationsReducer';
 import { nextIDForArray } from '../utils/utils';
 import {
-    ADD_SERVICE,
-    ADD_TRACK,
+    ADD_SERVICE
 } from '../actions/actionTypes';
-import trackReducer, { doAddTrack } from './trackReducer';
 import trackRouteReducer, { doAddTrackRoute } from './trackRouteReducer'
 import transferReducer from './transferReducer';
 
@@ -23,8 +21,7 @@ const combinedReducers = combineReducers({
     services: servicesReducer,
     serviceRoutes: serviceRouteReducer,
     stations: stationReducer,
-    tracks: trackReducer,
-    trackRoutes: trackRouteReducer,
+    tracks: trackRouteReducer,
     transfers: transferReducer
 });
 
@@ -32,9 +29,6 @@ function crossSliceReducer(state, action) {
     switch (action.type) {
         case ADD_SERVICE: {
             return rootAddService(state, action)
-        }
-        case ADD_TRACK: {
-            return rootAddTrack(state, action)
         }
         default:
             return state
@@ -86,22 +80,5 @@ function rootAddService(state, action) {
         ...state,
         services: doAddService(state.services, action),
         serviceRoutes: doAddServiceRoute(state.serviceRoutes, serviceID)
-    }
-}
-
-function rootAddTrack(state, action) {
-
-    let stations = selectStationsGivenStationIDs(state.stations, action.payload.stationIDs)
-
-    let trackID = nextIDForArray(state.tracks)
-    return {
-        ...state,
-        tracks: doAddTrack(state.tracks, action),
-        trackRoutes: doAddTrackRoute(
-            state.trackRoutes,
-            action,
-            trackID,
-            stations
-        )
     }
 }

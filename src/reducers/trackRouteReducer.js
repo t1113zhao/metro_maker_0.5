@@ -1,5 +1,4 @@
-import { getNodeText } from '@testing-library/dom'
-import { difference, filter } from 'underscore'
+import { difference } from 'underscore'
 import {
     genericMultiDelete,
     genericMultiRestore,
@@ -9,7 +8,6 @@ import {
     nextIDForArray,
     filterDeleted,
     filterByIds,
-    filterById,
     filterOutById,
     filterOutByIds,
     idCompare
@@ -22,11 +20,9 @@ import {
     REMOVE_STATION,
     RESTORE_STATION,
 
-    // ADD_NODE,
     EDIT_NODE,
-    // REMOVE_NODE,
-    // RESTORE_NODE,
     MOVE_STATION,
+    
     ADD_STRAIGHT_SEGMENT,
     ADD_CURVED_SEGMENT,
     STRAIGHT_TO_CURVED,

@@ -1,5 +1,5 @@
 import { transferIDsGivenStationID } from '../reducers/transferReducer'
-import { getTrackIDsByStationID } from '../reducers/trackReducer'
+import { getTrackIDsByStationID } from '../reducers/trackRouteReducer'
 import {
     ADD_STATION,
     EDIT_STATION,
