@@ -1,4 +1,6 @@
-import { Provider } from "react-redux"
+/** 
+ * A class to contain random utility functions
+*/
 
 export function nextIDForArray(array) {
     const maxID = array.reduce((maxID, element) => Math.max(element.id, maxID), -1)
@@ -44,7 +46,7 @@ export function genericMultiDelete(array, ids, deletedAt) {
     })
 }
 
-export function genericMultiRestore(array, ids, deletedAt) {
+export function genericMultiRestore(array, ids) {
     var restoreSet = new Set(ids)
 
     return array.map((item) => {
@@ -87,16 +89,39 @@ export function filterOutById(array, id) {
     })
 }
 
+export function idCompare(a,b) {
+    if(a.id < b.id) {
+        return -1;
+    }
+    if(a.id> b.id) {
+        return 1
+    }
+    return 0
+}
+
+export function filterOutByIds(array, ids) {
+    var idset = new Set(ids)
+
+    return array.filter(item => {
+        return !idset.has(item.id)
+    })
+}
+
+
 export function haversineMidpoint(node_A, node_B) {
+    const R = 6371e3
+    function toRad(x) {
+        return x * Math.PI / 180
+    }
 
     //http://jsfiddle.net/c1s6xgab/
-    let lat1 = node_A.latitude
-    let lng1 = node_A.longitude
+    let lat1 = toRad(node_A.latitude)
+    let lng1 = toRad(node_A.longitude)
 
-    let lat2 = node_B.latitude
-    let lng2 = node_B.longitude
+    let lat2 = toRad(node_B.latitude)
+    let lng2 = toRad(node_B.longitude)
 
-    let dLng = (lng2-lng1)
+    let dLng = (lng2 - lng1)
 
     var bX = Math.cos(lat2) * Math.cos(dLng);
     var bY = Math.cos(lat2) * Math.sin(dLng);
@@ -108,20 +133,11 @@ export function haversineMidpoint(node_A, node_B) {
     lat3 = lat3 * 180 / Math.PI
     lng3 = lng3 * 180 / Math.PI
 
-    // -220 = +140
-    if(lat3 < -180){
-        lat3 = -360 - lat3
-    } else if (lat3> 180){
-        lat3 = 360 - lat3
-    }
+    lng3 = ( lng3 + 540 ) % 360 - 180
 
-    if(lng3 < -180){
-        lng3 = lng3 + 360
-    } else if (lng3> 180){
-        lng3 = lng3 - 360
+    // 6 digits of precision is precision at worst of 11cm at equator 
+    return {
+        latitude: parseFloat(lat3.toFixed(6)) ,
+        longitude: parseFloat(lng3.toFixed(6)) 
     }
-
-    return [
-        lat3, lng3
-    ]
 }
