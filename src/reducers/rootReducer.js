@@ -6,16 +6,15 @@ import { selectLinesGivenAgencyId } from '../reducers/linesReducer';
 import servicesReducer, { doAddService } from '../reducers/servicesReducer';
 import { selectServicesGivenLineID } from '../reducers/servicesReducer';
 import serviceRouteReducer, { doAddServiceRoute } from '../reducers/serviceRouteReducer';
-import stationReducer, { selectStationsGivenStationIDs } from '../reducers/stationsReducer';
-import { addStation, selectAllNodeIdsGivenStationIDs } from '../reducers/stationsReducer';
+import stationReducer from '../reducers/stationsReducer';
 import { nextIDForArray } from '../utils/utils';
 import {
     ADD_SERVICE
 } from '../actions/actionTypes';
-import trackRouteReducer, { doAddTrackRoute } from './trackRouteReducer'
+import trackRouteReducer from './trackRouteReducer'
 import transferReducer from './transferReducer';
 
-const combinedReducers = combineReducers({
+export const combinedReducers = combineReducers({
     agencies: agencyReducer,
     lines: linesReducer,
     services: servicesReducer,
@@ -25,7 +24,7 @@ const combinedReducers = combineReducers({
     transfers: transferReducer
 });
 
-function crossSliceReducer(state, action) {
+export function crossSliceReducer(state, action) {
     switch (action.type) {
         case ADD_SERVICE: {
             return rootAddService(state, action)
@@ -45,7 +44,7 @@ export function selectAgenciesLinesAndServicesAsTreeObject(state, isSelectable) 
     return selectAllAgencies(state, false).map(agency => {
         return {
             title: agency.name,
-            key: agency.id,
+            key: agency.id+ "",
             children: selectLinesAndServicesAsTreeObject(state, false, agency.id),
             selectable: isSelectable
         }

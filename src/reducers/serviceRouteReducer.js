@@ -1,4 +1,4 @@
-import { filterById, filterOutById, genericMultiDelete, genericMultiRestore, genericSingleDelete, genericSingleRestore, nextIDForArray } from '../utils/utils'
+import { filterById, genericMultiDelete, genericMultiRestore, genericSingleDelete, genericSingleRestore, nextIDForArray } from '../utils/utils'
 import {
     REMOVE_SERVICE, RESTORE_SERVICE,
     REMOVE_LINE, RESTORE_LINE,
@@ -121,26 +121,6 @@ export default function serviceRouteReducer(state = initialState, action) {
         case UNDO_CLEAR_SERVICE_ROUTE: {
             return doUndoClearServiceRoute(state, action)
         }
-        // case CLEAR_SERVICE_TRACK_BLOCK: {
-        //     return editServiceTracks(state, action, (targetEdges) => {
-        //         return targetEdges.length === 0
-        //     }, doClearTrackBlock)
-        // }
-        // case UNDO_CLEAR_SERVICE_TRACK_BLOCK: {
-        //     return editServiceTracks(state, action, (targetEdges) => {
-        //         return targetEdges.length === 0
-        //     }, undoClearTrackBlock)
-        // }
-        // case REMOVE_SERVICE_TRACK_BLOCK: {
-        //     return editServiceTracks(state, action, (targetEdges) => {
-        //         return targetEdges.length === 0
-        //     }, doRemoveTrackBlock)
-        // }
-        // case RESTORE_SERVICE_TRACK_BLOCK: {
-        //     return editServiceTracks(state, action, (targetEdges) => {
-        //         return targetEdges.length === 0
-        //     }, doRestoreTrackBlock)
-        // }
         case REMOVE_STOP: {
             return doRemoveStop(state, action)
         }
