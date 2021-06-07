@@ -77,6 +77,7 @@ export function filterByIds(array, ids) {
     })
 }
 
+//basically get
 export function filterById(array, id) {
     return array.filter(item => {
         return item.id === id
@@ -89,7 +90,17 @@ export function filterOutById(array, id) {
     })
 }
 
-export function idCompare(a,b) {
+export function idCompareAsc(a,b) {
+    if(a.id < b.id) {
+        return 1;
+    }
+    if(a.id> b.id) {
+        return -1
+    }
+    return 0
+}
+
+export function idCompareDsc(a,b) {
     if(a.id < b.id) {
         return -1;
     }
