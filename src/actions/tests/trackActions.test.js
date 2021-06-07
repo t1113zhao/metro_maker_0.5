@@ -1,3 +1,4 @@
+import { selectStationsGivenStationIDs } from '../../reducers/stationsReducer';
 import {
     ADD_TRACK,
     REMOVE_TRACK,
@@ -5,15 +6,21 @@ import {
 } from '../actionTypes'
 
 import * as actions from '../trackActions'
+import configureMockStore from 'redux-mock-store'
+
+const mockStore = configureMockStore()
 
 it('Add Track Action Creator', () => {
     let stationA_ID = 0;
     let stationB_ID = 1;
 
-    expect(actions.addTrack(stationA_ID, stationB_ID)).toEqual({
+    let store = mockStore()
+    expect(store.dispatch(
+        actions.addTrack(stationA_ID, stationB_ID)
+    )).toEqual({
         type: ADD_TRACK,
         payload: {
-            stationIDs: [0, 1]
+            stations: []
         }
     })
 })
@@ -43,4 +50,33 @@ it('Restore Track Action Creator', () => {
             id: id
         }
     })
+})
+
+it('should return stations given stationID correctly', () => {
+    let store = mockStore({
+        stations: [
+            { id: 0, deletedAt: null },
+            { id: 1, deletedAt: null },
+            { id: 2, deletedAt: null },
+            { id: 3, deletedAt: null },
+            { id: 4, deletedAt: 'yesterday' },
+            { id: 5, deletedAt: 'yesterday' },
+        ]
+    })
+
+    expect(selectStationsGivenStationIDs(store.getState(), [0, 1, 2, 3, 4, 5], true)).toEqual([
+        { id: 0, deletedAt: null },
+        { id: 1, deletedAt: null },
+        { id: 2, deletedAt: null },
+        { id: 3, deletedAt: null },
+        { id: 4, deletedAt: 'yesterday' },
+        { id: 5, deletedAt: 'yesterday' },
+    ])
+
+    expect(selectStationsGivenStationIDs(store.getState(), [0, 1, 2, 3, 4, 5], false)).toEqual([
+        { id: 0, deletedAt: null },
+        { id: 1, deletedAt: null },
+        { id: 2, deletedAt: null },
+        { id: 3, deletedAt: null },
+    ])
 })

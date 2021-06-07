@@ -1,14 +1,17 @@
+import { selectStationsGivenStationIDs } from '../reducers/stationsReducer'
 import {
     ADD_TRACK,
     REMOVE_TRACK,
     RESTORE_TRACK
 } from './actionTypes'
+import store from '../app/store'
 
 export function addTrack(stationA_ID, stationB_ID) {
+    let stationIDs = [parseInt(stationA_ID), parseInt(stationB_ID)]
     return {
         type: ADD_TRACK,
         payload: {
-            stationIDs: [parseInt(stationA_ID), parseInt(stationB_ID)]
+            stations: selectStationsGivenStationIDs(store.getState(), stationIDs)
         }
     }
 }
