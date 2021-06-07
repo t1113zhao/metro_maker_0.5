@@ -7,10 +7,6 @@ import {
     REMOVE_SERVICE_ALONG_TRACK,
     CLEAR_SERVICE_ROUTE,
     UNDO_CLEAR_SERVICE_ROUTE,
-    // CLEAR_SERVICE_TRACK_BLOCK,
-    // UNDO_CLEAR_SERVICE_TRACK_BLOCK,
-    // REMOVE_SERVICE_TRACK_BLOCK,
-    // RESTORE_SERVICE_TRACK_BLOCK,
     REMOVE_STOP,
     RESTORE_STOP
 } from '../actionTypes'
@@ -31,7 +27,7 @@ it('Add Two Way Service Action Creator', () => {
             trackID: trackID,
             serviceID: serviceID,
             stationIDs: [stationA_ID, stationB_ID],
-            index: index    
+            index: index
         }
     })
 })
@@ -52,7 +48,7 @@ it('Add One Way Service Action Creator', () => {
             serviceID: serviceID,
             fromID: fromID,
             toID: toID,
-            index: index    
+            index: index
         }
     })
 })

@@ -98,10 +98,6 @@ it('Break Segment Action Creator', () => {
 })
 
 it('Remove Segment Action Creator', () => {
-    var MockDate = require('mockdate')
-    MockDate.set(1434319925275);
-
-    let date = new Date().toISOString()
     let segmentID = 0
     let trackID = 0
 
@@ -109,8 +105,7 @@ it('Remove Segment Action Creator', () => {
         type: REMOVE_SEGMENT,
         payload: {
             id: segmentID,
-            trackID: trackID,
-            deletedAt: date
+            trackID: trackID
         }
     })
 })
@@ -118,12 +113,19 @@ it('Remove Segment Action Creator', () => {
 it('Restore Segment Action Creator', () => {
     let segmentID = 0
     let trackID = 0
+    let restoreSegment = { id: 3, endNodes: [3, 4], controlPoint: null }
+    let nodesToRestore = [
+        { id: 4, stationID: null, latitude: 43.72, longitude: -79.485 },
+    ]
 
-    expect(actions.restoreSegment(segmentID, trackID)).toEqual({
+
+    expect(actions.restoreSegment(segmentID, trackID, restoreSegment, nodesToRestore)).toEqual({
         type: RESTORE_SEGMENT,
         payload: {
             id: segmentID,
-            trackID: trackID
+            trackID: trackID,
+            segmentToRestore: restoreSegment,
+            nodesToRestore: nodesToRestore
         }
     })
 })

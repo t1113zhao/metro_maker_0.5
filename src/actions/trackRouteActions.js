@@ -81,17 +81,18 @@ export function removeSegment(segmentID, trackID) {
         payload: {
             id: parseInt(segmentID),
             trackID: parseInt(trackID),
-            deletedAt: new Date().toISOString(),
         }
     }
 }
 
-export function restoreSegment(segmentID, trackID) {
+export function restoreSegment(segmentID, trackID, segmentToRestore, nodesToRestore) {
     return {
         type: RESTORE_SEGMENT,
         payload: {
             id: parseInt(segmentID),
-            trackID: parseInt(trackID)
+            trackID: parseInt(trackID),
+            segmentToRestore: segmentToRestore,
+            nodesToRestore: nodesToRestore
         }
     }
 }
