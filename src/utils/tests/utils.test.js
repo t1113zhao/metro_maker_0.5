@@ -127,9 +127,9 @@ describe('util functions', () => {
             { id: 0, deletedAt: null },
             { id: 2, deletedAt: null },
         ]
-        expect(unsortedArray.sort(utils.idCompareDsc)).toEqual(deleteArray)
+        expect(unsortedArray.sort(utils.idCompareAsc)).toEqual(deleteArray)
 
-        expect(unsortedArray.sort(utils.idCompareAsc)).toEqual([
+        expect(unsortedArray.sort(utils.idCompareDsc)).toEqual([
             { id: 3, deletedAt: 'yesterday' },
             { id: 2, deletedAt: null },
             { id: 1, deletedAt: 'yesterday' },

@@ -10,7 +10,7 @@ import {
     filterByIds,
     filterOutById,
     filterOutByIds,
-    idCompareDsc
+    idCompareAsc
 } from '../utils/utils'
 import {
     ADD_TRACK,
@@ -351,11 +351,11 @@ function doRestoreSegment(state, action) {
         for (var i = 0; i < action.payload.nodesToRestore.length; i++) {
             newNodes.push(action.payload.nodesToRestore[i])
         }
-        newNodes.sort(idCompareDsc)
+        newNodes.sort(idCompareAsc)
 
         let newSegments = trackRoute.segments.slice(0)
         newSegments.splice(action.payload.id, 0, action.payload.segmentToRestore)
-        newSegments.sort(idCompareDsc)
+        newSegments.sort(idCompareAsc)
 
         return {
             ...trackRoute,
@@ -462,7 +462,7 @@ function moveSpecificNode(latitude, longitude, id, nodes) {
         }
     })
 
-    return newNodes.sort(idCompareDsc)
+    return newNodes.sort(idCompareAsc)
 }
 
 export function getTrackIDsByStationID(tracks, stationID, includeDeleted) {

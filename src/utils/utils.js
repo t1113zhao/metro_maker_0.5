@@ -90,7 +90,7 @@ export function filterOutById(array, id) {
     })
 }
 
-export function idCompareAsc(a,b) {
+export function idCompareDsc(a,b) {
     if(a.id < b.id) {
         return 1;
     }
@@ -100,7 +100,7 @@ export function idCompareAsc(a,b) {
     return 0
 }
 
-export function idCompareDsc(a,b) {
+export function idCompareAsc(a,b) {
     if(a.id < b.id) {
         return -1;
     }
