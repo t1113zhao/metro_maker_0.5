@@ -58,7 +58,7 @@ function doEditStation(state, action) {
             return item
         }
         return {
-            ...item,
+            ...item,  
             name: action.payload.name,
             description: action.payload.description
         }

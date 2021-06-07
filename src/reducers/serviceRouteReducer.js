@@ -346,15 +346,15 @@ function doTwoWayToOneWay(serviceRoute, action, serviceTracks, targetBlock, targ
 
 function doRemoveServiceAlongTrack(serviceRoute, action, serviceTracks, targetBlock, targetEdges) {
     let checkStops = []
-    
+
     let newBlock = targetBlock.filter(edge => {
-        if(edge.trackID === action.payload.trackID) {
+        if (edge.trackID === action.payload.trackID) {
             checkStops = [edge.fromStationID, edge.toStationID]
         }
         return edge.trackID !== action.payload.trackID
     })
 
-    if(newBlock.length > 0) {
+    if (newBlock.length > 0) {
         serviceTracks.splice(action.payload.index, 1, newBlock)
     } else {
         serviceTracks = [
@@ -365,10 +365,10 @@ function doRemoveServiceAlongTrack(serviceRoute, action, serviceTracks, targetBl
 
     let removeStops = []
 
-    if (!serviceRoutePassesThroughStation(serviceTracks, checkStops[0])){
+    if (!serviceRoutePassesThroughStation(serviceTracks, checkStops[0])) {
         removeStops.push(checkStops[0])
     }
-    if (!serviceRoutePassesThroughStation(serviceTracks, checkStops[1])){
+    if (!serviceRoutePassesThroughStation(serviceTracks, checkStops[1])) {
         removeStops.push(checkStops[1])
     }
     let newStops = difference(serviceRoute.stopsByID, removeStops)
@@ -404,40 +404,6 @@ export function doUndoClearServiceRoute(state, action) {
         }
     })
 }
-
-// export function doClearTrackBlock(serviceRoute, action, serviceTracks, targetBlock, targetEdges) {
-//     let newBlock = []
-//     serviceTracks.splice(action.payload.index, 1, newBlock)
-//     return {
-//         ...serviceRoute,
-//         serviceTracks: serviceTracks
-//     }
-// }
-
-// export function undoClearTrackBlock(serviceRoute, action, serviceTracks, targetBlock, targetEdges) {
-//     serviceTracks.splice(action.payload.index, 1, action.payload.block)
-//     return {
-//         ...serviceRoute,
-//         serviceTracks: serviceTracks
-//     }
-// }
-
-// export function doRemoveTrackBlock(serviceRoute, action, serviceTracks, targetBlock, targetEdges) {
-//     serviceTracks = [...serviceTracks.slice(0, action.payload.index),
-//     ...serviceTracks.slice(action.payload.index + 1)]
-//     return {
-//         ...serviceRoute,
-//         serviceTracks: serviceTracks
-//     }
-// }
-
-// export function doRestoreTrackBlock(serviceRoute, action, serviceTracks, targetBlock, targetEdges) {
-//     serviceTracks.splice(action.payload.index, 1, action.payload.block)
-//     return {
-//         ...serviceRoute,
-//         serviceTracks: serviceTracks
-//     }
-// }
 
 function doRemoveStop(state, action) {
     return state.map(serviceRoute => {
@@ -542,5 +508,5 @@ function isServiceRouteComplete(serviceRoute) {
 }
 
 function getStationsInOrder(serviceRoute) {
-    // first station is the 
+    // first station is the station in the first track block that isn't in the next block
 }
