@@ -22,7 +22,7 @@ import {
 
     EDIT_NODE,
     MOVE_STATION,
-    
+
     ADD_STRAIGHT_SEGMENT,
     ADD_CURVED_SEGMENT,
     STRAIGHT_TO_CURVED,
@@ -463,94 +463,6 @@ function moveSpecificNode(latitude, longitude, id, nodes) {
     })
 
     return newNodes.sort(idCompare)
-}
-
-function doRemoveNode(state, action) {
-    return state.map(trackRoute => {
-        if (trackRoute.id != action.payload.trackID) {
-            return trackRoute
-        }
-
-        let removeSegments = trackRoute.segments.filter(segment => {
-            return segment.endNodes[0] == action.payload.id ||
-                segment.endNodes[1] == action.payload.id ||
-                segment.controlPointID == action.payload.id
-        })
-
-        let removeSegmentIDs = removeSegments.map(segment => {
-            return segment.id
-        })
-
-        //this is broken
-        let removeNodeIds = getNodesThatOnlyGivenSegmentsConnectTo(
-            removeSegments,
-            trackRoute.segments,
-            false
-        )
-
-        let newSegments = genericMultiDelete(
-            trackRoute.segments,
-            removeSegmentIDs,
-            action.payload.deletedAt
-        )
-
-        let newNodes = genericMultiDelete(
-            trackRoute.nodes,
-            removeNodeIds,
-            action.payload.deletedAt
-        )
-
-        return {
-            ...trackRoute,
-            nodes: newNodes,
-            segments: newSegments
-        }
-    })
-}
-
-function doRestoreNode(state, action) {
-    return state.map(trackRoute => {
-        if (trackRoute.id != action.payload.trackID) {
-            return trackRoute
-        }
-
-        // get the segments that are attached to the to be removed node
-
-        let restoreSegments = trackRoute.segments.filter(segment => {
-            return segment.endNodes[0] == action.payload.id ||
-                segment.endNodes[1] == action.payload.id ||
-                segment.controlPointID == action.payload.id
-        })
-
-        let restoreSegmentIDs = restoreSegments.map(segment => {
-            return segment.id
-        })
-
-        //this is broken
-        let restoreNodeIds = getNodesThatOnlyGivenSegmentsConnectTo(
-            restoreSegments,
-            trackRoute.segments,
-            true
-        )
-
-        let newSegments = genericMultiDelete(
-            trackRoute.segments,
-            restoreSegmentIDs,
-            action.payload.deletedAt
-        )
-
-        let newNodes = genericMultiDelete(
-            trackRoute.nodes,
-            restoreNodeIds,
-            action.payload.deletedAt
-        )
-
-        return {
-            ...trackRoute,
-            nodes: newNodes,
-            segments: newSegments
-        }
-    })
 }
 
 export function getTrackIDsByStationID(tracks, stationID, includeDeleted) {
