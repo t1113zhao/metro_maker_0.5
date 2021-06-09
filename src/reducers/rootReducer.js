@@ -44,7 +44,7 @@ export function selectAgenciesLinesAndServicesAsTreeObject(state, isSelectable) 
     return selectAllAgencies(state, false).map(agency => {
         return {
             title: agency.name,
-            key: agency.id+ "",
+            key: agency.id + "",
             children: selectLinesAndServicesAsTreeObject(state, false, agency.id),
             selectable: isSelectable
         }

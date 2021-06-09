@@ -20,7 +20,7 @@ import {
     REMOVE_STATION,
     RESTORE_STATION,
 
-    EDIT_NODE,
+    MOVE_NODE,
     MOVE_STATION,
 
     ADD_STRAIGHT_SEGMENT,
@@ -93,13 +93,7 @@ export default function trackRouteReducer(state = initialState, action) {
                 action.payload.trackIDs
             )
         }
-        // case REMOVE_NODE: {
-        //     return doRemoveNode(state, action)
-        // }
-        // case RESTORE_NODE: {
-        //     return doRestoreNode(state, action)
-        // }
-        case EDIT_NODE: {
+        case MOVE_NODE: {
             return doEditNode(state, action)
         }
         case MOVE_STATION: {

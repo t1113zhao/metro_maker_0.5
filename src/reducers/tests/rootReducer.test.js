@@ -133,16 +133,22 @@ describe('crossSliceSelectors', () => {
         expect(selectAgenciesLinesAndServicesAsTreeObject(store.getState(), false)).toEqual([
             {
                 title: "GO", key: "0", selectable: false, children: [
-                    { title: "Stoufville", key: "0-0", selectable: false, children: [
-                        {title: "Stoufville Local", key: "0-0-0", selectable: false, isLeaf: true},
-                        {title: "Stoufville Express", key: "0-0-1", selectable: false, isLeaf: true},
-                    ] },
-                    { title: "Lakeshore West", key: "0-1", selectable: false, children: [
-                        {title: "Lakeshore West Express", key: "0-1-2", selectable: false, isLeaf: true},
-                    ] },
-                    { title: "Lakeshore East", key: "0-2", selectable: false, children: [
+                    {
+                        title: "Stoufville", key: "0-0", selectable: false, children: [
+                            { title: "Stoufville Local", key: "0-0-0", selectable: false, isLeaf: true },
+                            { title: "Stoufville Express", key: "0-0-1", selectable: false, isLeaf: true },
+                        ]
+                    },
+                    {
+                        title: "Lakeshore West", key: "0-1", selectable: false, children: [
+                            { title: "Lakeshore West Express", key: "0-1-2", selectable: false, isLeaf: true },
+                        ]
+                    },
+                    {
+                        title: "Lakeshore East", key: "0-2", selectable: false, children: [
 
-                    ] },
+                        ]
+                    },
 
                 ]
             },

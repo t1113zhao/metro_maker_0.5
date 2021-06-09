@@ -6,7 +6,7 @@ import {
     REMOVE_TRACK,
     RESTORE_TRACK,
 
-    EDIT_NODE,
+    MOVE_NODE,
     MOVE_STATION,
     ADD_STRAIGHT_SEGMENT,
     ADD_CURVED_SEGMENT,
@@ -1011,7 +1011,7 @@ describe('Track route reducer operates correctly', () => {
                 deletedAt: null
             },
         ], {
-            type: EDIT_NODE,
+            type: MOVE_NODE,
             payload: {
                 id: 5,
                 trackID: 0,

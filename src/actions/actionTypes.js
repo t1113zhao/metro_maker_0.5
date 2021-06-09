@@ -59,8 +59,7 @@ export const REMOVE_SEGMENT = "REMOVE_SEGMENT"
 export const RESTORE_SEGMENT = "RESTORE_SEGMENT"
 
 //Node Action Types
-export const ADD_NODE = "ADD_NODE"
-export const EDIT_NODE = "EDIT_NODE" // MOVE NODE
+export const MOVE_NODE = "MOVE_NODE" // MOVE NODE
 
 //Track Action Types
 export const ADD_TRACK = "ADD_TRACK"
