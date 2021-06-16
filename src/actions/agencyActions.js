@@ -1,5 +1,6 @@
 import {
     ADD_AGENCY,
+    UNDO_ADD_AGENCY,
     EDIT_AGENCY,
     REMOVE_AGENCY,
     RESTORE_AGENCY
@@ -8,6 +9,7 @@ import store from '../app/store'
 
 import { lineIDsGivenAgencyId } from '../reducers/linesReducer'
 import { serviceIDsGivenAgencyID } from '../reducers/servicesReducer'
+import { getById, nextIDForArray } from '../utils/utils'
 
 export function addAgency(name, color) {
     return {
@@ -15,6 +17,15 @@ export function addAgency(name, color) {
         payload: {
             name: name,
             color: color
+        }
+    }
+}
+
+export function undoAddAgency(id) {
+    return {
+        type: UNDO_ADD_AGENCY,
+        payload: {
+            id: parseInt(id)
         }
     }
 }
@@ -49,6 +60,31 @@ export function restoreAgency(id) {
             id: parseInt(id),
             lineIDs: lineIDsGivenAgencyId(store.getState(), parseInt(id), true),
             serviceIDs: serviceIDsGivenAgencyID(store.getState(), parseInt(id), true)
+        }
+    }
+}
+
+export function getInverseAgencyActions(state, action) {
+    switch (action.type) {
+        default: {
+            return { type: "ERROR" }
+        }
+        case ADD_AGENCY: {
+            return undoAddAgency(nextIDForArray(state))
+        }
+        case UNDO_ADD_AGENCY: {
+            let targetAgency = getById(state, action.payload.id)
+            return addAgency(targetAgency.name, targetAgency.color)
+        }
+        case EDIT_AGENCY: {
+            let targetAgency = getById(state, action.payload.id)
+            return editAgency(targetAgency.id, targetAgency.name, targetAgency.color)
+        }
+        case REMOVE_AGENCY: {
+            return restoreAgency(action.payload.id)
+        }
+        case RESTORE_AGENCY: {
+            return removeAgency(action.payload.id)
         }
     }
 }

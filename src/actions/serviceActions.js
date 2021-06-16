@@ -1,9 +1,12 @@
 import {
     ADD_SERVICE,
+    UNDO_ADD_SERVICE,
     EDIT_SERVICE,
     REMOVE_SERVICE,
     RESTORE_SERVICE
 } from './actionTypes'
+
+import { nextIDForArray, getById } from '../utils/utils'
 
 export function addService(lineID, name, servicePeriod, frequency) {
     return {
@@ -13,6 +16,15 @@ export function addService(lineID, name, servicePeriod, frequency) {
             name: name,
             servicePeriod: servicePeriod,
             frequency: frequency // trains per hour
+        }
+    }
+}
+
+export function undoAddService(id) {
+    return {
+        type: UNDO_ADD_SERVICE,
+        payload: {
+            id: parseInt(id),
         }
     }
 }
@@ -44,6 +56,31 @@ export function restoreService(id) {
         type: RESTORE_SERVICE,
         payload: {
             id: parseInt(id),
+        }
+    }
+}
+
+export function getInverseServiceActions(state, action) {
+    switch (action.type) {
+        default: {
+            return { type: "ERROR" }
+        }
+        case ADD_SERVICE: {
+            return undoAddService(nextIDForArray(state))
+        }
+        case UNDO_ADD_SERVICE: {
+            let targetService = getById(state, action.payload.id)
+            return addService(targetService.lineID, targetService.name, targetService.servicePeriod, targetService.frequency)
+        }
+        case EDIT_SERVICE: {
+            let targetService = getById(state, action.payload.id)
+            return editService(targetService.id, targetService.name, targetService.servicePeriod, targetService.frequency)
+        }
+        case REMOVE_SERVICE: {
+            return restoreService(action.payload.id)
+        }
+        case RESTORE_SERVICE: {
+            return removeService(action.payload.id)
         }
     }
 }

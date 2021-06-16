@@ -84,6 +84,17 @@ export function filterById(array, id) {
     })
 }
 
+export function getById(array, id) {
+    let searchID = parseInt(id)
+    let filtered = filterById(array, searchID)
+
+    if(filtered.length == 1) {
+        return filtered[0]
+    } else {
+        return {error: "No item with such ID"}
+    }
+}
+
 export function filterOutById(array, id) {
     return array.filter(item => {
         return item.id !== id

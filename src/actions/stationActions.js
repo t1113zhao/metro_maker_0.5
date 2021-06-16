@@ -2,6 +2,7 @@ import { transferIDsGivenStationID } from '../reducers/transferReducer'
 import { getTrackIDsByStationID } from '../reducers/trackRouteReducer'
 import {
     ADD_STATION,
+    UNDO_ADD_STATION,
     EDIT_STATION,
     REMOVE_STATION,
     RESTORE_STATION,
@@ -9,6 +10,7 @@ import {
 } from './actionTypes'
 
 import store from '../app/store'
+import { getById, nextIDForArray } from '../utils/utils'
 
 export function addStation(description, name, latitude, longitude) {
     return {
@@ -18,6 +20,15 @@ export function addStation(description, name, latitude, longitude) {
             description: description,
             latitude: parseFloat(latitude),
             longitude: parseFloat(longitude)
+        }
+    }
+}
+
+export function undoAddStation(id) {
+    return {
+        type: UNDO_ADD_STATION,
+        payload: {
+            id: parseInt(id),
         }
     }
 }
@@ -63,6 +74,35 @@ export function restoreStation(id) {
             id: parseInt(id),
             trackIDs: getTrackIDsByStationID(store.getState().tracks, parseInt(id), true),
             transferIDs: transferIDsGivenStationID(store.getState().transfers, parseInt(id), true)
+        }
+    }
+}
+
+export function getInverseStationActions(state, action) {
+    switch (action.type) {
+        default: {
+            return { type: "ERROR" } // this should not happen
+        }
+        case ADD_STATION: {
+            return undoAddStation(nextIDForArray(state))
+        }
+        case UNDO_ADD_STATION: {
+            let targetStation = getById(state, action.payload.id)
+            return addStation(targetStation.description, targetStation.name, targetStation.latitude, targetStation.longitude)
+        }
+        case EDIT_STATION: {
+            let targetStation = getById(state, action.payload.id)
+            return editStation(targetStation.id, targetStation.description, targetStation.name)
+        }
+        case MOVE_STATION: {
+            let targetStation = getById(state, action.payload.id)
+            return moveStation(targetStation.id, targetStation.latitude, targetStation.longitude)
+        }
+        case REMOVE_STATION: {
+            return restoreStation(action.payload.id)
+        }
+        case RESTORE_STATION: {
+            return removeStation(action.payload.id)
         }
     }
 }
