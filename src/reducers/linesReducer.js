@@ -1,6 +1,7 @@
-import { filterById, filterDeleted, genericMultiDelete, genericMultiRestore, genericSingleDelete, genericSingleRestore, nextIDForArray } from '../utils/utils'
+import { filterById, filterDeleted, filterOutById, genericMultiDelete, genericMultiRestore, genericSingleDelete, genericSingleRestore, nextIDForArray } from '../utils/utils'
 import {
     ADD_LINE,
+    UNDO_ADD_LINE,
     EDIT_LINE,
     REMOVE_LINE,
     RESTORE_LINE,
@@ -14,6 +15,9 @@ export default function lineReducer(state = initialLineState, action) {
     switch (action.type) {
         case ADD_LINE: {
             return doAddLine(state, action);
+        }
+        case UNDO_ADD_LINE: {
+            return filterOutById(state, action.payload.id)
         }
         case EDIT_LINE: {
             return doEditLine(state, action);

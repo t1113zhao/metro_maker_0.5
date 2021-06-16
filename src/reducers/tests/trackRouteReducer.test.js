@@ -3,6 +3,7 @@ import {
     RESTORE_STATION,
 
     ADD_TRACK,
+    UNDO_ADD_TRACK,
     REMOVE_TRACK,
     RESTORE_TRACK,
 
@@ -122,6 +123,48 @@ describe('Track route reducer operates correctly', () => {
         expect(reducer(undefined, {})).toEqual([])
     })
 
+    let stateWithOneTrack = [
+        {
+            id: 0,
+            stationIDs: [0, 1],
+            nodes: [
+                { id: 0, stationID: 0, latitude: 43.7, longitude: -79.44 },
+                { id: 1, stationID: 1, latitude: 43.7, longitude: -79.45 }
+            ],
+            segments: [
+                { id: 0, isCurved: false, endNodes: [0, 1], controlPoint: null }
+            ],
+            deletedAt: null
+        }
+    ]
+
+    let stateWithTwoTracks = [
+        {
+            id: 0,
+            stationIDs: [0, 1],
+            nodes: [
+                { id: 0, stationID: 0, latitude: 43.7, longitude: -79.44 },
+                { id: 1, stationID: 1, latitude: 43.7, longitude: -79.45 }
+            ],
+            segments: [
+                { id: 0, isCurved: false, endNodes: [0, 1], controlPoint: null }
+            ],
+            deletedAt: null
+        },
+        {
+            id: 1,
+            stationIDs: [1, 2],
+            nodes: [
+                { id: 0, stationID: 1, latitude: 43.7, longitude: -79.45 },
+                { id: 1, stationID: 2, latitude: 43.7, longitude: -79.46 }
+            ],
+            segments: [
+                { id: 0, isCurved: false, endNodes: [0, 1], controlPoint: null }
+            ],
+            deletedAt: null
+        },
+    ]
+
     it('should add to empty state correctly', () => {
         let stations = [
             { id: 0, latitude: 43.7, longitude: -79.44 },
@@ -133,20 +176,7 @@ describe('Track route reducer operates correctly', () => {
             payload: {
                 stations: stations
             }
-        })).toEqual([
-            {
-                id: 0,
-                stationIDs: [0, 1],
-                nodes: [
-                    { id: 0, stationID: 0, latitude: 43.7, longitude: -79.44 },
-                    { id: 1, stationID: 1, latitude: 43.7, longitude: -79.45 }
-                ],
-                segments: [
-                    { id: 0, isCurved: false, endNodes: [0, 1], controlPoint: null }
-                ],
-                deletedAt: null
-            }
-        ])
+        })).toEqual(stateWithOneTrack)
     })
 
     it('should add new track to non-empty state correctly', () => {
@@ -155,50 +185,30 @@ describe('Track route reducer operates correctly', () => {
             { id: 2, latitude: 43.7, longitude: -79.46 }
         ]
 
-        expect(reducer([
-            {
-                id: 0,
-                stationIDs: [0, 1],
-                nodes: [
-                    { id: 0, stationID: 0, latitude: 43.7, longitude: -79.44 },
-                    { id: 1, stationID: 1, latitude: 43.7, longitude: -79.45 }
-                ],
-                segments: [
-                    { id: 0, isCurved: false, endNodes: [0, 1], controlPoint: null }
-                ],
-                deletedAt: null
-            },
-        ], {
+        expect(reducer(stateWithOneTrack, {
             type: ADD_TRACK,
             payload: {
                 stations: stations
             }
-        })).toEqual([
-            {
-                id: 0,
-                stationIDs: [0, 1],
-                nodes: [
-                    { id: 0, stationID: 0, latitude: 43.7, longitude: -79.44 },
-                    { id: 1, stationID: 1, latitude: 43.7, longitude: -79.45 }
-                ],
-                segments: [
-                    { id: 0, isCurved: false, endNodes: [0, 1], controlPoint: null }
-                ],
-                deletedAt: null
-            },
-            {
-                id: 1,
-                stationIDs: [1, 2],
-                nodes: [
-                    { id: 0, stationID: 1, latitude: 43.7, longitude: -79.45 },
-                    { id: 1, stationID: 2, latitude: 43.7, longitude: -79.46 }
-                ],
-                segments: [
-                    { id: 0, isCurved: false, endNodes: [0, 1], controlPoint: null }
-                ],
-                deletedAt: null
-            },
-        ])
+        })).toEqual(stateWithTwoTracks)
+    })
+
+    it('should undo add new track to empty state', () => {
+        expect(reducer(stateWithOneTrack, {
+            type: UNDO_ADD_TRACK,
+            payload: {
+                id: 0
+            }
+        })).toEqual([])
+    })
+
+    it('should undo add new track to non empty state', () => {
+        expect(reducer(stateWithTwoTracks, {
+            type: UNDO_ADD_TRACK,
+            payload: {
+                id: 1
+            }
+        })).toEqual(stateWithOneTrack)
     })
 
     let stateWithGap = [
@@ -961,7 +971,7 @@ describe('Track route reducer operates correctly', () => {
                 ],
                 deletedAt: null
             },
-        ],{
+        ], {
             type: MOVE_STATION,
             payload: {
                 id: 0,

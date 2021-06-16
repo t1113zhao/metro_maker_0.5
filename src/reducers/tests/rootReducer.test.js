@@ -1,6 +1,6 @@
 import configureMockStore from 'redux-mock-store'
 import {
-    ADD_SERVICE
+    ADD_SERVICE, UNDO_ADD_SERVICE
 } from '../../actions/actionTypes';
 
 import { crossSliceReducer, combinedReducers, selectAgenciesLinesAndServicesAsTreeObject } from '../rootReducer'
@@ -53,6 +53,36 @@ describe('crossSliceReducer', () => {
         transfers: [],
     }
 
+    let stateWith2Services = {
+        agencies: [],
+        lines: [],
+        services: [
+            {
+                id: 0,
+                lineID: 0,
+                name: 'stouffville RER',
+                servicePeriod: 'express',
+                frequency: 'always',
+                deletedAt: null
+            },
+            {
+                id: 1,
+                lineID: 1,
+                name: 'barrie RER',
+                servicePeriod: 'express',
+                frequency: 'always',
+                deletedAt: null
+            }
+        ],
+        serviceRoutes: [
+            { id: 0, deletedAt: null, stopsByID: [], serviceTracks: [] },
+            { id: 1, deletedAt: null, stopsByID: [], serviceTracks: [] },
+        ],
+        stations: [],
+        tracks: [],
+        transfers: [],
+    }
+
     it('should add service and serviceRoute to empty state correctly', () => {
         expect(crossSliceReducer(defaultState, {
             type: ADD_SERVICE,
@@ -74,37 +104,25 @@ describe('crossSliceReducer', () => {
                 servicePeriod: 'express',
                 frequency: 'always',
             }
-        })).toEqual(
-            {
-                agencies: [],
-                lines: [],
-                services: [
-                    {
-                        id: 0,
-                        lineID: 0,
-                        name: 'stouffville RER',
-                        servicePeriod: 'express',
-                        frequency: 'always',
-                        deletedAt: null
-                    },
-                    {
-                        id: 1,
-                        lineID: 1,
-                        name: 'barrie RER',
-                        servicePeriod: 'express',
-                        frequency: 'always',
-                        deletedAt: null
-                    }
-                ],
-                serviceRoutes: [
-                    { id: 0, deletedAt: null, stopsByID: [], serviceTracks: [] },
-                    { id: 1, deletedAt: null, stopsByID: [], serviceTracks: [] },
-                ],
-                stations: [],
-                tracks: [],
-                transfers: [],
+        })).toEqual(stateWith2Services)
+    })
+
+    it('should undo add service and service Route to empty state', () => {
+        expect(crossSliceReducer(stateWith1Service, {
+            type: UNDO_ADD_SERVICE,
+            payload: {
+                id: 0
             }
-        )
+        })).toEqual(defaultState)
+    })
+
+    it('should undo add service and service Route to non empty state', () => {
+        expect(crossSliceReducer(stateWith2Services, {
+            type: UNDO_ADD_SERVICE,
+            payload: {
+                id: 1
+            }
+        })).toEqual(stateWith1Service)
     })
 })
 

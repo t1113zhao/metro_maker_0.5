@@ -1,8 +1,9 @@
 import _ from 'underscore';
-import { filterDeleted, genericMultiDelete, genericMultiRestore, genericSingleDelete, genericSingleRestore, nextIDForArray } from '../utils/utils'
+import { filterDeleted, filterOutById, genericMultiDelete, genericMultiRestore, genericSingleDelete, genericSingleRestore, nextIDForArray } from '../utils/utils'
 
 import {
     ADD_TRANSFER,
+    UNDO_ADD_TRANSFER,
     EDIT_TRANSFER,
     REMOVE_TRANSFER,
     RESTORE_TRANSFER,
@@ -17,16 +18,16 @@ export default function transferReducer(state = initialState, action) {
         case ADD_TRANSFER: {
             return doAddTransfer(state, action);
         }
+        case UNDO_ADD_TRANSFER: {
+            return filterOutById(state, action.payload.id);
+        }
         case EDIT_TRANSFER: {
             return doEditTransfer(state, action);
         }
         case REMOVE_STATION: {
             return genericMultiDelete(
                 state,
-                selectAllTransfersGivenStationID(
-                    state,
-                    action.payload.id
-                ),
+                action.payload.transferIDs,
                 action.payload.deletedAt
             )
         }
@@ -39,10 +40,7 @@ export default function transferReducer(state = initialState, action) {
         case RESTORE_STATION: {
             return genericMultiRestore(
                 state,
-                selectAllTransfersGivenStationID(
-                    state,
-                    action.payload.id
-                )
+                action.payload.transferIDs,
             )
         }
         case RESTORE_TRANSFER: {

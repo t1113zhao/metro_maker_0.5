@@ -1,4 +1,10 @@
-import * as actions from '../../actions/actionTypes'
+import {
+    ADD_AGENCY,
+    UNDO_ADD_AGENCY,
+    EDIT_AGENCY,
+    REMOVE_AGENCY,
+    RESTORE_AGENCY
+} from '../../actions/actionTypes'
 
 import reducer, { selectAgenciesGivenId, selectAllAgencies } from '../agenciesReducer'
 
@@ -11,7 +17,7 @@ describe('Agency Reducer', () => {
         let name = 'MetroLinx'
         let color = 'Green'
         expect(reducer([], {
-            type: actions.ADD_AGENCY,
+            type: ADD_AGENCY,
             payload: {
                 name: name,
                 color: color
@@ -31,7 +37,7 @@ describe('Agency Reducer', () => {
         let color = 'Red'
 
         expect(reducer([{ id: 0, name: 'MetroLinx', color: 'Green', deletedAt: null }], {
-            type: actions.ADD_AGENCY,
+            type: ADD_AGENCY,
             payload: {
                 name: name,
                 color: color
@@ -42,7 +48,7 @@ describe('Agency Reducer', () => {
         ])
 
         expect(reducer([{ id: 15, name: 'MetroLinx', color: 'Green', deletedAt: 'yesterday' }], {
-            type: actions.ADD_AGENCY,
+            type: ADD_AGENCY,
             payload: {
                 name: name,
                 color: color
@@ -53,13 +59,39 @@ describe('Agency Reducer', () => {
         ])
     })
 
+    it('should undo add agency correctly to empty state', () => {
+        expect(reducer([
+            { id: 0, name: 'MetroLinx', color: 'Green', deletedAt: null },
+        ], {
+            type: UNDO_ADD_AGENCY,
+            payload: {
+                id: 0
+            }
+        })).toEqual([])
+    })
+
+
+    it('should undo add agency correctly to non empty state', () => {
+        expect(reducer([
+            { id: 0, name: 'MetroLinx', color: 'Green', deletedAt: null },
+            { id: 1, name: 'TTC', color: 'Red', deletedAt: null }
+        ], {
+            type: UNDO_ADD_AGENCY,
+            payload: {
+                id: 1
+            }
+        })).toEqual([
+            { id: 0, name: 'MetroLinx', color: 'Green', deletedAt: null },
+        ])
+    })
+
     it('should edit agency correctly', () => {
         let id = 2
         let name = 'Betrolinx'
         let color = 'Blue'
 
         expect(reducer([{ id: 0, name: 'MetroLinx', color: 'Green', deletedAt: null }], {
-            type: actions.EDIT_AGENCY,
+            type: EDIT_AGENCY,
             payload: {
                 id: id,
                 name: name,
@@ -70,7 +102,7 @@ describe('Agency Reducer', () => {
         )
 
         expect(reducer([{ id: 2, name: 'MetroLinx', color: 'Green', deletedAt: null }], {
-            type: actions.EDIT_AGENCY,
+            type: EDIT_AGENCY,
             payload: {
                 id: id,
                 name: name,
@@ -89,7 +121,7 @@ describe('Agency Reducer', () => {
         let date = new Date().toISOString()
 
         expect(reducer([{ id: 0, name: 'MetroLinx', color: 'Green', deletedAt: null }], {
-            type: actions.REMOVE_AGENCY,
+            type: REMOVE_AGENCY,
             payload: {
                 id: id,
                 deletedAt: date,
@@ -101,7 +133,7 @@ describe('Agency Reducer', () => {
         ])
 
         expect(reducer([{ id: 2, name: 'MetroLinx', color: 'Green', deletedAt: null }], {
-            type: actions.REMOVE_AGENCY,
+            type: REMOVE_AGENCY,
             payload: {
                 id: id,
                 deletedAt: date,
@@ -117,7 +149,7 @@ describe('Agency Reducer', () => {
         let id = 2
 
         expect(reducer([{ id: 0, name: 'MetroLinx', color: 'Green', deletedAt: null }], {
-            type: actions.RESTORE_AGENCY,
+            type: RESTORE_AGENCY,
             payload: {
                 id: id
             }
@@ -126,7 +158,7 @@ describe('Agency Reducer', () => {
         ])
 
         expect(reducer([{ id: 2, name: 'MetroLinx', color: 'Green', deletedAt: null }], {
-            type: actions.RESTORE_AGENCY,
+            type: RESTORE_AGENCY,
             payload: {
                 id: id
             }
@@ -136,7 +168,7 @@ describe('Agency Reducer', () => {
 
 
         expect(reducer([{ id: 2, name: 'MetroLinx', color: 'Green', deletedAt: 'yesterday' }], {
-            type: actions.RESTORE_AGENCY,
+            type: RESTORE_AGENCY,
             payload: {
                 id: id
             }

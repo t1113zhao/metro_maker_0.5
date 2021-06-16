@@ -7,9 +7,9 @@ import servicesReducer, { doAddService } from '../reducers/servicesReducer';
 import { selectServicesGivenLineID } from '../reducers/servicesReducer';
 import serviceRouteReducer, { doAddServiceRoute } from '../reducers/serviceRouteReducer';
 import stationReducer from '../reducers/stationsReducer';
-import { nextIDForArray } from '../utils/utils';
+import { filterOutById, nextIDForArray } from '../utils/utils';
 import {
-    ADD_SERVICE
+    ADD_SERVICE, UNDO_ADD_SERVICE
 } from '../actions/actionTypes';
 import trackRouteReducer from './trackRouteReducer'
 import transferReducer from './transferReducer';
@@ -29,12 +29,15 @@ export function crossSliceReducer(state, action) {
         case ADD_SERVICE: {
             return rootAddService(state, action)
         }
+        case UNDO_ADD_SERVICE: {
+            return rootUndoAddService(state, action)
+        }
         default:
             return state
     }
 }
 
-export default function rootReducer(state, action) {
+export default function presentReducer(state, action) {
     const intermediateState = combinedReducers(state, action);
     const finalState = crossSliceReducer(intermediateState, action);
     return finalState;
@@ -79,5 +82,13 @@ function rootAddService(state, action) {
         ...state,
         services: doAddService(state.services, action),
         serviceRoutes: doAddServiceRoute(state.serviceRoutes, serviceID)
+    }
+}
+
+function rootUndoAddService(state, action) {
+    return {
+        ...state,
+        services: filterOutById(state.services, action.payload.id),
+        serviceRoutes: filterOutById(state.serviceRoutes, action.payload.id)
     }
 }

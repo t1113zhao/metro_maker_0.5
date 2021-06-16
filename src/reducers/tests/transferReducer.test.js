@@ -1,12 +1,11 @@
 import {
     ADD_TRANSFER,
+    UNDO_ADD_TRANSFER,
     EDIT_TRANSFER,
     REMOVE_TRANSFER,
     RESTORE_TRANSFER,
     REMOVE_STATION,
     RESTORE_STATION,
-    REMOVE_NODE,
-    RESTORE_NODE,
 } from '../../actions/actionTypes'
 // expect(reducer([],{})).toEqual([])
 
@@ -48,6 +47,31 @@ describe('Transfer Reducer', () => {
         })).toEqual([
             { id: 0, stationIDs: [0, 1], type: transferTypes.FREE_OUT_STATION, deletedAt: null },
             { id: 1, stationIDs: [0, 2], type: transferTypes.IN_STATION, deletedAt: null },
+        ])
+    })
+
+    it('should undo add transfer to empty state', () => {
+        expect(reducer([
+            { id: 0, stationIDs: [0, 1], type: transferTypes.FREE_OUT_STATION, deletedAt: null }
+        ], {
+            type: UNDO_ADD_TRANSFER,
+            payload: {
+                id: 0
+            }
+        })).toEqual([])
+    })
+
+    it('should undo add transfer to non-empty state', () => {
+        expect(reducer([
+            { id: 0, stationIDs: [0, 1], type: transferTypes.FREE_OUT_STATION, deletedAt: null },
+            { id: 1, stationIDs: [0, 2], type: transferTypes.IN_STATION, deletedAt: null },
+        ], {
+            type: UNDO_ADD_TRANSFER,
+            payload: {
+                id: 1
+            }
+        })).toEqual([
+            { id: 0, stationIDs: [0, 1], type: transferTypes.FREE_OUT_STATION, deletedAt: null }
         ])
     })
 
@@ -127,6 +151,45 @@ describe('Transfer Reducer', () => {
         })).toEqual([
             { id: 0, stationIDs: [0, 1], type: transferTypes.FREE_OUT_STATION, deletedAt: 'last week' },
             { id: 1, stationIDs: [0, 2], type: transferTypes.IN_STATION, deletedAt: null },
+        ])
+    })
+
+    it('should remove transfer when station deleted', () => {
+        expect(reducer([
+            { id: 0, stationIDs: [0, 1], type: transferTypes.FREE_OUT_STATION, deletedAt: null },
+            { id: 1, stationIDs: [0, 2], type: transferTypes.IN_STATION, deletedAt: null },
+            { id: 2, stationIDs: [1, 2], type: transferTypes.FREE_OUT_STATION, deletedAt: null },
+        ], {
+            type: REMOVE_STATION,
+            payload: {
+                id: 0,
+                deletedAt: 'yesterday',
+                trackIDs: [],
+                transferIDs: [0, 1]
+            }
+        })).toEqual([
+            { id: 0, stationIDs: [0, 1], type: transferTypes.FREE_OUT_STATION, deletedAt: 'yesterday' },
+            { id: 1, stationIDs: [0, 2], type: transferTypes.IN_STATION, deletedAt: 'yesterday' },
+            { id: 2, stationIDs: [1, 2], type: transferTypes.FREE_OUT_STATION, deletedAt: null },
+        ])
+    })
+
+    it('should restore transfer when station restored', () => {
+        expect(reducer([
+            { id: 0, stationIDs: [0, 1], type: transferTypes.FREE_OUT_STATION, deletedAt: 'yesterday' },
+            { id: 1, stationIDs: [0, 2], type: transferTypes.IN_STATION, deletedAt: 'yesterday' },
+            { id: 2, stationIDs: [1, 2], type: transferTypes.FREE_OUT_STATION, deletedAt: null },
+        ], {
+            type: RESTORE_STATION,
+            payload: {
+                id: 0,
+                trackIDs: [],
+                transferIDs: [0, 1]
+            }
+        })).toEqual([
+            { id: 0, stationIDs: [0, 1], type: transferTypes.FREE_OUT_STATION, deletedAt: null },
+            { id: 1, stationIDs: [0, 2], type: transferTypes.IN_STATION, deletedAt: null },
+            { id: 2, stationIDs: [1, 2], type: transferTypes.FREE_OUT_STATION, deletedAt: null },
         ])
     })
 })

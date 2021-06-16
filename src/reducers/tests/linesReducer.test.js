@@ -1,5 +1,6 @@
 import {
     ADD_LINE,
+    UNDO_ADD_LINE,
     EDIT_LINE,
     REMOVE_LINE,
     RESTORE_LINE,
@@ -42,6 +43,31 @@ describe('Lines Reducer', () => {
         })).toEqual([
             { id: 1, agencyID: 0, name: 'Yonge University', color: 'Yellow', linetype: linetypes.HEAVY_METRO, deletedAt: null },
             { id: 2, agencyID: 0, name: 'Bloor Danforth', color: 'Green', linetype: linetypes.HEAVY_METRO, deletedAt: null }
+        ])
+    })
+
+    it('should undo add single line to empty state', () => {
+        expect(reducer([
+            { id: 0, agencyID: 0, name: 'Yonge University', color: 'Yellow', linetype: linetypes.HEAVY_METRO, deletedAt: null },
+        ], {
+            type: UNDO_ADD_LINE,
+            payload: {
+                id: 0
+            }
+        })).toEqual([])
+    })
+
+    it('should undo add single line to non empty state', () => {
+        expect(reducer([
+            { id: 0, agencyID: 0, name: 'Yonge University', color: 'Yellow', linetype: linetypes.HEAVY_METRO, deletedAt: null },
+            { id: 1, agencyID: 0, name: 'Yonge University', color: 'Yellow', linetype: linetypes.HEAVY_METRO, deletedAt: null },
+        ], {
+            type: UNDO_ADD_LINE,
+            payload: {
+                id: 1
+            }
+        })).toEqual([
+            { id: 0, agencyID: 0, name: 'Yonge University', color: 'Yellow', linetype: linetypes.HEAVY_METRO, deletedAt: null },
         ])
     })
 

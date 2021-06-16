@@ -1,6 +1,7 @@
-import { genericSingleDelete, genericSingleRestore, nextIDForArray, filterDeleted, filterByIds } from '../utils/utils'
+import { genericSingleDelete, genericSingleRestore, nextIDForArray, filterDeleted, filterByIds, filterOutById } from '../utils/utils'
 import {
     ADD_STATION,
+    UNDO_ADD_STATION,
     EDIT_STATION,
     MOVE_STATION,
     REMOVE_STATION,
@@ -12,6 +13,9 @@ export default function stationReducer(state = initialState, action) {
     switch (action.type) {
         case ADD_STATION: {
             return doAddStation(state, action)
+        }
+        case UNDO_ADD_STATION: {
+            return filterOutById(state, action.payload.id)
         }
         case EDIT_STATION: {
             return doEditStation(state, action)

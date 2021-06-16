@@ -1,6 +1,7 @@
-import { filterById, filterDeleted, genericSingleDelete, genericSingleRestore, nextIDForArray } from '../utils/utils'
+import { filterById, filterDeleted, filterOutById, genericSingleDelete, genericSingleRestore, nextIDForArray } from '../utils/utils'
 import {
     ADD_AGENCY,
+    UNDO_ADD_AGENCY,
     EDIT_AGENCY,
     REMOVE_AGENCY,
     RESTORE_AGENCY
@@ -11,6 +12,9 @@ export default function agencyReducer(state = initialState, action) {
     switch (action.type) {
         case ADD_AGENCY: {
             return doAddAgency(state, action);
+        }
+        case UNDO_ADD_AGENCY: {
+            return filterOutById(state, action.payload.id)
         }
         case EDIT_AGENCY: {
             return doEditAgency(state, action);

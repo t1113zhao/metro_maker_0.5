@@ -1,5 +1,6 @@
 import {
     ADD_STATION,
+    UNDO_ADD_STATION,
     EDIT_STATION,
     MOVE_STATION,
     REMOVE_STATION,
@@ -51,6 +52,31 @@ describe('Station Reducer', () => {
             { id: 0, name: 'station 0', description: 'description', latitude: 45, longitude: -76, deletedAt: null },
             { id: 1, name: name, description: description, latitude: latitude, longitude: longitude, deletedAt: null },
         ])
+    })
+
+    it('should undo add station to non empty state correctly', () => {
+        expect(reducer([
+            { id: 0, latitude: 45, longitude: -80, deletedAt: null },
+            { id: 1, latitude: 45, longitude: -80.1, deletedAt: null },
+        ], {
+            type: UNDO_ADD_STATION,
+            payload: {
+                id: 1
+            }
+        })).toEqual([
+            { id: 0, latitude: 45, longitude: -80, deletedAt: null },
+        ])
+    })
+
+    it('should undo add station to empty state correctly', () => {
+        expect(reducer([
+            { id: 0, latitude: 45, longitude: -80, deletedAt: null },
+        ], {
+            type: UNDO_ADD_STATION,
+            payload: {
+                id: 0
+            }
+        })).toEqual([])
     })
 
     it('Should edit station correctly', () => {

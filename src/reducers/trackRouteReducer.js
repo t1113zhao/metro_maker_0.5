@@ -14,6 +14,7 @@ import {
 } from '../utils/utils'
 import {
     ADD_TRACK,
+    UNDO_ADD_TRACK,
     REMOVE_TRACK,
     RESTORE_TRACK,
 
@@ -47,6 +48,9 @@ export default function trackRouteReducer(state = initialState, action) {
     switch (action.type) {
         case ADD_TRACK: {
             return doAddTrackRoute(state, action)
+        }
+        case UNDO_ADD_TRACK: {
+            return filterOutById(state, action.payload.id)
         }
         case ADD_STRAIGHT_SEGMENT:
         case ADD_CURVED_SEGMENT: {
@@ -94,7 +98,7 @@ export default function trackRouteReducer(state = initialState, action) {
             )
         }
         case MOVE_NODE: {
-            return doEditNode(state, action)
+            return doMoveNode(state, action)
         }
         case MOVE_STATION: {
             return doMoveStation(state, action)
@@ -311,6 +315,11 @@ function doBreakSegment(state, action) {
     })
 }
 
+//function doMergeSegments(state, action) {
+// action.payload.segmentIDs[0] is the one to retain
+//}
+
+//refactor this so that 
 function doRemoveSegment(state, action) {
     return state.map(trackRoute => {
         if (trackRoute.id != action.payload.trackID) {
@@ -395,7 +404,7 @@ export function getNodesThatOnlyGivenSegmentsConnectTo(segmentID, fullset, inclu
     return subsetOnlyNodeIds
 }
 
-function doEditNode(state, action) {
+function doMoveNode(state, action) {
 
     return state.map(trackRoute => {
         if (trackRoute.id != action.payload.trackID) {
