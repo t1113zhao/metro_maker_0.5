@@ -147,14 +147,17 @@ export function getInverseServiceRouteActions(state, action) {
             })
 
             if (targetEdges.length == 1) {
-                return addOneWayService(action.payload.trackID, action.payload.serviceID, action.payload.index)
+                let targetEdge = targetEdges[0]
+                return addOneWayService(action.payload.trackID, action.payload.serviceID, targetEdge.fromStationID, targetEdge.toStationID, action.payload.index)
             } else {
-                return addTwoWayService(action.payload.trackID, action.payload.serviceID, action.payload.index)
+                let targetEdge = targetEdges[0]
+
+                return addTwoWayService(action.payload.trackID, action.payload.serviceID, targetEdge.fromStationID, targetEdge.toStationID, action.payload.index)
             }
         }
         case CLEAR_SERVICE_ROUTE: {
             let targetRoute = getById(state, action.payload.serviceID)
-            let stopsCopy = targetRoute.stops.slice()
+            let stopsCopy = targetRoute.stopsByID.slice()
             let serviceTracksCopy = targetRoute.serviceTracks.slice()
             return undoClearServiceRoute(targetRoute.id, stopsCopy, serviceTracksCopy)
         }
