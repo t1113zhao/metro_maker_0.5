@@ -4,9 +4,11 @@ import {
     STRAIGHT_TO_CURVED,
     CURVED_TO_STRAIGHT,
     BREAK_SEGMENT,
+    UNDO_BREAK_SEGMENT,
     MERGE_SEGMENTS,
+    UNDO_MERGE_SEGMENTS,
     REMOVE_SEGMENT,
-    RESTORE_SEGMENT
+    RESTORE_SEGMENT,
 } from '../actionTypes'
 import * as actions from '../trackRouteActions'
 
@@ -98,7 +100,26 @@ describe('track route action creators', () => {
                 trackID: trackID
             }
         })
+    })
 
+    it('Unbreak Segment Action Creator', () => {
+        let segmentA_ID = 0
+        let segmentB_ID = 1
+        let trackID = 2
+
+        expect(actions.undoBreakSegment(
+            segmentA_ID, segmentB_ID, trackID,
+            { id: 5, stationID: null, latitude: 43.73, longitude: -79.48 },
+            { id: 2, isCurved: true, endNodes: [2, 4], controlPoint: 5 }
+        )).toEqual({
+            type: UNDO_BREAK_SEGMENT,
+            payload: {
+                trackID: 2,
+                segmentIDs: [segmentA_ID, segmentB_ID],
+                nodeToRestore: { id: 5, stationID: null, latitude: 43.73, longitude: -79.48 },
+                segmentToRestore: { id: 2, isCurved: true, endNodes: [2, 4], controlPoint: 5 }
+            }
+        })
     })
 
     it('Merge Segment Action Creator', () => {
@@ -109,8 +130,36 @@ describe('track route action creators', () => {
         expect(actions.mergeSegments(segmentA_ID, segmentB_ID, trackID)).toEqual({
             type: MERGE_SEGMENTS,
             payload: {
-                segmentsIDs: [segmentA_ID, segmentB_ID],
+                segmentIDs: [segmentA_ID, segmentB_ID],
                 trackID: trackID
+            }
+        })
+    })
+
+    it('UnMerge Segment Action Creator', () => {
+        let trackID = 0
+        let segmentToRemoveID = 1
+        let segmentsToRestore = [
+            { id: 1, isCurved: false, endNodes: [1, 3], controlPoint: null },
+            { id: 2, isCurved: false, endNodes: [2, 4], controlPoint: null }
+        ]
+        let nodesToRestore = [
+            { id: 3, stationID: null, latitude: 43.72, longitude: -79.47 },
+            { id: 4, stationID: null, latitude: 43.72, longitude: -79.485 },
+        ]
+
+        expect(actions.undoMergeSegment(
+            trackID,
+            segmentToRemoveID,
+            segmentsToRestore,
+            nodesToRestore
+        )).toEqual({
+            type: UNDO_MERGE_SEGMENTS,
+            payload: {
+                trackID: trackID,
+                segmentToRemoveID: segmentToRemoveID,
+                segmentsToRestore: segmentsToRestore,
+                nodesToRestore: nodesToRestore,
             }
         })
     })
@@ -236,31 +285,209 @@ describe('track route action creators', () => {
             }
         })
 
-        expect(actions.getInverseTrackRouteActions(state, {
+        let breakState1 = [
+            {
+                id: 0,
+                stationIDs: [0, 1],
+                nodes: [
+                    { id: 0, stationID: 0, latitude: 43.7, longitude: -79.44 },
+                    { id: 1, stationID: 1, latitude: 43.7, longitude: -79.45 }
+                ],
+                segments: [
+                    { id: 0, isCurved: false, endNodes: [0, 1], controlPoint: null }
+                ],
+                deletedAt: null
+            },
+        ]
+
+        let breakState2 = [
+            {
+                id: 0,
+                stationIDs: [0, 1],
+                nodes: [
+                    { id: 0, stationID: 0, latitude: 43.7, longitude: -79.44 },
+                    { id: 1, stationID: 1, latitude: 43.7, longitude: -79.45 },
+                    { id: 2, stationID: null, latitude: 43.8, longitude: -79.445 },
+                ],
+                segments: [
+                    { id: 0, isCurved: true, endNodes: [0, 1], controlPoint: 2 }
+                ],
+                deletedAt: null
+            },
+        ]
+
+        let mergeState1 = [
+            {
+                id: 0,
+                stationIDs: [0, 1],
+                nodes: [
+                    { id: 0, stationID: 0, latitude: 43.7, longitude: -79.44 },
+                    { id: 1, stationID: 1, latitude: 43.7, longitude: -79.45 },
+                    { id: 2, stationID: null, latitude: 43.7, longitude: -79.445 },
+                ],
+                segments: [
+                    { id: 0, isCurved: false, endNodes: [0, 2], controlPoint: null },
+                    { id: 1, isCurved: false, endNodes: [2, 1], controlPoint: null }
+                ],
+                deletedAt: null
+            },
+        ]
+
+        let mergeState2 = [
+            {
+                id: 0,
+                stationIDs: [0, 1],
+                nodes: [
+                    { id: 0, stationID: 0, latitude: 43.7, longitude: -79.44 },
+                    { id: 1, stationID: 1, latitude: 43.7, longitude: -79.45 },
+                    { id: 2, stationID: null, latitude: 43.8, longitude: -79.445 },
+                    { id: 3, stationID: null, latitude: 43.8, longitude: -79.44 },
+                ],
+                segments: [
+                    { id: 0, isCurved: true, endNodes: [0, 2], controlPoint: 3 },
+                    { id: 1, isCurved: false, endNodes: [2, 1], controlPoint: null }
+                ],
+                deletedAt: null
+            },
+        ]
+
+        let mergeState3 = [
+            {
+                id: 0,
+                stationIDs: [0, 1],
+                nodes: [
+                    { id: 0, stationID: 0, latitude: 43.7, longitude: -79.44 },
+                    { id: 1, stationID: 1, latitude: 43.7, longitude: -79.45 },
+                    { id: 2, stationID: null, latitude: 43.8, longitude: -79.445 },
+                    { id: 3, stationID: null, latitude: 43.8, longitude: -79.44 },
+                    { id: 4, stationID: null, latitude: 43.8, longitude: -79.45 },
+                ],
+                segments: [
+                    { id: 0, isCurved: true, endNodes: [0, 2], controlPoint: 3 },
+                    { id: 1, isCurved: true, endNodes: [2, 1], controlPoint: 4 }
+                ],
+                deletedAt: null
+            },
+        ]
+
+        expect(actions.getInverseTrackRouteActions(breakState1, {
             type: BREAK_SEGMENT,
             payload: {
-                trackID: 1,
+                trackID: 0,
                 segmentID: 0,
             }
         })).toEqual({
-            type: MERGE_SEGMENTS,
+            type: UNDO_BREAK_SEGMENT,
             payload: {
-                trackID: 1,
-                segmentsIDs: [0, 1],
+                trackID: 0,
+                segmentIDs: [0, 1],
+                nodeToRestore: null,
+                segmentToRestore: { id: 0, isCurved: false, endNodes: [0, 1], controlPoint: null }
             }
         })
 
-        expect(actions.getInverseTrackRouteActions(state, {
-            type: MERGE_SEGMENTS,
-            payload: {
-                trackID: 1,
-                segmentsIDs: [0, 1],
-            }
-        })).toEqual({
+        expect(actions.getInverseTrackRouteActions(breakState2, {
             type: BREAK_SEGMENT,
             payload: {
-                trackID: 1,
+                trackID: 0,
                 segmentID: 0,
+            }
+        })).toEqual({
+            type: UNDO_BREAK_SEGMENT,
+            payload: {
+                trackID: 0,
+                segmentIDs: [0, 1],
+                nodeToRestore: { id: 2, stationID: null, latitude: 43.8, longitude: -79.445 },
+                segmentToRestore: { id: 0, isCurved: true, endNodes: [0, 1], controlPoint: 2 }
+            }
+        })
+
+        expect(actions.getInverseTrackRouteActions(mergeState1, {
+            type: MERGE_SEGMENTS,
+            payload: {
+                trackID: 0,
+                segmentIDs: [0, 1],
+            }
+        })).toEqual({
+            type: UNDO_MERGE_SEGMENTS,
+            payload: {
+                trackID: 0,
+                segmentToRemoveID: 0,
+                segmentsToRestore: [
+                    { id: 0, isCurved: false, endNodes: [0, 2], controlPoint: null },
+                    { id: 1, isCurved: false, endNodes: [2, 1], controlPoint: null }
+                ],
+                nodesToRestore: [
+                    { id: 2, stationID: null, latitude: 43.7, longitude: -79.445 },
+                ]
+            }
+        })
+
+        expect(actions.getInverseTrackRouteActions(mergeState2, {
+            type: MERGE_SEGMENTS,
+            payload: {
+                trackID: 0,
+                segmentIDs: [0, 1],
+            }
+        })).toEqual({
+            type: UNDO_MERGE_SEGMENTS,
+            payload: {
+                trackID: 0,
+                segmentToRemoveID: 0,
+                segmentsToRestore: [
+                    { id: 0, isCurved: true, endNodes: [0, 2], controlPoint: 3 },
+                    { id: 1, isCurved: false, endNodes: [2, 1], controlPoint: null }
+                ],
+                nodesToRestore: [
+                    { id: 2, stationID: null, latitude: 43.8, longitude: -79.445 },
+                    { id: 3, stationID: null, latitude: 43.8, longitude: -79.44 },
+                ]
+            }
+        })
+
+        expect(actions.getInverseTrackRouteActions(mergeState3, {
+            type: MERGE_SEGMENTS,
+            payload: {
+                trackID: 0,
+                segmentIDs: [0, 1],
+            }
+        })).toEqual({
+            type: UNDO_MERGE_SEGMENTS,
+            payload: {
+                trackID: 0,
+                segmentToRemoveID: 0,
+                segmentsToRestore: [
+                    { id: 0, isCurved: true, endNodes: [0, 2], controlPoint: 3 },
+                    { id: 1, isCurved: true, endNodes: [2, 1], controlPoint: 4 }
+                ],
+                nodesToRestore: [
+                    { id: 2, stationID: null, latitude: 43.8, longitude: -79.445 },
+                    { id: 3, stationID: null, latitude: 43.8, longitude: -79.44 },
+                    { id: 4, stationID: null, latitude: 43.8, longitude: -79.45 },
+                ]
+            }
+        })
+
+        expect(actions.getInverseTrackRouteActions(mergeState3, {
+            type: UNDO_MERGE_SEGMENTS,
+            payload: {
+                trackID: 0,
+                segmentToRemoveID: 0,
+                segmentsToRestore: [
+                    { id: 0, isCurved: true, endNodes: [0, 2], controlPoint: 3 },
+                    { id: 1, isCurved: true, endNodes: [2, 1], controlPoint: 4 }
+                ],
+                nodesToRestore: [
+                    { id: 2, stationID: null, latitude: 43.8, longitude: -79.445 },
+                    { id: 3, stationID: null, latitude: 43.8, longitude: -79.44 },
+                    { id: 4, stationID: null, latitude: 43.8, longitude: -79.45 },
+                ]
+            }
+        })).toEqual({
+            type: MERGE_SEGMENTS,
+            payload: {
+                trackID: 0,
+                segmentIDs: [0, 1],
             }
         })
 

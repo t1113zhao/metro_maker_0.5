@@ -1,4 +1,4 @@
-import { difference } from 'underscore'
+import { difference, intersection, object, union } from 'underscore'
 import {
     genericMultiDelete,
     genericMultiRestore,
@@ -10,7 +10,8 @@ import {
     filterByIds,
     filterOutById,
     filterOutByIds,
-    idCompareAsc
+    idCompareAsc,
+    getById
 } from '../utils/utils'
 import {
     ADD_TRACK,
@@ -28,7 +29,12 @@ import {
     ADD_CURVED_SEGMENT,
     STRAIGHT_TO_CURVED,
     CURVED_TO_STRAIGHT,
+
     BREAK_SEGMENT,
+    UNDO_BREAK_SEGMENT,
+    MERGE_SEGMENTS,
+    UNDO_MERGE_SEGMENTS,
+
     REMOVE_SEGMENT,
     RESTORE_SEGMENT,
 } from '../actions/actionTypes'
@@ -64,6 +70,15 @@ export default function trackRouteReducer(state = initialState, action) {
         }
         case BREAK_SEGMENT: {
             return doBreakSegment(state, action)
+        }
+        case UNDO_BREAK_SEGMENT: {
+            return undoBreakSegment(state, action)
+        }
+        case MERGE_SEGMENTS: {
+            return doMergeSegments(state, action)
+        }
+        case UNDO_MERGE_SEGMENTS: {
+            return undoMergeSegments(state, action)
         }
         case REMOVE_SEGMENT: {
             return doRemoveSegment(state, action)
@@ -169,10 +184,10 @@ function doAddSegmentToTrackRoute(state, action) {
             }
         }
 
-        let controlPointID = null
+        let controlPoint = null
         let isCurved = false;
         if (action.type === ADD_CURVED_SEGMENT) {
-            controlPointID = givenNodeIDs[2]
+            controlPoint = givenNodeIDs[2]
             isCurved = true
         }
         let newSegmentID = nextIDForArray(trackRoute.segments)
@@ -183,7 +198,7 @@ function doAddSegmentToTrackRoute(state, action) {
                 id: newSegmentID,
                 isCurved: isCurved,
                 endNodes: [givenNodeIDs[0], givenNodeIDs[1]],
-                controlPoint: controlPointID
+                controlPoint: controlPoint
             }
         )
         return {
@@ -278,16 +293,27 @@ function doBreakSegment(state, action) {
         if (trackRoute.id != action.payload.trackID) {
             return trackRoute
         }
-        let targetSegment = trackRoute.segments[action.payload.id]
-        let newNodes = trackRoute.nodes.slice(0)
-        let newSegments = trackRoute.segments.slice(0)
-        let targetNodes = filterByIds(newNodes, [targetSegment.endNodes[0], targetSegment.endNodes[1]])
+
+        let targetSegment = trackRoute.segments[action.payload.segmentID]
+
+        //remove target segment
+        let removedParentSegment = removeSegmentsFromTrackRoute(
+            trackRoute.nodes,
+            trackRoute.segments,
+            [action.payload.segmentID]
+        )
+
+        let newNodes = removedParentSegment.nodes
+        let newSegments = removedParentSegment.segments
+
+        // get the end nodes of the removed segment to construct two children segments
+        let segmentEndNodes = filterByIds(newNodes, targetSegment.endNodes)
 
         let newCoords = haversineMidpoint(
-            targetNodes[0],
-            targetNodes[1]
+            segmentEndNodes[0],
+            segmentEndNodes[1]
         )
-        let newNodeID = nextIDForArray(trackRoute.nodes)
+        let newNodeID = nextIDForArray(newNodes)
         newNodes.push({
             id: newNodeID,
             stationID: null,
@@ -295,69 +321,20 @@ function doBreakSegment(state, action) {
             longitude: newCoords.longitude
         })
 
+        // push the new segments
         newSegments.push({
-            id: nextIDForArray(trackRoute.segments),
-            endNodes: [newNodeID, targetSegment.endNodes[1]],
+            id: targetSegment.id,
+            endNodes: [targetSegment.endNodes[0], newNodeID],
             isCurved: false,
             controlPoint: null,
         })
 
-        targetSegment.endNodes = [
-            targetSegment.endNodes[0],
-            newNodeID
-        ]
-
-        return {
-            ...trackRoute,
-            nodes: newNodes,
-            segments: newSegments
-        }
-    })
-}
-
-//function doMergeSegments(state, action) {
-// action.payload.segmentIDs[0] is the one to retain
-//}
-
-//refactor this so that 
-function doRemoveSegment(state, action) {
-    return state.map(trackRoute => {
-        if (trackRoute.id != action.payload.trackID) {
-            return trackRoute
-        }
-
-        let removeNodeIds = getNodesThatOnlyGivenSegmentsConnectTo(
-            action.payload.id,
-            trackRoute.segments,
-            false
-        )
-
-        let newNodes = filterOutByIds(trackRoute.nodes, removeNodeIds)
-
-        let newSegments = filterOutById(trackRoute.segments, action.payload.id)
-
-        return {
-            ...trackRoute,
-            nodes: newNodes,
-            segments: newSegments
-        }
-    })
-}
-
-function doRestoreSegment(state, action) {
-    return state.map(trackRoute => {
-        if (trackRoute.id != action.payload.trackID) {
-            return trackRoute
-        }
-
-        let newNodes = trackRoute.nodes.slice(0)
-        for (var i = 0; i < action.payload.nodesToRestore.length; i++) {
-            newNodes.push(action.payload.nodesToRestore[i])
-        }
-        newNodes.sort(idCompareAsc)
-
-        let newSegments = trackRoute.segments.slice(0)
-        newSegments.splice(action.payload.id, 0, action.payload.segmentToRestore)
+        newSegments.push({
+            id: nextIDForArray(newSegments),
+            endNodes: [newNodeID, targetSegment.endNodes[1]],
+            isCurved: false,
+            controlPoint: null,
+        })
         newSegments.sort(idCompareAsc)
 
         return {
@@ -368,40 +345,180 @@ function doRestoreSegment(state, action) {
     })
 }
 
-export function getNodesThatOnlyGivenSegmentsConnectTo(segmentID, fullset, includeStationNodes) {
+function undoBreakSegment(state, action) {
+    return state.map(trackRoute => {
+        if (trackRoute.id != action.payload.trackID) {
+            return trackRoute
+        }
+        let removeParentsSegments = removeSegmentsFromTrackRoute(
+            trackRoute.nodes,
+            trackRoute.segments,
+            action.payload.segmentIDs
+        )
 
-    let subsetNodeIds = []
+        let newNodes = removeParentsSegments.nodes
+        let newSegments = removeParentsSegments.segments
 
-    let differenceSetNodeIds = []
+        if(action.payload.nodeToRestore) {
+            newNodes.push(action.payload.nodeToRestore)
+            newNodes.sort(idCompareAsc)
+        }
+        newSegments.push(action.payload.segmentToRestore)
+        newSegments.sort(idCompareAsc)
 
-    fullset.forEach(segment => {
-        if (segment.id == segmentID) {
-            subsetNodeIds.push(segment.endNodes[0])
-            subsetNodeIds.push(segment.endNodes[1])
-            if (segment.controlPoint) {
-                subsetNodeIds.push(segment.controlPoint)
-            }
-        } else {
-            differenceSetNodeIds.push(segment.endNodes[0])
-            differenceSetNodeIds.push(segment.endNodes[1])
-            if (segment.controlPoint) {
-                differenceSetNodeIds.push(segment.controlPoint)
-            }
+        return {
+            ...trackRoute,
+            nodes: newNodes,
+            segments: newSegments
         }
     })
+}
 
-    let subsetOnlyNodeIds = difference(
-        subsetNodeIds,
-        differenceSetNodeIds
+function doMergeSegments(state, action) {
+    return state.map(trackRoute => {
+        if (trackRoute.id != action.payload.trackID) {
+            return trackRoute
+        }
+
+        let commonNodes = getCommonEndPointsBetweenTwoSegments(
+            action.payload.segmentIDs[0],
+            action.payload.segmentIDs[1],
+            trackRoute.segments
+        )
+
+        // if two segments dont touch
+        if (commonNodes.length != 1) {
+            return trackRoute
+        }
+
+        let mergeEndPoints = getUnCommonEndPointsBetweenTwoSegments(
+            action.payload.segmentIDs[0],
+            action.payload.segmentIDs[1],
+            trackRoute.segments
+        )
+
+        let removedParentSegments = removeSegmentsFromTrackRoute(
+            trackRoute.nodes,
+            trackRoute.segments,
+            action.payload.segmentIDs
+        )
+
+        let newNodes = removedParentSegments.nodes
+        let newSegments = removedParentSegments.segments
+
+
+        newSegments.push({
+            id: action.payload.segmentIDs[0],
+            endNodes: mergeEndPoints,
+            isCurved: false,
+            controlPoint: null,
+        })
+
+        newSegments.sort(idCompareAsc)
+
+        return {
+            ...trackRoute,
+            nodes: newNodes,
+            segments: newSegments,
+        }
+    })
+}
+
+function undoMergeSegments(state, action) {
+    return state.map(trackRoute => {
+        if (trackRoute.id != action.payload.trackID) {
+            return trackRoute
+        }
+
+        let removedParentSegment = removeSegmentsFromTrackRoute(
+            trackRoute.nodes,
+            trackRoute.segments,
+            [action.payload.segmentToRemoveID]
+        )
+        let newNodesAndSegments = restoreSegmentsAndNodes(
+            removedParentSegment.nodes,
+            removedParentSegment.segments,
+            action.payload.nodesToRestore,
+            action.payload.segmentsToRestore
+        )
+
+        return {
+            ...trackRoute,
+            nodes: newNodesAndSegments.nodes,
+            segments: newNodesAndSegments.segments
+        }
+    })
+}
+
+function doRemoveSegment(state, action) {
+    return state.map(trackRoute => {
+        if (trackRoute.id != action.payload.trackID) {
+            return trackRoute
+        }
+
+        let outObj = removeSegmentsFromTrackRoute(trackRoute.nodes, trackRoute.segments, [action.payload.id])
+
+        return {
+            ...trackRoute,
+            nodes: outObj.nodes,
+            segments: outObj.segments
+        }
+    })
+}
+
+export function removeSegmentsFromTrackRoute(nodes, segments, segmentIDs) {
+    let removeNodeIds = getNodesThatOnlyGivenSegmentsConnectTo(
+        segmentIDs,
+        segments,
+        false,
+        true
     )
 
-    if (includeStationNodes == false) {
-        let checkSet = new Set(subsetOnlyNodeIds)
-        checkSet.delete(0)
-        checkSet.delete(1)
-        return Array.from(checkSet)
+    let newNodes = filterOutByIds(nodes, removeNodeIds)
+
+    let newSegments = filterOutByIds(segments, segmentIDs)
+
+    return {
+        nodes: newNodes,
+        segments: newSegments
     }
-    return subsetOnlyNodeIds
+}
+
+function doRestoreSegment(state, action) {
+    return state.map(trackRoute => {
+        if (trackRoute.id != action.payload.trackID) {
+            return trackRoute
+        }
+        let outObj = restoreSegmentsAndNodes(trackRoute.nodes, trackRoute.segments, action.payload.nodesToRestore, [action.payload.segmentToRestore])
+
+        return {
+            ...trackRoute,
+            nodes: outObj.nodes,
+            segments: outObj.segments
+        }
+    })
+}
+
+function restoreSegmentsAndNodes(nodes, segments, nodesToRestore, segmentsToRestore) {
+    let newNodes = nodes.slice()
+    let newSegments = segments.slice()
+
+    for (var i = 0; i < nodesToRestore.length; i++) {
+        let node = nodesToRestore[i]
+        newNodes.push(node)
+    }
+    newNodes.sort(idCompareAsc)
+
+    for (var i = 0; i < segmentsToRestore.length; i++) {
+        let segment = segmentsToRestore[i]
+        newSegments.push(segment)
+    }
+    newSegments.sort(idCompareAsc)
+
+    return {
+        nodes: newNodes,
+        segments: newSegments
+    }
 }
 
 function doMoveNode(state, action) {
@@ -476,4 +593,58 @@ export function getTrackIDsByStationID(tracks, stationID, includeDeleted) {
         return track.id
     })
     return filterDeleted(output, includeDeleted)
+}
+
+export function getNodesThatOnlyGivenSegmentsConnectTo(segmentIDs, fullset, includeStationNodes, includeControlPoint) {
+
+    let segmentIDSet = new Set(segmentIDs)
+    let subsetNodeIds = []
+
+    let differenceSetNodeIds = []
+
+    fullset.forEach(segment => {
+        if (segmentIDSet.has(segment.id)) {
+            subsetNodeIds.push(segment.endNodes[0])
+            subsetNodeIds.push(segment.endNodes[1])
+            if (includeControlPoint && segment.controlPoint) {
+                subsetNodeIds.push(segment.controlPoint)
+            }
+        } else {
+            differenceSetNodeIds.push(segment.endNodes[0])
+            differenceSetNodeIds.push(segment.endNodes[1])
+            if (includeControlPoint && segment.controlPoint) {
+                differenceSetNodeIds.push(segment.controlPoint)
+            }
+        }
+    })
+
+    let subsetOnlyNodeIds = difference(
+        subsetNodeIds,
+        differenceSetNodeIds
+    )
+
+    if (includeStationNodes == false) {
+        let checkSet = new Set(subsetOnlyNodeIds)
+        checkSet.delete(0)
+        checkSet.delete(1)
+        return Array.from(checkSet)
+    }
+
+    return subsetOnlyNodeIds
+}
+
+export function getCommonEndPointsBetweenTwoSegments(segmentA_ID, segmentB_ID, fullset) {
+    let segmentANodes = getById(fullset, segmentA_ID).endNodes
+    let segmentBNodes = getById(fullset, segmentB_ID).endNodes
+
+    return intersection(segmentANodes, segmentBNodes)
+}
+
+export function getUnCommonEndPointsBetweenTwoSegments(segmentA_ID, segmentB_ID, fullset) {
+    let segmentANodes = getById(fullset, segmentA_ID).endNodes
+    let segmentBNodes = getById(fullset, segmentB_ID).endNodes
+
+    let commonNodes = intersection(segmentANodes, segmentBNodes)
+    let allNodes = union(segmentANodes, segmentBNodes)
+    return difference(allNodes, commonNodes)
 }

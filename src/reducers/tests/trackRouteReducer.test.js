@@ -14,6 +14,9 @@ import {
     STRAIGHT_TO_CURVED,
     CURVED_TO_STRAIGHT,
     BREAK_SEGMENT,
+    UNDO_BREAK_SEGMENT,
+    MERGE_SEGMENTS,
+    UNDO_MERGE_SEGMENTS,
     REMOVE_SEGMENT,
     RESTORE_SEGMENT,
 } from '../../actions/actionTypes'
@@ -490,6 +493,7 @@ describe('Track route reducer operates correctly', () => {
     })
 
     it('should break a segment', () => {
+        // break a straight segment
         expect(reducer([
             {
                 id: 0,
@@ -506,7 +510,7 @@ describe('Track route reducer operates correctly', () => {
         ], {
             type: BREAK_SEGMENT,
             payload: {
-                id: 0,
+                segmentID: 0,
                 trackID: 0
             }
         })).toEqual([
@@ -521,6 +525,334 @@ describe('Track route reducer operates correctly', () => {
                 segments: [
                     { id: 0, isCurved: false, endNodes: [0, 2], controlPoint: null },
                     { id: 1, isCurved: false, endNodes: [2, 1], controlPoint: null }
+                ],
+                deletedAt: null
+            },
+        ])
+
+        //break a curved segment
+        expect(reducer([
+            {
+                id: 0,
+                stationIDs: [0, 1],
+                nodes: [
+                    { id: 0, stationID: 0, latitude: 43.7, longitude: -79.44 },
+                    { id: 1, stationID: 1, latitude: 43.7, longitude: -79.45 },
+                    { id: 2, stationID: null, latitude: 43.8, longitude: -79.445 },
+                ],
+                segments: [
+                    { id: 0, isCurved: true, endNodes: [0, 1], controlPoint: 2 }
+                ],
+                deletedAt: null
+            },
+        ], {
+            type: BREAK_SEGMENT,
+            payload: {
+                segmentID: 0,
+                trackID: 0
+            }
+        })).toEqual([
+            {
+                id: 0,
+                stationIDs: [0, 1],
+                nodes: [
+                    { id: 0, stationID: 0, latitude: 43.7, longitude: -79.44 },
+                    { id: 1, stationID: 1, latitude: 43.7, longitude: -79.45 },
+                    { id: 2, stationID: null, latitude: 43.7, longitude: -79.445 },
+                ],
+                segments: [
+                    { id: 0, isCurved: false, endNodes: [0, 2], controlPoint: null },
+                    { id: 1, isCurved: false, endNodes: [2, 1], controlPoint: null }
+                ],
+                deletedAt: null
+            },
+        ])
+
+    })
+
+    it('should unbreak a segment', () => {
+        expect(reducer([
+            {
+                id: 0,
+                stationIDs: [0, 1],
+                nodes: [
+                    { id: 0, stationID: 0, latitude: 43.7, longitude: -79.44 },
+                    { id: 1, stationID: 1, latitude: 43.7, longitude: -79.45 },
+                    { id: 2, stationID: null, latitude: 43.7, longitude: -79.445 },
+                ],
+                segments: [
+                    { id: 0, isCurved: false, endNodes: [0, 2], controlPoint: null },
+                    { id: 1, isCurved: false, endNodes: [2, 1], controlPoint: null }
+                ],
+                deletedAt: null
+            },
+        ], {
+            type: UNDO_BREAK_SEGMENT,
+            payload: {
+                trackID: 0,
+                segmentIDs: [0, 1],
+                nodeToRestore: null,
+                segmentToRestore: { id: 0, isCurved: false, endNodes: [0, 1], controlPoint: null }
+            }
+        })).toEqual(
+            [
+                {
+                    id: 0,
+                    stationIDs: [0, 1],
+                    nodes: [
+                        { id: 0, stationID: 0, latitude: 43.7, longitude: -79.44 },
+                        { id: 1, stationID: 1, latitude: 43.7, longitude: -79.45 }
+                    ],
+                    segments: [
+                        { id: 0, isCurved: false, endNodes: [0, 1], controlPoint: null }
+                    ],
+                    deletedAt: null
+                },
+            ]
+        )
+
+        expect(reducer([
+            {
+                id: 0,
+                stationIDs: [0, 1],
+                nodes: [
+                    { id: 0, stationID: 0, latitude: 43.7, longitude: -79.44 },
+                    { id: 1, stationID: 1, latitude: 43.7, longitude: -79.45 },
+                    { id: 2, stationID: null, latitude: 43.7, longitude: -79.445 },
+                ],
+                segments: [
+                    { id: 0, isCurved: false, endNodes: [0, 2], controlPoint: null },
+                    { id: 1, isCurved: false, endNodes: [2, 1], controlPoint: null }
+                ],
+                deletedAt: null
+            },
+        ], {
+            type: UNDO_BREAK_SEGMENT,
+            payload: {
+                trackID: 0,
+                segmentIDs: [0, 1],
+                nodeToRestore: { id: 2, stationID: null, latitude: 43.8, longitude: -79.445 },
+                segmentToRestore: { id: 0, isCurved: true, endNodes: [0, 1], controlPoint: 2 }
+            }
+        })).toEqual([
+            {
+                id: 0,
+                stationIDs: [0, 1],
+                nodes: [
+                    { id: 0, stationID: 0, latitude: 43.7, longitude: -79.44 },
+                    { id: 1, stationID: 1, latitude: 43.7, longitude: -79.45 },
+                    { id: 2, stationID: null, latitude: 43.8, longitude: -79.445 },
+                ],
+                segments: [
+                    { id: 0, isCurved: true, endNodes: [0, 1], controlPoint: 2 }
+                ],
+                deletedAt: null
+            },
+        ])
+    })
+
+    it('should merge segments', () => {
+        let mergedState = [
+            {
+                id: 0,
+                stationIDs: [0, 1],
+                nodes: [
+                    { id: 0, stationID: 0, latitude: 43.7, longitude: -79.44 },
+                    { id: 1, stationID: 1, latitude: 43.7, longitude: -79.45 },
+                ],
+                segments: [
+                    { id: 0, isCurved: false, endNodes: [0, 1], controlPoint: null }
+                ],
+                deletedAt: null
+            },
+        ]
+        // straight straight
+        expect(reducer([
+            {
+                id: 0,
+                stationIDs: [0, 1],
+                nodes: [
+                    { id: 0, stationID: 0, latitude: 43.7, longitude: -79.44 },
+                    { id: 1, stationID: 1, latitude: 43.7, longitude: -79.45 },
+                    { id: 2, stationID: null, latitude: 43.7, longitude: -79.445 },
+                ],
+                segments: [
+                    { id: 0, isCurved: false, endNodes: [0, 2], controlPoint: null },
+                    { id: 1, isCurved: false, endNodes: [2, 1], controlPoint: null }
+                ],
+                deletedAt: null
+            },
+        ], {
+            type: MERGE_SEGMENTS,
+            payload: {
+                trackID: 0,
+                segmentIDs: [0, 1]
+            }
+        })).toEqual(mergedState)
+
+        // straight curved
+        expect(reducer([
+            {
+                id: 0,
+                stationIDs: [0, 1],
+                nodes: [
+                    { id: 0, stationID: 0, latitude: 43.7, longitude: -79.44 },
+                    { id: 1, stationID: 1, latitude: 43.7, longitude: -79.45 },
+                    { id: 2, stationID: null, latitude: 43.8, longitude: -79.445 },
+                    { id: 3, stationID: null, latitude: 43.8, longitude: -79.44 },
+                ],
+                segments: [
+                    { id: 0, isCurved: true, endNodes: [0, 2], controlPoint: 3 },
+                    { id: 1, isCurved: false, endNodes: [2, 1], controlPoint: null }
+                ],
+                deletedAt: null
+            },
+        ], {
+            type: MERGE_SEGMENTS,
+            payload: {
+                trackID: 0,
+                segmentIDs: [0, 1]
+            }
+        })).toEqual(mergedState)
+
+        // curved curved
+        expect(reducer([
+            {
+                id: 0,
+                stationIDs: [0, 1],
+                nodes: [
+                    { id: 0, stationID: 0, latitude: 43.7, longitude: -79.44 },
+                    { id: 1, stationID: 1, latitude: 43.7, longitude: -79.45 },
+                    { id: 2, stationID: null, latitude: 43.8, longitude: -79.445 },
+                    { id: 3, stationID: null, latitude: 43.8, longitude: -79.44 },
+                    { id: 4, stationID: null, latitude: 43.8, longitude: -79.45 },
+                ],
+                segments: [
+                    { id: 0, isCurved: true, endNodes: [0, 2], controlPoint: 3 },
+                    { id: 1, isCurved: true, endNodes: [2, 1], controlPoint: 4 }
+                ],
+                deletedAt: null
+            },
+        ], {
+            type: MERGE_SEGMENTS,
+            payload: {
+                trackID: 0,
+                segmentIDs: [0, 1]
+            }
+        })).toEqual(mergedState)
+    })
+
+    it('should unmerge segment', () => {
+        let mergedState = [
+            {
+                id: 0,
+                stationIDs: [0, 1],
+                nodes: [
+                    { id: 0, stationID: 0, latitude: 43.7, longitude: -79.44 },
+                    { id: 1, stationID: 1, latitude: 43.7, longitude: -79.45 },
+                ],
+                segments: [
+                    { id: 0, isCurved: false, endNodes: [0, 1], controlPoint: null }
+                ],
+                deletedAt: null
+            },
+        ]
+
+        // straight straight
+        expect(reducer(mergedState, {
+            type: UNDO_MERGE_SEGMENTS,
+            payload: {
+                trackID: 0,
+                segmentToRemoveID: 0,
+                segmentsToRestore: [
+                    { id: 0, isCurved: false, endNodes: [0, 2], controlPoint: null },
+                    { id: 1, isCurved: false, endNodes: [2, 1], controlPoint: null }
+                ],
+                nodesToRestore: [
+                    { id: 2, stationID: null, latitude: 43.7, longitude: -79.445 },
+                ]
+            }
+        })).toEqual([
+            {
+                id: 0,
+                stationIDs: [0, 1],
+                nodes: [
+                    { id: 0, stationID: 0, latitude: 43.7, longitude: -79.44 },
+                    { id: 1, stationID: 1, latitude: 43.7, longitude: -79.45 },
+                    { id: 2, stationID: null, latitude: 43.7, longitude: -79.445 },
+                ],
+                segments: [
+                    { id: 0, isCurved: false, endNodes: [0, 2], controlPoint: null },
+                    { id: 1, isCurved: false, endNodes: [2, 1], controlPoint: null }
+                ],
+                deletedAt: null
+            },
+
+        ])
+
+        // straight curved
+        expect(reducer(mergedState, {
+            type: UNDO_MERGE_SEGMENTS,
+            payload: {
+                trackID: 0,
+                segmentToRemoveID: 0,
+                segmentsToRestore: [
+                    { id: 0, isCurved: true, endNodes: [0, 2], controlPoint: 3 },
+                    { id: 1, isCurved: false, endNodes: [2, 1], controlPoint: null }
+                ],
+                nodesToRestore: [
+                    { id: 2, stationID: null, latitude: 43.8, longitude: -79.445 },
+                    { id: 3, stationID: null, latitude: 43.8, longitude: -79.44 },
+                ]
+            }
+        })).toEqual([
+            {
+                id: 0,
+                stationIDs: [0, 1],
+                nodes: [
+                    { id: 0, stationID: 0, latitude: 43.7, longitude: -79.44 },
+                    { id: 1, stationID: 1, latitude: 43.7, longitude: -79.45 },
+                    { id: 2, stationID: null, latitude: 43.8, longitude: -79.445 },
+                    { id: 3, stationID: null, latitude: 43.8, longitude: -79.44 },
+                ],
+                segments: [
+                    { id: 0, isCurved: true, endNodes: [0, 2], controlPoint: 3 },
+                    { id: 1, isCurved: false, endNodes: [2, 1], controlPoint: null }
+                ],
+                deletedAt: null
+            },
+        ])
+
+        // curved curved
+        expect(reducer(mergedState, {
+            type: UNDO_MERGE_SEGMENTS,
+            payload: {
+                trackID: 0,
+                segmentToRemoveID: 0,
+                segmentsToRestore: [
+                    { id: 0, isCurved: true, endNodes: [0, 2], controlPoint: 3 },
+                    { id: 1, isCurved: true, endNodes: [2, 1], controlPoint: 4 }
+                ],
+                nodesToRestore: [
+                    { id: 2, stationID: null, latitude: 43.8, longitude: -79.445 },
+                    { id: 3, stationID: null, latitude: 43.8, longitude: -79.44 },
+                    { id: 4, stationID: null, latitude: 43.8, longitude: -79.45 },
+                ]
+            }
+        })).toEqual([
+            {
+                id: 0,
+                stationIDs: [0, 1],
+                nodes: [
+                    { id: 0, stationID: 0, latitude: 43.7, longitude: -79.44 },
+                    { id: 1, stationID: 1, latitude: 43.7, longitude: -79.45 },
+                    { id: 2, stationID: null, latitude: 43.8, longitude: -79.445 },
+                    { id: 3, stationID: null, latitude: 43.8, longitude: -79.44 },
+                    { id: 4, stationID: null, latitude: 43.8, longitude: -79.45 },
+                ],
+                segments: [
+                    { id: 0, isCurved: true, endNodes: [0, 2], controlPoint: 3 },
+                    { id: 1, isCurved: true, endNodes: [2, 1], controlPoint: 4 }
                 ],
                 deletedAt: null
             },
@@ -1081,7 +1413,7 @@ describe('Track route reducer operates correctly', () => {
             { id: 3, endNodes: [3, 5], controlPoint: null },
         ]
 
-        expect(getNodesThatOnlyGivenSegmentsConnectTo(3, fullset1, false
+        expect(getNodesThatOnlyGivenSegmentsConnectTo([3], fullset1, false
         )).toEqual([5])
 
         let fullset2 = [
@@ -1091,8 +1423,24 @@ describe('Track route reducer operates correctly', () => {
             { id: 3, endNodes: [3, 4], controlPoint: null },
         ]
 
-        expect(getNodesThatOnlyGivenSegmentsConnectTo(3, fullset2, false
+        expect(getNodesThatOnlyGivenSegmentsConnectTo([3], fullset2, false, false
         )).toEqual([])
+
+        expect(getNodesThatOnlyGivenSegmentsConnectTo([2, 3], fullset2, false, false
+        )).toEqual([3])
+
+        expect(getNodesThatOnlyGivenSegmentsConnectTo([1, 2, 3], fullset2, false, false
+        )).toEqual([4, 3])
+
+        let fullset3 = [
+            { id: 0, endNodes: [0, 2], controlPoint: 5 },
+            { id: 1, endNodes: [1, 4], controlPoint: 6 },
+            { id: 2, endNodes: [2, 3], controlPoint: null },
+            { id: 3, endNodes: [3, 4], controlPoint: null },
+        ]
+
+        expect(getNodesThatOnlyGivenSegmentsConnectTo([1], fullset3, false, true
+        )).toEqual([6])
 
     })
 })
