@@ -403,6 +403,38 @@ describe('track route action creators', () => {
         })
 
         expect(actions.getInverseTrackRouteActions(mergeState1, {
+            type: UNDO_BREAK_SEGMENT,
+            payload: {
+                trackID: 0,
+                segmentIDs: [0, 1],
+                nodeToRestore: null,
+                segmentToRestore: { id: 0, isCurved: false, endNodes: [0, 1], controlPoint: null }
+            }
+        })).toEqual({
+            type: BREAK_SEGMENT,
+            payload: {
+                trackID: 0,
+                segmentID: 0,
+            }
+        })
+
+        expect(actions.getInverseTrackRouteActions(mergeState1, {
+            type: UNDO_BREAK_SEGMENT,
+            payload: {
+                trackID: 0,
+                segmentIDs: [0, 1],
+                nodeToRestore: { id: 2, stationID: null, latitude: 43.8, longitude: -79.445 },
+                segmentToRestore: { id: 0, isCurved: true, endNodes: [0, 1], controlPoint: 2 }
+            }
+        })).toEqual({
+            type: BREAK_SEGMENT,
+            payload: {
+                trackID: 0,
+                segmentID: 0,
+            }
+        })
+
+        expect(actions.getInverseTrackRouteActions(mergeState1, {
             type: MERGE_SEGMENTS,
             payload: {
                 trackID: 0,
