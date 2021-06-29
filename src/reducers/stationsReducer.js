@@ -23,6 +23,7 @@ export default function stationReducer(state = initialState, action) {
         case MOVE_STATION: {
             return doMoveStation(state, action)
         }
+        // This can only happen if station doesn't have services running to it
         case REMOVE_STATION: {
             return genericSingleDelete(
                 state,

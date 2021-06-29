@@ -15,7 +15,7 @@ import {
     RESTORE_STOP,
 } from '../../actions/actionTypes'
 
-import reducer from '../serviceRouteReducer'
+import reducer, { stationCanBeDeleted, trackCanBeDeleted } from '../serviceRouteReducer'
 
 import { serviceRoutePassesThroughStation, isTrackBlockComplete } from '../serviceRouteReducer'
 
@@ -964,7 +964,7 @@ describe('proper function of Service Route Reducer', () => {
                 ]
             },
         ]
-        expect(reducer( restoreStopState,{
+        expect(reducer(restoreStopState, {
             type: RESTORE_STOP,
             payload: {
                 serviceID: 0,
@@ -995,7 +995,7 @@ describe('proper function of Service Route Reducer', () => {
             },
         ])
 
-        expect(reducer(restoreStopState,{
+        expect(reducer(restoreStopState, {
             type: RESTORE_STOP,
             payload: {
                 serviceID: 0,
@@ -1058,7 +1058,84 @@ describe('Service Route Selectors', () => {
         ])).toEqual(false)
 
         expect(isTrackBlockComplete([])).toEqual(false)
-
     })
 
+    let checkState = [
+        {
+            id: 0, deletedAt: null, stopsByID: [0, 1, 2, 3, 4, 5, 6], serviceTracks: [
+                [
+                    { trackID: 0, fromStationID: 0, toStationID: 1 },
+                    { trackID: 0, fromStationID: 1, toStationID: 0 }
+                ],
+                [
+                    { trackID: 1, fromStationID: 1, toStationID: 2 },
+                    { trackID: 1, fromStationID: 2, toStationID: 1 }
+                ],
+                [
+                    { trackID: 2, fromStationID: 2, toStationID: 3 },
+                    { trackID: 3, fromStationID: 3, toStationID: 4 },
+                    { trackID: 4, fromStationID: 4, toStationID: 5 },
+                    { trackID: 5, fromStationID: 5, toStationID: 2 },
+                ],
+                [
+                    { trackID: 6, fromStationID: 4, toStationID: 6 },
+                    { trackID: 6, fromStationID: 6, toStationID: 4 }
+                ],
+            ]
+        },
+        {
+            id: 1, deletedAt: null, stopsByID: [0, 1, 2, 3, 7], serviceTracks: [
+                [
+                    { trackID: 0, fromStationID: 0, toStationID: 1 },
+                    { trackID: 0, fromStationID: 1, toStationID: 0 }
+                ],
+                [
+                    { trackID: 1, fromStationID: 1, toStationID: 2 },
+                    { trackID: 1, fromStationID: 2, toStationID: 1 }
+                ],
+                [
+                    { trackID: 2, fromStationID: 2, toStationID: 3 },
+                    { trackID: 2, fromStationID: 3, toStationID: 2 },
+                ],
+                [
+                    { trackID: 7, fromStationID: 3, toStationID: 7 },
+                    { trackID: 7, fromStationID: 7, toStationID: 3 }
+                ],
+            ]
+        },
+    ]
+
+    it('should say if station can be removed', () => {
+        expect(stationCanBeDeleted(checkState, 0)).toEqual({
+            canBeDeleted: false,
+            serviceIDs: [0, 1]
+        })
+        expect(stationCanBeDeleted(checkState, 7)).toEqual({
+            canBeDeleted: false,
+            serviceIDs: [1]
+        })
+        expect(stationCanBeDeleted(checkState, 8)).toEqual({
+            canBeDeleted: true,
+            serviceIDs: []
+        })
+    })
+
+    it('should say if track can be removed', () => {
+        expect(trackCanBeDeleted(checkState, 0)).toEqual({
+            canBeDeleted: false,
+            serviceIDs: [0, 1]
+        })
+        expect(trackCanBeDeleted(checkState, 7)).toEqual({
+            canBeDeleted: false,
+            serviceIDs: [1]
+        })
+        expect(trackCanBeDeleted(checkState, 5)).toEqual({
+            canBeDeleted: false,
+            serviceIDs: [0]
+        })
+        expect(trackCanBeDeleted(checkState, 8)).toEqual({
+            canBeDeleted: true,
+            serviceIDs: []
+        })
+    })
 })

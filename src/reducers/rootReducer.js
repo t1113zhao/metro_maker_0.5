@@ -24,6 +24,7 @@ export const combinedReducers = combineReducers({
     transfers: transferReducer
 });
 
+// These actions require two state changes to happen simultaneously
 export function crossSliceReducer(state, action) {
     switch (action.type) {
         case ADD_SERVICE: {

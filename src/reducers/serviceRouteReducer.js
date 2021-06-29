@@ -96,22 +96,22 @@ export default function serviceRouteReducer(state = initialState, action) {
             return doAddOneWayServiceTrack(state, action)
         }
         case SWITCH_ONEWAY_DIRECTION: {
-            return editServiceTracks(state, action, (targetEdges) => {
+            return editServiceTracks(state, action, matchingTrackIDPredicate, (targetEdges) => {
                 return targetEdges.length !== 1
             }, doSwitchOneWayDirection)
         }
         case ONEWAY_TO_TWOWAY: {
-            return editServiceTracks(state, action, (targetEdges) => {
+            return editServiceTracks(state, action, matchingTrackIDPredicate, (targetEdges) => {
                 return targetEdges.length !== 1
             }, doOneWayToTwoWay)
         }
         case TWOWAY_TO_ONEWAY: {
-            return editServiceTracks(state, action, (targetEdges) => {
+            return editServiceTracks(state, action, matchingTrackIDPredicate, (targetEdges) => {
                 return targetEdges.length !== 2
             }, doTwoWayToOneWay)
         }
         case REMOVE_SERVICE_ALONG_TRACK: {
-            return editServiceTracks(state, action, (targetEdges) => {
+            return editServiceTracks(state, action, matchingTrackIDPredicate, (targetEdges) => {
                 return targetEdges.length === 0
             }, doRemoveServiceAlongTrack)
         }
@@ -239,7 +239,7 @@ function doAddOneWayServiceTrack(state, action) {
     })
 }
 
-function editServiceTracks(state, action, predicate, callback) {
+function editServiceTracks(state, action, targetEdgePredicate, predicate, callback) {
     return state.map(serviceRoute => {
         if (serviceRoute.id !== action.payload.serviceID) {
             return serviceRoute
@@ -251,9 +251,7 @@ function editServiceTracks(state, action, predicate, callback) {
         }
         let targetBlock = serviceTracks[action.payload.index]
 
-        let targetEdges = targetBlock.filter(edge => {
-            return edge.trackID === action.payload.trackID
-        })
+        let targetEdges = targetBlock.filter(edge => targetEdgePredicate(action, edge))
 
         if (predicate(targetEdges)) {
             return serviceRoute
@@ -261,6 +259,10 @@ function editServiceTracks(state, action, predicate, callback) {
             return callback(serviceRoute, action, serviceTracks, targetBlock, targetEdges)
         }
     })
+}
+
+function matchingTrackIDPredicate(action, edge) {
+    return edge.trackID === action.payload.trackID
 }
 
 function doSwitchOneWayDirection(serviceRoute, action, serviceTracks, targetBlock, targetEdges) {
@@ -489,4 +491,42 @@ function isServiceRouteComplete(serviceRoute) {
 
 function getStationsInOrder(serviceRoute) {
     // first station is the station in the first track block that isn't in the next block
+}
+
+export function stationCanBeDeleted(state, stationID) {
+    return checkIfTrackOrStationCanBeDeleted(state, stationID, (edge, stationID) => {
+        return edge.fromStationID == stationID || edge.toStationID == stationID
+    })
+}
+
+export function trackCanBeDeleted(state, trackID) {
+    return checkIfTrackOrStationCanBeDeleted(state, trackID, (edge, trackID) => {
+        return edge.trackID == trackID
+    })
+}
+
+function checkIfTrackOrStationCanBeDeleted(state, removeID, predicate) {
+    let canBeDeleted = true
+    let serviceSet = new Set()
+
+    for (var i = 0; i < state.length; i++) {
+        let serviceRoute = state[i]
+
+        for (var j = 0; j < serviceRoute.serviceTracks.length; j++) {
+            let block = serviceRoute.serviceTracks[j]
+            for (var k = 0; k < block.length; k++) {
+                let edge = block[k]
+
+                if (predicate(edge, removeID)) {
+                    canBeDeleted = false
+                    serviceSet.add(serviceRoute.id)
+                }
+            }
+        }
+    }
+
+    return {
+        canBeDeleted: canBeDeleted,
+        serviceIDs: Array.from(serviceSet)
+    }
 }

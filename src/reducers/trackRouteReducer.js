@@ -86,6 +86,7 @@ export default function trackRouteReducer(state = initialState, action) {
         case RESTORE_SEGMENT: {
             return doRestoreSegment(state, action)
         }
+        //This can only happen if track doesn't have services running on it
         case REMOVE_TRACK: {
             return genericSingleDelete(
                 state,
