@@ -62,9 +62,8 @@ function doEditAgency(state, action) {
     })
 }
 
-export function selectAllAgencies(state, includeDeleted) {
-    let output = state.agencies
-    return filterDeleted(output, includeDeleted)
+export function selectAllAgencies(agencies, includeDeleted) {
+    return filterDeleted(agencies, includeDeleted)
 }
 
 export function selectAgenciesGivenId(state, id, includeDeleted) {

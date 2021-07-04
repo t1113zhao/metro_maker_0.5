@@ -297,11 +297,11 @@ describe('Lines Reducer', () => {
 
     it('should select all lines', () => {
 
-        expect(selectAllLines(selectorstate, true)).toEqual([
+        expect(selectAllLines(selectorstate.lines, true)).toEqual([
             { id: 0, agencyID: 0, deletedAt: null }, { id: 1, agencyID: 0, deletedAt: null }, { id: 2, agencyID: 0, deletedAt: 'yesterday' }, { id: 3, agencyID: 1, deletedAt: null }
         ])
 
-        expect(selectAllLines(selectorstate, false)).toEqual([
+        expect(selectAllLines(selectorstate.lines, false)).toEqual([
             { id: 0, agencyID: 0, deletedAt: null }, { id: 1, agencyID: 0, deletedAt: null }, { id: 3, agencyID: 1, deletedAt: null }
         ])
     })

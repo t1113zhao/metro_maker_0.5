@@ -81,9 +81,8 @@ function doEditLine(state, action) {
     })
 }
 
-export function selectAllLines(state, includeDeleted) {
-    let output = state.lines
-    return filterDeleted(output, includeDeleted)
+export function selectAllLines(lines, includeDeleted) {
+    return filterDeleted(lines, includeDeleted)
 }
 
 export function selectLineGivenID(state, id, includeDeleted) {

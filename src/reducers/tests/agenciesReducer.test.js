@@ -184,12 +184,12 @@ describe('Agency Reducer', () => {
             ]
         }
 
-        expect(selectAllAgencies(state, true)).toEqual(
+        expect(selectAllAgencies(state.agencies, true)).toEqual(
             [
                 { id: 0, deletedAt: null }, { id: 1, deletedAt: 'yesteryear' }
             ]
         )
-        expect(selectAllAgencies(state, false)).toEqual(
+        expect(selectAllAgencies(state.agencies, false)).toEqual(
             [
                 { id: 0, deletedAt: null },
             ]

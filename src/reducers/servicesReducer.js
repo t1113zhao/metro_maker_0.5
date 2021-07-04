@@ -80,9 +80,8 @@ function doEditService(state, action) {
     })
 }
 
-export function selectAllServices(state, includeDeleted) {
-    let output = state.services
-    return filterDeleted(output, includeDeleted)
+export function selectAllServices(services, includeDeleted) {
+    return filterDeleted(services, includeDeleted)
 }
 
 export function selectServiceGivenID(state, id, includeDeleted) {

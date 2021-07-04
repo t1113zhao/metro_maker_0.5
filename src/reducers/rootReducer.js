@@ -45,7 +45,7 @@ export default function presentReducer(state, action) {
 }
 
 export function selectAgenciesLinesAndServicesAsTreeObject(state, isSelectable) {
-    return selectAllAgencies(state, false).map(agency => {
+    return selectAllAgencies(state.agencies, false).map(agency => {
         return {
             title: agency.name,
             key: agency.id + "",

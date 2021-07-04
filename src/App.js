@@ -1,12 +1,12 @@
 //import logo from './logo.svg';
 import './App.css';
-import {TestButton} from './components/testButton.js'
+import ManagementPanel from './components/managementPanel'
 
 function App() {
   return (
     <div className="App">
       <p>  APP</p>
-      <TestButton/>
+      <ManagementPanel/>
     </div>
   );
 }

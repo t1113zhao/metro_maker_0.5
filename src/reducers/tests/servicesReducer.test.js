@@ -537,7 +537,7 @@ describe('Service Reducer', () => {
     }
 
     it('should select all services', () => {
-        expect(selectAllServices(selectorState, true)).toEqual([
+        expect(selectAllServices(selectorState.services, true)).toEqual([
             { id: 0, lineID: 0, deletedAt: null },
             { id: 1, lineID: 0, deletedAt: 'yesterday' },
             { id: 2, lineID: 1, deletedAt: null },
@@ -546,7 +546,7 @@ describe('Service Reducer', () => {
             { id: 5, lineID: 2, deletedAt: 'yesterday' },
         ])
 
-        expect(selectAllServices(selectorState, false)).toEqual([
+        expect(selectAllServices(selectorState.services, false)).toEqual([
             { id: 0, lineID: 0, deletedAt: null },
             { id: 2, lineID: 1, deletedAt: null },
             { id: 4, lineID: 2, deletedAt: null },
