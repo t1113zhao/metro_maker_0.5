@@ -1,39 +1,33 @@
-import { filterById, filterDeleted, filterOutById, genericSingleDelete, genericSingleRestore, nextIDForArray } from '../utils/utils'
 import {
-    ADD_AGENCY,
-    UNDO_ADD_AGENCY,
-    EDIT_AGENCY,
-    REMOVE_AGENCY,
-    RESTORE_AGENCY
-} from '../actions/actionTypes'
+    filterById,
+    filterDeleted,
+    filterOutById,
+    genericSingleDelete,
+    genericSingleRestore,
+    nextIDForArray
+} from "../utils/utils"
+import { ADD_AGENCY, UNDO_ADD_AGENCY, EDIT_AGENCY, REMOVE_AGENCY, RESTORE_AGENCY } from "../actions/actionTypes"
 const initialState = []
 
 export default function agencyReducer(state = initialState, action) {
     switch (action.type) {
         case ADD_AGENCY: {
-            return doAddAgency(state, action);
+            return doAddAgency(state, action)
         }
         case UNDO_ADD_AGENCY: {
             return filterOutById(state, action.payload.id)
         }
         case EDIT_AGENCY: {
-            return doEditAgency(state, action);
+            return doEditAgency(state, action)
         }
         case REMOVE_AGENCY: {
-            return genericSingleDelete(
-                state,
-                action.payload.id,
-                action.payload.deletedAt
-            );
+            return genericSingleDelete(state, action.payload.id, action.payload.deletedAt)
         }
         case RESTORE_AGENCY: {
-            return genericSingleRestore(
-                state,
-                action.payload.id
-            );
+            return genericSingleRestore(state, action.payload.id)
         }
         default:
-            return state;
+            return state
     }
 }
 

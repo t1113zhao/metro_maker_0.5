@@ -1,4 +1,13 @@
-import { filterById, filterDeleted, filterOutById, genericMultiDelete, genericMultiRestore, genericSingleDelete, genericSingleRestore, nextIDForArray } from '../utils/utils'
+import {
+    filterById,
+    filterDeleted,
+    filterOutById,
+    genericMultiDelete,
+    genericMultiRestore,
+    genericSingleDelete,
+    genericSingleRestore,
+    nextIDForArray
+} from "../utils/utils"
 import {
     ADD_LINE,
     UNDO_ADD_LINE,
@@ -7,49 +16,35 @@ import {
     RESTORE_LINE,
     REMOVE_AGENCY,
     RESTORE_AGENCY
-} from '../actions/actionTypes'
+} from "../actions/actionTypes"
 
-const initialLineState = [];
+const initialLineState = []
 
 export default function lineReducer(state = initialLineState, action) {
     switch (action.type) {
         case ADD_LINE: {
-            return doAddLine(state, action);
+            return doAddLine(state, action)
         }
         case UNDO_ADD_LINE: {
             return filterOutById(state, action.payload.id)
         }
         case EDIT_LINE: {
-            return doEditLine(state, action);
+            return doEditLine(state, action)
         }
         case REMOVE_AGENCY: {
-            return genericMultiDelete(
-                state,
-                action.payload.lineIDs,
-                action.payload.deletedAt
-            )
+            return genericMultiDelete(state, action.payload.lineIDs, action.payload.deletedAt)
         }
         case REMOVE_LINE: {
-            return genericSingleDelete(
-                state,
-                action.payload.id,
-                action.payload.deletedAt
-            )
+            return genericSingleDelete(state, action.payload.id, action.payload.deletedAt)
         }
         case RESTORE_AGENCY: {
-            return genericMultiRestore(
-                state,
-                action.payload.lineIDs
-            )
+            return genericMultiRestore(state, action.payload.lineIDs)
         }
         case RESTORE_LINE: {
-            return genericSingleRestore(
-                state,
-                action.payload.id
-            )
+            return genericSingleRestore(state, action.payload.id)
         }
         default:
-            return state;
+            return state
     }
 }
 
@@ -69,7 +64,7 @@ function doAddLine(state, action) {
 
 function doEditLine(state, action) {
     return state.map(item => {
-        if (item.id != action.payload.id) {
+        if (item.id !== action.payload.id) {
             return item
         }
         return {

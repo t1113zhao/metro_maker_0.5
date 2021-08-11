@@ -1,9 +1,18 @@
-import { filterById, genericMultiDelete, genericMultiRestore, genericSingleDelete, genericSingleRestore, nextIDForArray } from '../utils/utils'
 import {
-    REMOVE_SERVICE, RESTORE_SERVICE,
-    REMOVE_LINE, RESTORE_LINE,
-    REMOVE_AGENCY, RESTORE_AGENCY,
-
+    filterById,
+    genericMultiDelete,
+    genericMultiRestore,
+    genericSingleDelete,
+    genericSingleRestore,
+    nextIDForArray
+} from "../utils/utils"
+import {
+    REMOVE_SERVICE,
+    RESTORE_SERVICE,
+    REMOVE_LINE,
+    RESTORE_LINE,
+    REMOVE_AGENCY,
+    RESTORE_AGENCY,
     ADD_SERVICETRACK_TWOWAY,
     ADD_SERVICETRACK_ONEWAY,
     SWITCH_ONEWAY_DIRECTION,
@@ -14,11 +23,11 @@ import {
     UNDO_CLEAR_SERVICE_ROUTE,
     REMOVE_STOP,
     RESTORE_STOP
-} from '../actions/actionTypes'
-import _, { difference, union } from 'underscore';
+} from "../actions/actionTypes"
+import _, { difference, union } from "underscore"
 
 //an array of serviceRoute objects
-const initialState = [];
+const initialState = []
 
 /* 
     A service route object stores three things
@@ -58,36 +67,21 @@ const initialState = [];
     A block must be complete before a new block can be added on top of it
 */
 
-
 export default function serviceRouteReducer(state = initialState, action) {
     switch (action.type) {
         case REMOVE_AGENCY:
         case REMOVE_LINE: {
-            return genericMultiDelete(
-                state,
-                action.payload.serviceIDs,
-                action.payload.deletedAt
-            )
+            return genericMultiDelete(state, action.payload.serviceIDs, action.payload.deletedAt)
         }
         case REMOVE_SERVICE: {
-            return genericSingleDelete(
-                state,
-                action.payload.id,
-                action.payload.deletedAt
-            )
+            return genericSingleDelete(state, action.payload.id, action.payload.deletedAt)
         }
         case RESTORE_AGENCY:
         case RESTORE_LINE: {
-            return genericMultiRestore(
-                state,
-                action.payload.serviceIDs
-            )
+            return genericMultiRestore(state, action.payload.serviceIDs)
         }
         case RESTORE_SERVICE: {
-            return genericSingleRestore(
-                state,
-                action.payload.id
-            )
+            return genericSingleRestore(state, action.payload.id)
         }
         case ADD_SERVICETRACK_TWOWAY: {
             return doAddTwoWayServiceTrack(state, action)
@@ -96,24 +90,48 @@ export default function serviceRouteReducer(state = initialState, action) {
             return doAddOneWayServiceTrack(state, action)
         }
         case SWITCH_ONEWAY_DIRECTION: {
-            return editServiceTracks(state, action, matchingTrackIDPredicate, (targetEdges) => {
-                return targetEdges.length !== 1
-            }, doSwitchOneWayDirection)
+            return editServiceTracks(
+                state,
+                action,
+                matchingTrackIDPredicate,
+                targetEdges => {
+                    return targetEdges.length !== 1
+                },
+                doSwitchOneWayDirection
+            )
         }
         case ONEWAY_TO_TWOWAY: {
-            return editServiceTracks(state, action, matchingTrackIDPredicate, (targetEdges) => {
-                return targetEdges.length !== 1
-            }, doOneWayToTwoWay)
+            return editServiceTracks(
+                state,
+                action,
+                matchingTrackIDPredicate,
+                targetEdges => {
+                    return targetEdges.length !== 1
+                },
+                doOneWayToTwoWay
+            )
         }
         case TWOWAY_TO_ONEWAY: {
-            return editServiceTracks(state, action, matchingTrackIDPredicate, (targetEdges) => {
-                return targetEdges.length !== 2
-            }, doTwoWayToOneWay)
+            return editServiceTracks(
+                state,
+                action,
+                matchingTrackIDPredicate,
+                targetEdges => {
+                    return targetEdges.length !== 2
+                },
+                doTwoWayToOneWay
+            )
         }
         case REMOVE_SERVICE_ALONG_TRACK: {
-            return editServiceTracks(state, action, matchingTrackIDPredicate, (targetEdges) => {
-                return targetEdges.length === 0
-            }, doRemoveServiceAlongTrack)
+            return editServiceTracks(
+                state,
+                action,
+                matchingTrackIDPredicate,
+                targetEdges => {
+                    return targetEdges.length === 0
+                },
+                doRemoveServiceAlongTrack
+            )
         }
         case CLEAR_SERVICE_ROUTE: {
             return doClearServiceRoute(state, action)
@@ -128,9 +146,8 @@ export default function serviceRouteReducer(state = initialState, action) {
             return doRestoreStop(state, action)
         }
         default:
-            return state;
+            return state
     }
-
 }
 
 export function doAddServiceRoute(state, serviceID) {
@@ -152,11 +169,11 @@ function doAddTwoWayServiceTrack(state, action) {
             return serviceRoute
         }
 
-        let newStops = serviceRoute.stopsByID.slice(0);
+        let newStops = serviceRoute.stopsByID.slice(0)
 
         newStops = union(newStops, action.payload.stationIDs)
 
-        let serviceTracks = serviceRoute.serviceTracks.slice(0);
+        let serviceTracks = serviceRoute.serviceTracks.slice(0)
 
         let newBlock = [
             {
@@ -169,7 +186,7 @@ function doAddTwoWayServiceTrack(state, action) {
                 fromStationID: parseInt(action.payload.stationIDs[1]),
                 toStationID: parseInt(action.payload.stationIDs[0])
             }
-        ];
+        ]
 
         serviceTracks.splice(action.payload.index, 0, newBlock)
 
@@ -196,23 +213,24 @@ function doAddOneWayServiceTrack(state, action) {
         }
         let serviceTracks = serviceRoute.serviceTracks.slice(0)
 
-        // if inserting at the beginning, the index is -1. 
+        // if inserting at the beginning, the index is -1.
         if (serviceTracks.length === action.payload.index) {
             let newBlock = [
                 {
                     trackID: action.payload.trackID,
                     fromStationID: action.payload.fromID,
                     toStationID: action.payload.toID
-                }];
+                }
+            ]
             serviceTracks.splice(action.payload.index, 0, newBlock)
-
         } else if (action.payload.index === -1) {
             let newBlock = [
                 {
                     trackID: action.payload.trackID,
                     fromStationID: action.payload.fromID,
                     toStationID: action.payload.toID
-                }];
+                }
+            ]
             serviceTracks.splice(0, 0, newBlock)
         } else {
             let currentBlock = serviceTracks[action.payload.index].slice(0)
@@ -266,9 +284,11 @@ function matchingTrackIDPredicate(action, edge) {
 }
 
 function doSwitchOneWayDirection(serviceRoute, action, serviceTracks, targetBlock, targetEdges) {
-    let newBlock = targetBlock.filter(edge => {
-        return edge.trackID !== action.payload.trackID
-    }).slice(0)
+    let newBlock = targetBlock
+        .filter(edge => {
+            return edge.trackID !== action.payload.trackID
+        })
+        .slice(0)
 
     let targetEdge = targetEdges[0]
 
@@ -419,11 +439,9 @@ function doRestoreStop(state, action) {
             stopsByID: newStopsByID
         }
     })
-
 }
 
 export function serviceRoutePassesThroughStation(serviceTracks, stationID) {
-
     for (var i = 0; i < serviceTracks.length; i++) {
         for (var j = 0; j < serviceTracks[i].length; j++) {
             let edge = serviceTracks[i][j]
@@ -437,7 +455,6 @@ export function serviceRoutePassesThroughStation(serviceTracks, stationID) {
 
 function validActionsForServiceRoute(serviceRoute, stations) {
     //so when the serviceRoute is empty, this is not called.
-
     // stationIDs where a new block can be added, along with the associated trackBlockIndex
     // stationIds where an incomplete block can be added to, needs associated trackBlockIndex
     // trackBlockIndices which are not complete and can be edited
@@ -455,7 +472,7 @@ export function isTrackBlockAtIndexComplete(serviceRoute, serviceID, index) {
 }
 
 export function isTrackBlockComplete(targetBlock) {
-    if (!targetBlock || targetBlock.length == 0) {
+    if (!targetBlock || targetBlock.length === 0) {
         return false
     }
 
@@ -495,13 +512,13 @@ function getStationsInOrder(serviceRoute) {
 
 export function stationCanBeDeleted(state, stationID) {
     return checkIfTrackOrStationCanBeDeleted(state, stationID, (edge, stationID) => {
-        return edge.fromStationID == stationID || edge.toStationID == stationID
+        return edge.fromStationID === stationID || edge.toStationID === stationID
     })
 }
 
 export function trackCanBeDeleted(state, trackID) {
     return checkIfTrackOrStationCanBeDeleted(state, trackID, (edge, trackID) => {
-        return edge.trackID == trackID
+        return edge.trackID === trackID
     })
 }
 

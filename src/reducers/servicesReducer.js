@@ -1,5 +1,13 @@
-import { filterById, filterDeleted, genericMultiDelete, genericMultiRestore, genericSingleDelete, genericSingleRestore, nextIDForArray } from '../utils/utils'
-import { lineIDsGivenAgencyId } from './linesReducer.js'
+import {
+    filterById,
+    filterDeleted,
+    genericMultiDelete,
+    genericMultiRestore,
+    genericSingleDelete,
+    genericSingleRestore,
+    nextIDForArray
+} from "../utils/utils"
+import { lineIDsGivenAgencyId } from "./linesReducer.js"
 import {
     ADD_SERVICE,
     EDIT_SERVICE,
@@ -9,46 +17,32 @@ import {
     RESTORE_LINE,
     REMOVE_AGENCY,
     RESTORE_AGENCY
-} from '../actions/actionTypes'
+} from "../actions/actionTypes"
 
 const initialServicesState = []
 
 export default function serviceReducer(state = initialServicesState, action) {
     switch (action.type) {
         case EDIT_SERVICE: {
-            return doEditService(state, action);
+            return doEditService(state, action)
         }
         case REMOVE_AGENCY:
         case REMOVE_LINE: {
-            return genericMultiDelete(
-                state,
-                action.payload.serviceIDs,
-                action.payload.deletedAt
-            )
+            return genericMultiDelete(state, action.payload.serviceIDs, action.payload.deletedAt)
         }
         case REMOVE_SERVICE: {
-            return genericSingleDelete(
-                state,
-                action.payload.id,
-                action.payload.deletedAt
-            )
+            return genericSingleDelete(state, action.payload.id, action.payload.deletedAt)
         }
         case RESTORE_AGENCY:
         case RESTORE_LINE: {
-            return genericMultiRestore(
-                state,
-                action.payload.serviceIDs
-            )
+            return genericMultiRestore(state, action.payload.serviceIDs)
         }
 
         case RESTORE_SERVICE: {
-            return genericSingleRestore(
-                state,
-                action.payload.id
-            )
+            return genericSingleRestore(state, action.payload.id)
         }
         default:
-            return state;
+            return state
     }
 }
 
@@ -91,7 +85,7 @@ export function selectServiceGivenID(state, id, includeDeleted) {
 
 export function selectServicesGivenLineID(state, lineID, includeDeleted) {
     let output = state.services.filter(service => {
-        return service.lineID == lineID
+        return service.lineID === lineID
     })
     return filterDeleted(output, includeDeleted)
 }

@@ -1,5 +1,13 @@
-import _ from 'underscore';
-import { filterDeleted, filterOutById, genericMultiDelete, genericMultiRestore, genericSingleDelete, genericSingleRestore, nextIDForArray } from '../utils/utils'
+import _ from "underscore"
+import {
+    filterDeleted,
+    filterOutById,
+    genericMultiDelete,
+    genericMultiRestore,
+    genericSingleDelete,
+    genericSingleRestore,
+    nextIDForArray
+} from "../utils/utils"
 
 import {
     ADD_TRANSFER,
@@ -8,46 +16,33 @@ import {
     REMOVE_TRANSFER,
     RESTORE_TRANSFER,
     REMOVE_STATION,
-    RESTORE_STATION,
-} from '../actions/actionTypes'
+    RESTORE_STATION
+} from "../actions/actionTypes"
 
 const initialState = []
 
 export default function transferReducer(state = initialState, action) {
     switch (action.type) {
         case ADD_TRANSFER: {
-            return doAddTransfer(state, action);
+            return doAddTransfer(state, action)
         }
         case UNDO_ADD_TRANSFER: {
-            return filterOutById(state, action.payload.id);
+            return filterOutById(state, action.payload.id)
         }
         case EDIT_TRANSFER: {
-            return doEditTransfer(state, action);
+            return doEditTransfer(state, action)
         }
         case REMOVE_STATION: {
-            return genericMultiDelete(
-                state,
-                action.payload.transferIDs,
-                action.payload.deletedAt
-            )
+            return genericMultiDelete(state, action.payload.transferIDs, action.payload.deletedAt)
         }
         case REMOVE_TRANSFER: {
-            return genericSingleDelete(
-                state,
-                action.payload.id,
-                action.payload.deletedAt)
+            return genericSingleDelete(state, action.payload.id, action.payload.deletedAt)
         }
         case RESTORE_STATION: {
-            return genericMultiRestore(
-                state,
-                action.payload.transferIDs,
-            )
+            return genericMultiRestore(state, action.payload.transferIDs)
         }
         case RESTORE_TRANSFER: {
-            return genericSingleRestore(
-                state,
-                action.payload.id
-            )
+            return genericSingleRestore(state, action.payload.id)
         }
         default: {
             return state
@@ -69,12 +64,12 @@ function doAddTransfer(state, action) {
 
 function doEditTransfer(state, action) {
     return state.map(item => {
-        if (item.id != action.payload.id) {
+        if (item.id !== action.payload.id) {
             return item
         }
         return {
             ...item,
-            type: action.payload.type,
+            type: action.payload.type
         }
     })
 }
@@ -83,35 +78,35 @@ export function selectAllConnectedStations(state, stationID) {
     //for each transfer, create hashmap of station to station
     //then do a BFS search
 
-    let map = new Map();
+    let map = new Map()
     state.foreach(element => {
-        let A = element.stationIDs[0];
-        let B = element.stationIDs[1];
+        let A = element.stationIDs[0]
+        let B = element.stationIDs[1]
 
         if (!map.has(A)) {
-            map.set(A, [B]);
+            map.set(A, [B])
         } else if (!map.get(A).includes(B)) {
-            map.get(A).push(B);
+            map.get(A).push(B)
         }
 
         if (!map.has(B)) {
-            map.set(B, [A]);
+            map.set(B, [A])
         } else if (!map.get(B).includes(A)) {
-            map.get(B).push(A);
+            map.get(B).push(A)
         }
     })
 
-    let connectedIDs = [];
-    let searchQueue = [];
+    let connectedIDs = []
+    let searchQueue = []
 
-    searchQueue.push(stationID);
+    searchQueue.push(stationID)
     while (searchQueue.length() > 0) {
-        let cur = searchQueue.shift();
+        let cur = searchQueue.shift()
 
-        let connected = map.get(cur);
+        let connected = map.get(cur)
         connected.foreach(element => {
-            searchQueue.push(element);
-            connectedIDs.push(element);
+            searchQueue.push(element)
+            connectedIDs.push(element)
         })
     }
 
@@ -120,7 +115,7 @@ export function selectAllConnectedStations(state, stationID) {
 
 export function selectAllTransfersGivenStationID(transfers, stationID, includeDeleted) {
     let output = transfers.filter(transfer => {
-        return (transfer.stationIDs[0] == stationID || transfer.stationIDs[1] == stationID)
+        return transfer.stationIDs[0] === stationID || transfer.stationIDs[1] === stationID
     })
     return filterDeleted(output, includeDeleted)
 }

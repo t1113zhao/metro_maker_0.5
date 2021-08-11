@@ -1,4 +1,4 @@
-import { getById } from '../utils/utils'
+import { getById } from "../utils/utils"
 import {
     ADD_SERVICETRACK_TWOWAY,
     ADD_SERVICETRACK_ONEWAY,
@@ -10,7 +10,7 @@ import {
     UNDO_CLEAR_SERVICE_ROUTE,
     REMOVE_STOP,
     RESTORE_STOP
-} from './actionTypes'
+} from "./actionTypes"
 
 export function addTwoWayService(trackID, serviceID, stationA_ID, stationB_ID, index) {
     return {
@@ -85,7 +85,7 @@ export function clearServiceRoute(serviceID) {
     return {
         type: CLEAR_SERVICE_ROUTE,
         payload: {
-            serviceID: parseInt(serviceID),
+            serviceID: parseInt(serviceID)
         }
     }
 }
@@ -146,13 +146,25 @@ export function getInverseServiceRouteActions(state, action) {
                 return edge.trackID === action.payload.trackID
             })
 
-            if (targetEdges.length == 1) {
+            if (targetEdges.length === 1) {
                 let targetEdge = targetEdges[0]
-                return addOneWayService(action.payload.trackID, action.payload.serviceID, targetEdge.fromStationID, targetEdge.toStationID, action.payload.index)
+                return addOneWayService(
+                    action.payload.trackID,
+                    action.payload.serviceID,
+                    targetEdge.fromStationID,
+                    targetEdge.toStationID,
+                    action.payload.index
+                )
             } else {
                 let targetEdge = targetEdges[0]
 
-                return addTwoWayService(action.payload.trackID, action.payload.serviceID, targetEdge.fromStationID, targetEdge.toStationID, action.payload.index)
+                return addTwoWayService(
+                    action.payload.trackID,
+                    action.payload.serviceID,
+                    targetEdge.fromStationID,
+                    targetEdge.toStationID,
+                    action.payload.index
+                )
             }
         }
         case CLEAR_SERVICE_ROUTE: {

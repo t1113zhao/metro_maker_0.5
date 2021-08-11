@@ -1,11 +1,11 @@
-/** 
+/**
  * A class to contain random utility functions
-*/
+ */
 
 export function nextIDForArray(array) {
     const maxID = array.reduce((maxID, element) => Math.max(element.id, maxID), -1)
     return maxID + 1
-};
+}
 
 export function genericSingleDelete(array, id, deletedAt) {
     return array.map(item => {
@@ -14,7 +14,7 @@ export function genericSingleDelete(array, id, deletedAt) {
         }
         return {
             ...item,
-            deletedAt: deletedAt
+            deletedAt: deletedAt,
         }
     })
 }
@@ -26,7 +26,7 @@ export function genericSingleRestore(array, id) {
         }
         return {
             ...item,
-            deletedAt: null
+            deletedAt: null,
         }
     })
 }
@@ -34,11 +34,11 @@ export function genericSingleRestore(array, id) {
 export function genericMultiDelete(array, ids, deletedAt) {
     var removeSet = new Set(ids)
 
-    return array.map((item) => {
+    return array.map(item => {
         if (removeSet.has(item.id)) {
             return {
                 ...item,
-                deletedAt: deletedAt
+                deletedAt: deletedAt,
             }
         } else {
             return item
@@ -49,11 +49,11 @@ export function genericMultiDelete(array, ids, deletedAt) {
 export function genericMultiRestore(array, ids) {
     var restoreSet = new Set(ids)
 
-    return array.map((item) => {
+    return array.map(item => {
         if (restoreSet.has(item.id)) {
             return {
                 ...item,
-                deletedAt: null
+                deletedAt: null,
             }
         } else {
             return item
@@ -88,10 +88,10 @@ export function getById(array, id) {
     let searchID = parseInt(id)
     let filtered = filterById(array, searchID)
 
-    if(filtered.length == 1) {
+    if (filtered.length === 1) {
         return filtered[0]
     } else {
-        return {error: "No item with such ID"}
+        return { error: "No item with such ID" }
     }
 }
 
@@ -101,21 +101,21 @@ export function filterOutById(array, id) {
     })
 }
 
-export function idCompareDsc(a,b) {
-    if(a.id < b.id) {
-        return 1;
+export function idCompareDsc(a, b) {
+    if (a.id < b.id) {
+        return 1
     }
-    if(a.id> b.id) {
+    if (a.id > b.id) {
         return -1
     }
     return 0
 }
 
-export function idCompareAsc(a,b) {
-    if(a.id < b.id) {
-        return -1;
+export function idCompareAsc(a, b) {
+    if (a.id < b.id) {
+        return -1
     }
-    if(a.id> b.id) {
+    if (a.id > b.id) {
         return 1
     }
     return 0
@@ -129,11 +129,10 @@ export function filterOutByIds(array, ids) {
     })
 }
 
-
 export function haversineMidpoint(node_A, node_B) {
     const R = 6371e3
     function toRad(x) {
-        return x * Math.PI / 180
+        return (x * Math.PI) / 180
     }
 
     //http://jsfiddle.net/c1s6xgab/
@@ -143,23 +142,26 @@ export function haversineMidpoint(node_A, node_B) {
     let lat2 = toRad(node_B.latitude)
     let lng2 = toRad(node_B.longitude)
 
-    let dLng = (lng2 - lng1)
+    let dLng = lng2 - lng1
 
-    var bX = Math.cos(lat2) * Math.cos(dLng);
-    var bY = Math.cos(lat2) * Math.sin(dLng);
+    var bX = Math.cos(lat2) * Math.cos(dLng)
+    var bY = Math.cos(lat2) * Math.sin(dLng)
 
-    var lat3 = Math.atan2(Math.sin(lat1) + Math.sin(lat2), Math.sqrt((Math.cos(lat1) + bX) * (Math.cos(lat1) + bX) + bY * bY));
-    var lng3 = lng1 + Math.atan2(bY, Math.cos(lat1) + bX);
+    var lat3 = Math.atan2(
+        Math.sin(lat1) + Math.sin(lat2),
+        Math.sqrt((Math.cos(lat1) + bX) * (Math.cos(lat1) + bX) + bY * bY)
+    )
+    var lng3 = lng1 + Math.atan2(bY, Math.cos(lat1) + bX)
 
     //Convert back into degrees
-    lat3 = lat3 * 180 / Math.PI
-    lng3 = lng3 * 180 / Math.PI
+    lat3 = (lat3 * 180) / Math.PI
+    lng3 = (lng3 * 180) / Math.PI
 
-    lng3 = ( lng3 + 540 ) % 360 - 180
+    lng3 = ((lng3 + 540) % 360) - 180
 
-    // 6 digits of precision is precision at worst of 11cm at equator 
+    // 6 digits of precision is precision at worst of 11cm at equator
     return {
-        latitude: parseFloat(lat3.toFixed(6)) ,
-        longitude: parseFloat(lng3.toFixed(6)) 
+        latitude: parseFloat(lat3.toFixed(6)),
+        longitude: parseFloat(lng3.toFixed(6)),
     }
 }

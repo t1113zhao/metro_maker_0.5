@@ -1,11 +1,18 @@
-import { genericSingleDelete, genericSingleRestore, nextIDForArray, filterDeleted, filterByIds, filterOutById } from '../utils/utils'
+import {
+    genericSingleDelete,
+    genericSingleRestore,
+    nextIDForArray,
+    filterDeleted,
+    filterByIds,
+    filterOutById
+} from '../utils/utils'
 import {
     ADD_STATION,
     UNDO_ADD_STATION,
     EDIT_STATION,
     MOVE_STATION,
     REMOVE_STATION,
-    RESTORE_STATION,
+    RESTORE_STATION
 } from '../actions/actionTypes'
 const initialState = []
 
@@ -25,17 +32,10 @@ export default function stationReducer(state = initialState, action) {
         }
         // This can only happen if station doesn't have services running to it
         case REMOVE_STATION: {
-            return genericSingleDelete(
-                state,
-                action.payload.id,
-                action.payload.deletedAt
-            )
+            return genericSingleDelete(state, action.payload.id, action.payload.deletedAt)
         }
         case RESTORE_STATION: {
-            return genericSingleRestore(
-                state,
-                action.payload.id
-            )
+            return genericSingleRestore(state, action.payload.id)
         }
         default: {
             return state
@@ -63,7 +63,7 @@ function doEditStation(state, action) {
             return item
         }
         return {
-            ...item,  
+            ...item,
             name: action.payload.name,
             description: action.payload.description
         }
@@ -78,7 +78,7 @@ function doMoveStation(state, action) {
         return {
             ...item,
             latitude: action.payload.latitude,
-            longitude: action.payload.longitude,
+            longitude: action.payload.longitude
         }
     })
 }
