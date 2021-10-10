@@ -3,11 +3,13 @@ import {
     filterDeleted,
     filterOutById,
     genericMultiDelete,
+    genericMultiDeletePredicate,
     genericMultiRestore,
+    genericMultiRestorePredicate,
     genericSingleDelete,
     genericSingleRestore,
     nextIDForArray
-} from "../utils/utils"
+} from '../utils/utils'
 import {
     ADD_LINE,
     UNDO_ADD_LINE,
@@ -16,7 +18,7 @@ import {
     RESTORE_LINE,
     REMOVE_AGENCY,
     RESTORE_AGENCY
-} from "../actions/actionTypes"
+} from '../actions/actionTypes'
 
 const initialLineState = []
 
@@ -32,13 +34,21 @@ export default function lineReducer(state = initialLineState, action) {
             return doEditLine(state, action)
         }
         case REMOVE_AGENCY: {
-            return genericMultiDelete(state, action.payload.lineIDs, action.payload.deletedAt)
+            return genericMultiDeletePredicate(
+                state,
+                item => {
+                    return item.agencyID === action.payload.id
+                },
+                action.payload.deletedAt
+            )
         }
         case REMOVE_LINE: {
             return genericSingleDelete(state, action.payload.id, action.payload.deletedAt)
         }
         case RESTORE_AGENCY: {
-            return genericMultiRestore(state, action.payload.lineIDs)
+            return genericMultiRestorePredicate(state, item => {
+                return item.agencyID === action.payload.id
+            })
         }
         case RESTORE_LINE: {
             return genericSingleRestore(state, action.payload.id)
