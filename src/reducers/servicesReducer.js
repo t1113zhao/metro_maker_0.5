@@ -1,13 +1,13 @@
 import {
     filterById,
     filterDeleted,
-    genericMultiDelete,
-    genericMultiRestore,
+    genericMultiDeletePredicate,
+    genericMultiRestorePredicate,
     genericSingleDelete,
     genericSingleRestore,
     nextIDForArray
-} from "../utils/utils"
-import { lineIDsGivenAgencyId } from "./linesReducer.js"
+} from '../utils/utils'
+import { lineIDsGivenAgencyId } from './linesReducer.js'
 import {
     ADD_SERVICE,
     EDIT_SERVICE,
@@ -17,7 +17,7 @@ import {
     RESTORE_LINE,
     REMOVE_AGENCY,
     RESTORE_AGENCY
-} from "../actions/actionTypes"
+} from '../actions/actionTypes'
 
 const initialServicesState = []
 
@@ -26,18 +26,37 @@ export default function serviceReducer(state = initialServicesState, action) {
         case EDIT_SERVICE: {
             return doEditService(state, action)
         }
-        case REMOVE_AGENCY:
+        case REMOVE_AGENCY: {
+            return genericMultiDeletePredicate(
+                state,
+                item => {
+                    return item.agencyID === action.payload.id
+                },
+                action.payload.deletedAt
+            )
+        }
         case REMOVE_LINE: {
-            return genericMultiDelete(state, action.payload.serviceIDs, action.payload.deletedAt)
+            return genericMultiDeletePredicate(
+                state,
+                item => {
+                    return item.lineID === action.payload.id
+                },
+                action.payload.deletedAt
+            )
         }
         case REMOVE_SERVICE: {
             return genericSingleDelete(state, action.payload.id, action.payload.deletedAt)
         }
-        case RESTORE_AGENCY:
-        case RESTORE_LINE: {
-            return genericMultiRestore(state, action.payload.serviceIDs)
+        case RESTORE_AGENCY: {
+            return genericMultiRestorePredicate(state, item => {
+                return item.agencyID === action.payload.id
+            })
         }
-
+        case RESTORE_LINE: {
+            return genericMultiRestorePredicate(state, item => {
+                return item.lineID === action.payload.id
+            })
+        }
         case RESTORE_SERVICE: {
             return genericSingleRestore(state, action.payload.id)
         }
