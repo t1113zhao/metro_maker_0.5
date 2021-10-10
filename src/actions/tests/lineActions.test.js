@@ -54,44 +54,24 @@ describe('Line Action Creator', () => {
 
     it('Remove Line Action Creator', () => {
         var MockDate = require('mockdate')
-        MockDate.set(1434319925275);
+        MockDate.set(1434319925275)
 
-        let store = mockStore({
-            agencies: [
-                { id: 0 }, { id: 1 }, { id: 2 }, { id: 3 }],
-            lines: [
-                { id: 0, agencyID: 0, deletedAt: null },
-                { id: 1, agencyID: 0, deletedAt: null },
-                { id: 2, agencyID: 0, deletedAt: null },
-            ],
-            services: [
-                { id: 0, lineID: 0, deletedAt: null },
-                { id: 1, lineID: 0, deletedAt: null },
-                { id: 2, lineID: 1, deletedAt: null },
-                { id: 3, lineID: 1, deletedAt: '2021-05-23T18:47:02.436Z' },
-                { id: 4, lineID: 2, deletedAt: '2021-05-23T18:47:02.436Z' },
-                { id: 5, lineID: 2, deletedAt: '2021-05-23T18:47:02.436Z' }
-            ]
-        })
-
-        expect(store.dispatch(actions.removeLine(0))).toEqual({
+        expect(actions.removeLine(0)).toEqual({
             type: type.REMOVE_LINE,
             payload: {
                 id: 0,
-                deletedAt: new Date().toISOString(),
-                serviceIDs: []
+                deletedAt: new Date().toISOString()
             }
         })
     })
 
-    it('Get Correct Service IDs for Remove/Restore', () => {
+    it('Get Correct Service IDs', () => {
         let store = mockStore({
-            agencies: [
-                { id: 0 }, { id: 1 }, { id: 2 }, { id: 3 }],
+            agencies: [{ id: 0 }, { id: 1 }, { id: 2 }, { id: 3 }],
             lines: [
                 { id: 0, agencyID: 0, deletedAt: null },
                 { id: 1, agencyID: 0, deletedAt: null },
-                { id: 2, agencyID: 0, deletedAt: null },
+                { id: 2, agencyID: 0, deletedAt: null }
             ],
             services: [
                 { id: 0, lineID: 0, deletedAt: null },
@@ -120,144 +100,129 @@ describe('Line Action Creator', () => {
 
     it('Restore Line Action Creator', () => {
         var MockDate = require('mockdate')
-        MockDate.set(1434319925275);
+        MockDate.set(1434319925275)
 
-        let store = mockStore({
-            agencies: [
-                { id: 0 }, { id: 1 }, { id: 2 }, { id: 3 }],
-            lines: [
-                { id: 0, agencyID: 0, deletedAt: null },
-                { id: 1, agencyID: 0, deletedAt: null },
-                { id: 2, agencyID: 0, deletedAt: null },
-            ],
-            services: [
-                { id: 0, lineID: 0, deletedAt: null },
-                { id: 1, lineID: 0, deletedAt: null },
-                { id: 2, lineID: 1, deletedAt: null },
-                { id: 3, lineID: 1, deletedAt: '2021-05-23T18:47:02.436Z' },
-                { id: 4, lineID: 2, deletedAt: '2021-05-23T18:47:02.436Z' },
-                { id: 5, lineID: 2, deletedAt: '2021-05-23T18:47:02.436Z' }
-            ]
-        })
-
-        expect(store.dispatch(actions.restoreLine(0))).toEqual({
+        expect(actions.restoreLine(0)).toEqual({
             type: type.RESTORE_LINE,
             payload: {
-                id: 0,
-                serviceIDs: []
+                id: 0
             }
         })
     })
 
     it('should get right inverse actions', () => {
         let state = [
-            { id: 0, agencyID: 0, name: "Yonge University", color: "Yellow", linetype: linetypes.HEAVY_METRO, deletedAt: null },
-            { id: 1, agencyID: 0, name: "Bloor Danforth", color: "Green", linetype: linetypes.HEAVY_METRO, deletedAt: null },
-            { id: 2, agencyID: 0, name: "Ontario", color: "Blue", linetype: linetypes.LIGHT_METRO, deletedAt: null },
+            {
+                id: 0,
+                agencyID: 0,
+                name: 'Yonge University',
+                color: 'Yellow',
+                linetype: linetypes.HEAVY_METRO,
+                deletedAt: null
+            },
+            {
+                id: 1,
+                agencyID: 0,
+                name: 'Bloor Danforth',
+                color: 'Green',
+                linetype: linetypes.HEAVY_METRO,
+                deletedAt: null
+            },
+            { id: 2, agencyID: 0, name: 'Ontario', color: 'Blue', linetype: linetypes.LIGHT_METRO, deletedAt: null }
         ]
-        expect(actions.getInverseLineActions(state, {
-            type: type.ADD_AGENCY,
-        })).toEqual({
-            type: "ERROR"
+        expect(
+            actions.getInverseLineActions(state, {
+                type: type.ADD_AGENCY
+            })
+        ).toEqual({
+            type: 'ERROR'
         })
 
-        expect(getInverseLineActions(state, {
-            type: type.ADD_LINE,
-            payload: {
-                name: "LakeShore East",
-                agencyID: 0,
-                color: "Maroon",
-                linetype: linetypes.COMMUTER_REGIONAL_RAIL
-            }
-        })).toEqual({
+        expect(
+            getInverseLineActions(state, {
+                type: type.ADD_LINE,
+                payload: {
+                    name: 'LakeShore East',
+                    agencyID: 0,
+                    color: 'Maroon',
+                    linetype: linetypes.COMMUTER_REGIONAL_RAIL
+                }
+            })
+        ).toEqual({
             type: type.UNDO_ADD_LINE,
             payload: {
                 id: 3
             }
         })
 
-        expect(getInverseLineActions(state, {
-            type: type.UNDO_ADD_LINE,
-            payload: {
-                id: 2
-            }
-        })).toEqual({
+        expect(
+            getInverseLineActions(state, {
+                type: type.UNDO_ADD_LINE,
+                payload: {
+                    id: 2
+                }
+            })
+        ).toEqual({
             type: type.ADD_LINE,
             payload: {
                 agencyID: 0,
-                name: "Ontario",
-                color: "Blue",
+                name: 'Ontario',
+                color: 'Blue',
                 linetype: linetypes.LIGHT_METRO
             }
         })
 
-        expect(getInverseLineActions(state, {
+        expect(
+            getInverseLineActions(state, {
+                type: type.EDIT_LINE,
+                payload: {
+                    id: 2,
+                    name: 'Rontario Line',
+                    color: 'Red',
+                    linetype: linetypes.MAGLEV
+                }
+            })
+        ).toEqual({
             type: type.EDIT_LINE,
             payload: {
                 id: 2,
-                name: "Rontario Line",
-                color: "Red",
-                linetype: linetypes.MAGLEV,
-            }
-        })).toEqual({
-            type: type.EDIT_LINE,
-            payload: {
-                id: 2,
-                name: "Ontario",
-                color: "Blue",
-                linetype: linetypes.LIGHT_METRO,
+                name: 'Ontario',
+                color: 'Blue',
+                linetype: linetypes.LIGHT_METRO
             }
         })
 
         var MockDate = require('mockdate')
-        MockDate.set(1434319925275);
+        MockDate.set(1434319925275)
         let date = new Date().toISOString()
 
-        let store = mockStore({
-            agencies: [
-                { id: 0 }, { id: 1 }, { id: 2 }, { id: 3 }],
-            lines: [
-                { id: 0, agencyID: 0, name: "Yonge University", color: "Yellow", linetype: linetypes.HEAVY_METRO, deletedAt: null },
-                { id: 1, agencyID: 0, name: "Bloor Danforth", color: "Green", linetype: linetypes.HEAVY_METRO, deletedAt: null },
-                { id: 2, agencyID: 0, name: "Ontario", color: "Blue", linetype: linetypes.LIGHT_METRO, deletedAt: null },
-            ],
-            services: [
-                { id: 0, lineID: 0, deletedAt: null },
-                { id: 1, lineID: 0, deletedAt: null },
-                { id: 2, lineID: 1, deletedAt: null },
-                { id: 3, lineID: 1, deletedAt: '2021-05-23T18:47:02.436Z' },
-                { id: 4, lineID: 2, deletedAt: '2021-05-23T18:47:02.436Z' },
-                { id: 5, lineID: 2, deletedAt: '2021-05-23T18:47:02.436Z' }
-            ]
-        })
-
-        expect(store.dispatch(getInverseLineActions(store.getState(), {
-            type: type.REMOVE_LINE,
-            payload: {
-                id: 2,
-                deletedAt: date,
-                serviceIDs: []
-            }
-        }))).toEqual({
+        expect(
+            getInverseLineActions(state, {
+                type: type.REMOVE_LINE,
+                payload: {
+                    id: 2,
+                    deletedAt: date
+                }
+            })
+        ).toEqual({
             type: type.RESTORE_LINE,
             payload: {
-                id: 2,
-                serviceIDs: []
+                id: 2
             }
         })
 
-        expect(store.dispatch(getInverseLineActions(store.getState(), {
-            type: type.RESTORE_LINE,
-            payload: {
-                id: 2,
-                serviceIDs: []
-            }
-        }))).toEqual({
+        expect(
+            getInverseLineActions(state, {
+                type: type.RESTORE_LINE,
+                payload: {
+                    id: 2
+                }
+            })
+        ).toEqual({
             type: type.REMOVE_LINE,
             payload: {
                 id: 2,
-                deletedAt: date,
-                serviceIDs: []
+                deletedAt: date
             }
         })
     })

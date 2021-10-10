@@ -30,7 +30,6 @@ describe('agency action creator', () => {
     })
 
     it('Edit Agency Action Creator', () => {
-
         let id = '0'
         let name = 'MetroLinx'
         let colorCode = '#4a7729'
@@ -46,95 +45,32 @@ describe('agency action creator', () => {
 
     it('Remove Agency Action Creator', () => {
         var MockDate = require('mockdate')
-        MockDate.set(1434319925275);
+        MockDate.set(1434319925275)
 
-        let store = mockStore({
-            agencies: [
-                { id: 0 }, { id: 1 }, { id: 2 }, { id: 3 }],
-            lines: [
-                { id: 0, agencyID: 0, deletedAt: null },
-                { id: 1, agencyID: 0, deletedAt: null },
-                { id: 2, agencyID: 0, deletedAt: null },
-                { id: 3, agencyID: 1, deletedAt: null },
-                { id: 4, agencyID: 1, deletedAt: null },
-                { id: 5, agencyID: 1, deletedAt: '2021-05-23T18:47:02.436Z' },
-                { id: 6, agencyID: 2, deletedAt: '2021-05-23T18:47:02.436Z' },
-                { id: 7, agencyID: 2, deletedAt: '2021-05-23T18:47:02.436Z' },
-                { id: 8, agencyID: 2, deletedAt: '2021-05-23T18:47:02.436Z' },
-            ],
-            services: [
-                { id: 0, lineID: 0, deletedAt: null },
-                { id: 1, lineID: 1, deletedAt: null },
-                { id: 2, lineID: 2, deletedAt: null },
-                { id: 3, lineID: 2, deletedAt: null },
-                { id: 4, lineID: 3, deletedAt: null },
-                { id: 5, lineID: 4, deletedAt: null },
-                { id: 6, lineID: 4, deletedAt: null },
-                { id: 7, lineID: 5, deletedAt: '2021-05-23T18:47:02.436Z' },
-                { id: 8, lineID: 6, deletedAt: '2021-05-23T18:47:02.436Z' },
-                { id: 9, lineID: 7, deletedAt: '2021-05-23T18:47:02.436Z' },
-                { id: 10, lineID: 8, deletedAt: '2021-05-23T18:47:02.436Z' }
-            ]
-        })
-
-        expect(store.dispatch(actions.removeAgency(0))).toEqual({
+        expect(actions.removeAgency(0)).toEqual({
             type: type.REMOVE_AGENCY,
             payload: {
                 id: 0,
-                deletedAt: new Date().toISOString(),
-                lineIDs: [], // can't figure out why the selector isn't working within tests
-                serviceIDs: []
+                deletedAt: new Date().toISOString()
             }
         })
     })
 
     it('Restore Agency Action Creator', () => {
         var MockDate = require('mockdate')
-        MockDate.set(1434319925275);
+        MockDate.set(1434319925275)
 
-        let store = mockStore({
-            agencies: [
-                { id: 0 }, { id: 1 }, { id: 2 }, { id: 3 }],
-            lines: [
-                { id: 0, agencyID: 0, deletedAt: null },
-                { id: 1, agencyID: 0, deletedAt: null },
-                { id: 2, agencyID: 0, deletedAt: null },
-                { id: 3, agencyID: 1, deletedAt: null },
-                { id: 4, agencyID: 1, deletedAt: null },
-                { id: 5, agencyID: 1, deletedAt: '2021-05-23T18:47:02.436Z' },
-                { id: 6, agencyID: 2, deletedAt: '2021-05-23T18:47:02.436Z' },
-                { id: 7, agencyID: 2, deletedAt: '2021-05-23T18:47:02.436Z' },
-                { id: 8, agencyID: 2, deletedAt: '2021-05-23T18:47:02.436Z' },
-            ],
-            services: [
-                { id: 0, lineID: 0, deletedAt: null },
-                { id: 1, lineID: 1, deletedAt: null },
-                { id: 2, lineID: 2, deletedAt: null },
-                { id: 3, lineID: 2, deletedAt: null },
-                { id: 4, lineID: 3, deletedAt: null },
-                { id: 5, lineID: 4, deletedAt: null },
-                { id: 6, lineID: 4, deletedAt: null },
-                { id: 7, lineID: 5, deletedAt: '2021-05-23T18:47:02.436Z' },
-                { id: 8, lineID: 6, deletedAt: '2021-05-23T18:47:02.436Z' },
-                { id: 9, lineID: 7, deletedAt: '2021-05-23T18:47:02.436Z' },
-                { id: 10, lineID: 8, deletedAt: '2021-05-23T18:47:02.436Z' }
-            ]
-        })
-        expect(store.dispatch(actions.restoreAgency(0))).toEqual({
+        expect(actions.restoreAgency(0)).toEqual({
             type: type.RESTORE_AGENCY,
             payload: {
-                id: 0,
-                lineIDs: [], // can't figure out why the selector isn't working within tests
-                serviceIDs: []
+                id: 0
             }
         })
-
     })
 
-    it('Get Correct Line IDs for Remove/Restore', () => {
+    it('Get Correct Line IDs', () => {
         let store = mockStore({
-            agencies: [
-                { id: 0 }, { id: 1 }, { id: 2 }, { id: 3 }],
+            agencies: [{ id: 0 }, { id: 1 }, { id: 2 }, { id: 3 }],
             lines: [
                 { id: 0, agencyID: 0, deletedAt: null },
                 { id: 1, agencyID: 0, deletedAt: null },
@@ -144,7 +80,7 @@ describe('agency action creator', () => {
                 { id: 5, agencyID: 1, deletedAt: '2021-05-23T18:47:02.436Z' },
                 { id: 6, agencyID: 2, deletedAt: '2021-05-23T18:47:02.436Z' },
                 { id: 7, agencyID: 2, deletedAt: '2021-05-23T18:47:02.436Z' },
-                { id: 8, agencyID: 2, deletedAt: '2021-05-23T18:47:02.436Z' },
+                { id: 8, agencyID: 2, deletedAt: '2021-05-23T18:47:02.436Z' }
             ],
             services: [
                 { id: 0, lineID: 0, deletedAt: null },
@@ -170,13 +106,11 @@ describe('agency action creator', () => {
         expect(lineIDsGivenAgencyId(store.getState(), parseInt(2), false)).toEqual([])
 
         expect(lineIDsGivenAgencyId(store.getState(), parseInt(3), false)).toEqual([])
-
     })
 
     it('Get Correct Service IDs for Remove/Replace', () => {
         let store = mockStore({
-            agencies: [
-                { id: 0 }, { id: 1 }, { id: 2 }, { id: 3 }],
+            agencies: [{ id: 0 }, { id: 1 }, { id: 2 }, { id: 3 }],
             lines: [
                 { id: 0, agencyID: 0, deletedAt: null },
                 { id: 1, agencyID: 0, deletedAt: null },
@@ -186,7 +120,7 @@ describe('agency action creator', () => {
                 { id: 5, agencyID: 1, deletedAt: '2021-05-23T18:47:02.436Z' },
                 { id: 6, agencyID: 2, deletedAt: '2021-05-23T18:47:02.436Z' },
                 { id: 7, agencyID: 2, deletedAt: '2021-05-23T18:47:02.436Z' },
-                { id: 8, agencyID: 2, deletedAt: '2021-05-23T18:47:02.436Z' },
+                { id: 8, agencyID: 2, deletedAt: '2021-05-23T18:47:02.436Z' }
             ],
             services: [
                 { id: 0, lineID: 0, deletedAt: null },
@@ -217,34 +151,40 @@ describe('agency action creator', () => {
             { id: 0, name: 'MetroLinx', color: 'Green' },
             { id: 1, name: 'TTC', color: 'Red' },
             { id: 2, name: 'MiWay', color: 'Orange' },
-            { id: 3, name: 'YRT', color: 'Blue' }]
-            
-        expect(actions.getInverseAgencyActions(state, {
-            type: type.ADD_LINE,
-            payload: {
-                type: "ERROR"
-            }
-        }))
+            { id: 3, name: 'YRT', color: 'Blue' }
+        ]
 
-        expect(actions.getInverseAgencyActions(state, {
-            type: type.ADD_AGENCY,
-            payload: {
-                name: 'Yetrolinx',
-                color: 'Yellow'
-            }
-        })).toEqual({
+        expect(
+            actions.getInverseAgencyActions(state, {
+                type: type.ADD_LINE
+            })
+        ).toEqual({
+            type: 'ERROR'
+        })
+
+        expect(
+            actions.getInverseAgencyActions(state, {
+                type: type.ADD_AGENCY,
+                payload: {
+                    name: 'Yetrolinx',
+                    color: 'Yellow'
+                }
+            })
+        ).toEqual({
             type: type.UNDO_ADD_AGENCY,
             payload: {
                 id: 4
             }
         })
 
-        expect(actions.getInverseAgencyActions(state, {
-            type: type.UNDO_ADD_AGENCY,
-            payload: {
-                id: 3
-            }
-        })).toEqual({
+        expect(
+            actions.getInverseAgencyActions(state, {
+                type: type.UNDO_ADD_AGENCY,
+                payload: {
+                    id: 3
+                }
+            })
+        ).toEqual({
             type: type.ADD_AGENCY,
             payload: {
                 name: 'YRT',
@@ -252,14 +192,16 @@ describe('agency action creator', () => {
             }
         })
 
-        expect(actions.getInverseAgencyActions(state, {
-            type: type.EDIT_AGENCY,
-            payload: {
-                id: 1,
-                name: 'Meeway',
-                color: 'Pink'
-            }
-        })).toEqual({
+        expect(
+            actions.getInverseAgencyActions(state, {
+                type: type.EDIT_AGENCY,
+                payload: {
+                    id: 1,
+                    name: 'Meeway',
+                    color: 'Pink'
+                }
+            })
+        ).toEqual({
             type: type.EDIT_AGENCY,
             payload: {
                 id: 1,
@@ -268,65 +210,36 @@ describe('agency action creator', () => {
             }
         })
 
-        let store = mockStore({
-            agencies: [
-                { id: 0 }, { id: 1 }, { id: 2 }, { id: 3 }],
-            lines: [
-                { id: 0, agencyID: 0, deletedAt: null },
-                { id: 1, agencyID: 0, deletedAt: null },
-                { id: 2, agencyID: 0, deletedAt: null },
-                { id: 3, agencyID: 1, deletedAt: null },
-                { id: 4, agencyID: 1, deletedAt: null },
-                { id: 5, agencyID: 1, deletedAt: '2021-05-23T18:47:02.436Z' },
-                { id: 6, agencyID: 2, deletedAt: '2021-05-23T18:47:02.436Z' },
-                { id: 7, agencyID: 2, deletedAt: '2021-05-23T18:47:02.436Z' },
-                { id: 8, agencyID: 2, deletedAt: '2021-05-23T18:47:02.436Z' },
-            ],
-            services: [
-                { id: 0, lineID: 0, deletedAt: null },
-                { id: 1, lineID: 1, deletedAt: null },
-                { id: 2, lineID: 2, deletedAt: null },
-                { id: 3, lineID: 2, deletedAt: null },
-                { id: 4, lineID: 3, deletedAt: null },
-                { id: 5, lineID: 4, deletedAt: null },
-                { id: 6, lineID: 4, deletedAt: null },
-                { id: 7, lineID: 5, deletedAt: '2021-05-23T18:47:02.436Z' },
-                { id: 8, lineID: 6, deletedAt: '2021-05-23T18:47:02.436Z' },
-                { id: 9, lineID: 7, deletedAt: '2021-05-23T18:47:02.436Z' },
-                { id: 10, lineID: 8, deletedAt: '2021-05-23T18:47:02.436Z' }
-            ]
-        })
-
-        expect(store.dispatch(actions.getInverseAgencyActions(state, {
-            type: type.REMOVE_AGENCY,
-            payload: {
-                id: 2
-            }
-        }))).toEqual({
+        expect(
+            actions.getInverseAgencyActions(state, {
+                type: type.REMOVE_AGENCY,
+                payload: {
+                    id: 2
+                }
+            })
+        ).toEqual({
             type: type.RESTORE_AGENCY,
             payload: {
-                id: 2,
-                lineIDs: [],
-                serviceIDs: []
+                id: 2
             }
         })
 
         var MockDate = require('mockdate')
-        MockDate.set(1434319925275);
+        MockDate.set(1434319925275)
         let date = new Date().toISOString()
 
-        expect(store.dispatch(actions.getInverseAgencyActions(state, {
-            type: type.RESTORE_AGENCY,
-            payload: {
-                id: 2
-            }
-        }))).toEqual({
+        expect(
+            actions.getInverseAgencyActions(state, {
+                type: type.RESTORE_AGENCY,
+                payload: {
+                    id: 2
+                }
+            })
+        ).toEqual({
             type: type.REMOVE_AGENCY,
             payload: {
                 id: 2,
-                deletedAt: date,
-                lineIDs: [],
-                serviceIDs: []
+                deletedAt: date
             }
         })
     })

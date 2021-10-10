@@ -1,10 +1,4 @@
-import {
-    ADD_LINE,
-    UNDO_ADD_LINE,
-    EDIT_LINE,
-    REMOVE_LINE,
-    RESTORE_LINE
-} from './actionTypes'
+import { ADD_LINE, UNDO_ADD_LINE, EDIT_LINE, REMOVE_LINE, RESTORE_LINE } from './actionTypes'
 
 import store from '../app/store'
 
@@ -49,8 +43,7 @@ export function removeLine(id) {
         type: REMOVE_LINE,
         payload: {
             id: parseInt(id),
-            deletedAt: new Date().toISOString(),
-            serviceIDs: serviceIDsGivenLineID(store.getState(), parseInt(id), false)
+            deletedAt: new Date().toISOString()
         }
     }
 }
@@ -59,8 +52,7 @@ export function restoreLine(id) {
     return {
         type: RESTORE_LINE,
         payload: {
-            id: parseInt(id),
-            serviceIDs: serviceIDsGivenLineID(store.getState(), parseInt(id), true)
+            id: parseInt(id)
         }
     }
 }
@@ -68,7 +60,7 @@ export function restoreLine(id) {
 export function getInverseLineActions(state, action) {
     switch (action.type) {
         default: {
-            return { type: "ERROR" }
+            return { type: 'ERROR' }
         }
         case ADD_LINE: {
             return undoAddLine(nextIDForArray(state))
