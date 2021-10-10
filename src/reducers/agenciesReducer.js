@@ -5,8 +5,8 @@ import {
     genericSingleDelete,
     genericSingleRestore,
     nextIDForArray
-} from "../utils/utils"
-import { ADD_AGENCY, UNDO_ADD_AGENCY, EDIT_AGENCY, REMOVE_AGENCY, RESTORE_AGENCY } from "../actions/actionTypes"
+} from '../utils/utils'
+import { ADD_AGENCY, UNDO_ADD_AGENCY, EDIT_AGENCY, REMOVE_AGENCY, RESTORE_AGENCY } from '../actions/actionTypes'
 const initialState = []
 
 export default function agencyReducer(state = initialState, action) {
