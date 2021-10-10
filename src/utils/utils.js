@@ -14,7 +14,7 @@ export function genericSingleDelete(array, id, deletedAt) {
         }
         return {
             ...item,
-            deletedAt: deletedAt,
+            deletedAt: deletedAt
         }
     })
 }
@@ -26,7 +26,7 @@ export function genericSingleRestore(array, id) {
         }
         return {
             ...item,
-            deletedAt: null,
+            deletedAt: null
         }
     })
 }
@@ -38,12 +38,29 @@ export function genericMultiDelete(array, ids, deletedAt) {
         if (removeSet.has(item.id)) {
             return {
                 ...item,
-                deletedAt: deletedAt,
+                deletedAt: deletedAt
             }
         } else {
             return item
         }
     })
+}
+
+export function genericMultiDeleteRestorePredicate(array, predicate, deletedAt) {
+    return array.map(item => {
+        if (predicate(item)) {
+            return {
+                ...item,
+                deletedAt: deletedAt
+            }
+        } else {
+            return item
+        }
+    })
+}
+
+export function genericMultiDeletePredicate(array, predicate, deletedAt) {
+    return genericMultiDeleteRestorePredicate(array, predicate, deletedAt)
 }
 
 export function genericMultiRestore(array, ids) {
@@ -53,12 +70,16 @@ export function genericMultiRestore(array, ids) {
         if (restoreSet.has(item.id)) {
             return {
                 ...item,
-                deletedAt: null,
+                deletedAt: null
             }
         } else {
             return item
         }
     })
+}
+
+export function genericMultiRestorePredicate(array, predicate) {
+    return genericMultiDeleteRestorePredicate(array, predicate, null)
 }
 
 export function filterDeleted(array, includeDeleted) {
@@ -91,7 +112,7 @@ export function getById(array, id) {
     if (filtered.length === 1) {
         return filtered[0]
     } else {
-        return { error: "No item with such ID" }
+        return { error: 'No item with such ID' }
     }
 }
 
@@ -162,6 +183,6 @@ export function haversineMidpoint(node_A, node_B) {
     // 6 digits of precision is precision at worst of 11cm at equator
     return {
         latitude: parseFloat(lat3.toFixed(6)),
-        longitude: parseFloat(lng3.toFixed(6)),
+        longitude: parseFloat(lng3.toFixed(6))
     }
 }
