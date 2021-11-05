@@ -1,30 +1,28 @@
-
-import * as actionTypes from '../actions/actionTypes';
-import { getById, nextIDForArray } from "../utils/utils";
+import * as actionTypes from '../actions/actionTypes'
+import { getById, nextIDForArray } from '../utils/utils'
 
 import { getInverseAgencyActions } from '../actions/agencyActions'
 import { getInverseLineActions } from '../actions/lineActions'
-import { getInverseServiceActions } from '../actions/serviceActions';
-import { getInverseServiceRouteActions } from '../actions/serviceRouteActions';
-import { getInverseStationActions } from '../actions/stationActions';
-import { getInverseTransferActions } from '../actions/transferActions';
-import { getInverseTrackRouteActions } from '../actions/trackRouteActions';
-import { getInverseNodeActions } from '../actions/nodeActions';
-import { getInverseTrackActions } from '../actions/trackActions';
+import { getInverseServiceActions } from '../actions/serviceActions'
+import { getInverseServiceRouteActions } from '../actions/serviceRouteActions'
+import { getInverseStationActions } from '../actions/stationActions'
+import { getInverseTransferActions } from '../actions/transferActions'
+import { getInverseTrackRouteActions } from '../actions/trackRouteActions'
+import { getInverseNodeActions } from '../actions/nodeActions'
+import { getInverseTrackActions } from '../actions/trackActions'
 /**
- * Normal Action: adds the inverse action to the undo stack, 
+ * Normal Action: adds the inverse action to the undo stack,
  * if redo stack is not empty, clear it
- * 
- * Undo Action: dispatches the top of the undo stack, 
+ *
+ * Undo Action: dispatches the top of the undo stack,
  * adds the inverse of the top of the undo stack to the redo stack
- * 
+ *
  * Redo Action: dispatches the top of the redo stack
  * adds the inverse of the top of the redo stack to the undo stack
  */
 
 const undohistorylength = 100
 export default function undoRedoReducer(reducer) {
-
     const initialState = {
         past: [],
         present: reducer(undefined, {}),
@@ -140,14 +138,9 @@ function getInverseAction(presentState, action) {
         case actionTypes.RESTORE_TRANSFER: {
             return getInverseTransferActions(presentState.transfers, action)
         }
-        case actionTypes.ADD_STRAIGHT_SEGMENT:
-        case actionTypes.ADD_CURVED_SEGMENT:
-        case actionTypes.STRAIGHT_TO_CURVED:
-        case actionTypes.CURVED_TO_STRAIGHT:
-        case actionTypes.BREAK_SEGMENT:
-        case actionTypes.MERGE_SEGMENTS:
-        case actionTypes.REMOVE_SEGMENT:
-        case actionTypes.RESTORE_SEGMENT: {
+        case actionTypes.ADD_NEW_TRACKROUTE_NODES:
+        case actionTypes.EDIT_TRACKROUTE_NODES:
+        case actionTypes.CLEAR_TRACKROUTE_NODES: {
             return getInverseTrackRouteActions(presentState.tracks, action)
         }
         case actionTypes.MOVE_NODE: {
@@ -158,6 +151,12 @@ function getInverseAction(presentState, action) {
         case actionTypes.REMOVE_TRACK:
         case actionTypes.RESTORE_TRACK: {
             return getInverseTrackActions(presentState.tracks, action)
+        }
+        default: {
+            console.log('ERROR IMPROPER action')
+            return {
+                type: actionTypes.EMPTY
+            }
         }
     }
 }

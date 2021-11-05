@@ -1,10 +1,5 @@
 import { selectStationsGivenStationIDs } from '../reducers/stationsReducer'
-import {
-    ADD_TRACK,
-    UNDO_ADD_TRACK,
-    REMOVE_TRACK,
-    RESTORE_TRACK
-} from './actionTypes'
+import { ADD_TRACK, UNDO_ADD_TRACK, REMOVE_TRACK, RESTORE_TRACK } from './actionTypes'
 import store from '../app/store'
 import { getById, nextIDForArray } from '../utils/utils'
 
@@ -22,7 +17,7 @@ export function undoAddTrack(id) {
     return {
         type: UNDO_ADD_TRACK,
         payload: {
-            id: parseInt(id),
+            id: parseInt(id)
         }
     }
 }
@@ -41,7 +36,7 @@ export function restoreTrack(id) {
     return {
         type: RESTORE_TRACK,
         payload: {
-            id: parseInt(id),
+            id: parseInt(id)
         }
     }
 }
@@ -49,7 +44,7 @@ export function restoreTrack(id) {
 export function getInverseTrackActions(state, action) {
     switch (action.type) {
         default: {
-            return { type: "ERROR" } // this should not happen
+            return { type: 'ERROR' } // this should not happen
         }
         case ADD_TRACK: {
             return undoAddTrack(nextIDForArray(state))

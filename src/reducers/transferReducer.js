@@ -1,4 +1,4 @@
-import _ from "underscore"
+import _ from 'underscore'
 import {
     filterDeleted,
     filterOutById,
@@ -7,7 +7,7 @@ import {
     genericSingleDelete,
     genericSingleRestore,
     nextIDForArray
-} from "../utils/utils"
+} from '../utils/utils'
 
 import {
     ADD_TRANSFER,
@@ -17,7 +17,7 @@ import {
     RESTORE_TRANSFER,
     REMOVE_STATION,
     RESTORE_STATION
-} from "../actions/actionTypes"
+} from '../actions/actionTypes'
 
 const initialState = []
 
