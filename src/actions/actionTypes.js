@@ -70,3 +70,11 @@ export const RESTORE_TRACK = 'RESTORE_TRACK'
 //UNDO REDO
 export const GLOBAL_UNDO = 'GLOBAL_UNDO'
 export const GLOBAL_REDO = 'GLOBAL_REDO'
+
+export const EMPTY = 'EMPTY'
+
+// View State
+export const APP_NAVIGATE = 'APP_NAVIGATE'
+export const SEARCH = 'SEARCH'
+export const VIEW_FILTER = 'VIEW_FILTER'
+export const FOCUS_ENTITY = 'FOCUS_ENTITY'
