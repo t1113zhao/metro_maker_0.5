@@ -150,8 +150,8 @@ describe('Track route reducer operates correctly', () => {
                 stationIDs: [0, 1],
                 nodes: [],
                 stationNodes: [
-                    [46, 71],
-                    [46.5, 71.2]
+                    [71, 46],
+                    [71.2, 46.5]
                 ],
                 deletedAt: null
             }

@@ -38,11 +38,10 @@ export default function undoRedoReducer(reducer) {
         switch (action.type) {
             case actionTypes.GLOBAL_UNDO: {
                 if (past.length > 0) {
-                    let newPast = past.slice()
-                    let actionToApply = newPast.pop()
+                    let newPast = [...past.slice(0, past.length - 1)]
+                    let actionToApply = past[past.length - 1]
 
-                    let newFuture = future.slice(0)
-                    newFuture.push(getInverseAction(present, actionToApply))
+                    let newFuture = [...future, getInverseAction(present, actionToApply)]
 
                     return {
                         past: newPast,
@@ -55,11 +54,10 @@ export default function undoRedoReducer(reducer) {
             }
             case actionTypes.GLOBAL_REDO: {
                 if (future.length > 0) {
-                    let newFuture = future.slice()
-                    let actionToApply = newFuture.pop()
+                    let newFuture = [...future.slice(0, future.length - 1)]
+                    let actionToApply = future[future.length - 1]
 
-                    let newPast = past.slice(0)
-                    newPast.push(getInverseAction(present, actionToApply))
+                    let newPast = [...past, getInverseAction(present, actionToApply)]
 
                     return {
                         past: newPast,
@@ -72,8 +70,7 @@ export default function undoRedoReducer(reducer) {
             }
             default: {
                 if (action.type) {
-                    let newPast = past.slice(0)
-                    newPast.push(getInverseAction(present, action))
+                    let newPast = [...past, getInverseAction(present, action)]
                     return {
                         past: newPast,
                         present: reducer(present, action),

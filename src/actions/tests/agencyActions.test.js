@@ -123,21 +123,19 @@ describe('agency action creator', () => {
                 { id: 8, agencyID: 2, deletedAt: '2021-05-23T18:47:02.436Z' }
             ],
             services: [
-                { id: 0, lineID: 0, deletedAt: null },
-                { id: 1, lineID: 1, deletedAt: null },
-                { id: 2, lineID: 2, deletedAt: null },
-                { id: 3, lineID: 2, deletedAt: null },
-                { id: 4, lineID: 3, deletedAt: null },
-                { id: 5, lineID: 4, deletedAt: null },
-                { id: 6, lineID: 4, deletedAt: null },
-                { id: 7, lineID: 5, deletedAt: '2021-05-23T18:47:02.436Z' },
-                { id: 8, lineID: 6, deletedAt: '2021-05-23T18:47:02.436Z' },
-                { id: 9, lineID: 7, deletedAt: '2021-05-23T18:47:02.436Z' },
-                { id: 10, lineID: 8, deletedAt: '2021-05-23T18:47:02.436Z' }
+                { id: 0, lineID: 0, agencyID: 0, deletedAt: null },
+                { id: 1, lineID: 1, agencyID: 0, deletedAt: null },
+                { id: 2, lineID: 2, agencyID: 0, deletedAt: null },
+                { id: 3, lineID: 2, agencyID: 0, deletedAt: null },
+                { id: 4, lineID: 3, agencyID: 1, deletedAt: null },
+                { id: 5, lineID: 4, agencyID: 1, deletedAt: null },
+                { id: 6, lineID: 4, agencyID: 1, deletedAt: null },
+                { id: 7, lineID: 5, agencyID: 1, deletedAt: '2021-05-23T18:47:02.436Z' },
+                { id: 8, lineID: 6, agencyID: 2, deletedAt: '2021-05-23T18:47:02.436Z' },
+                { id: 9, lineID: 7, agencyID: 2, deletedAt: '2021-05-23T18:47:02.436Z' },
+                { id: 10, lineID: 8, agencyID: 2, deletedAt: '2021-05-23T18:47:02.436Z' }
             ]
         })
-
-        expect(serviceIDsGivenAgencyID(store.getState(), parseInt(0), false)).toEqual([0, 1, 2, 3])
 
         expect(serviceIDsGivenAgencyID(store.getState(), parseInt(0), false)).toEqual([0, 1, 2, 3])
 

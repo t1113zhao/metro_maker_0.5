@@ -30,7 +30,7 @@ import {
 /**
  * id: int
  * stationIDs: [0, 1]
- * nodes: [ {id, lat, long, stationID}, {id, lat, long}]
+ * nodes: [ [lat, long]]
  * segments: [{id, endpoints:[id, id]}]
  * deletedAt:
  */
@@ -93,8 +93,8 @@ export function doAddTrackRoute(state, action) {
             stationIDs: [startStation.id, endStation.id],
             nodes: [],
             stationNodes: [
-                [startStation.latitude, startStation.longitude],
-                [endStation.latitude, endStation.longitude]
+                [startStation.longitude, startStation.latitude],
+                [endStation.longitude, endStation.latitude]
             ],
             deletedAt: null
         }

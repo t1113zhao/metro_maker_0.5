@@ -8,7 +8,7 @@ export function addTrack(stationA_ID, stationB_ID) {
     return {
         type: ADD_TRACK,
         payload: {
-            stations: selectStationsGivenStationIDs(store.getState(), stationIDs)
+            stations: stationIDs
         }
     }
 }
