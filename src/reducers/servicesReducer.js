@@ -70,6 +70,7 @@ export function doAddService(state, action) {
         ...state,
         {
             id: nextIDForArray(state),
+            agencyID: action.payload.agencyID,
             lineID: action.payload.lineID,
             name: action.payload.name,
             servicePeriod: action.payload.servicePeriod,
@@ -116,10 +117,8 @@ export function serviceIDsGivenLineID(state, lineID, includeDeleted) {
 }
 
 export function selectServicesGivenAgencyID(state, agencyID, includeDeleted) {
-    let lineIDs = new Set(lineIDsGivenAgencyId(state, agencyID, includeDeleted))
-
     let output = state.services.filter(service => {
-        return lineIDs.has(service.lineID)
+        return service.agencyID === agencyID
     })
     return filterDeleted(output, includeDeleted)
 }

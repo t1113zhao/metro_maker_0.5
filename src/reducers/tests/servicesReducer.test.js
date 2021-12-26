@@ -600,50 +600,53 @@ describe('Service Reducer', () => {
 
     let selectorState = {
         services: [
-            { id: 0, lineID: 0, deletedAt: null },
-            { id: 1, lineID: 0, deletedAt: 'yesterday' },
-            { id: 2, lineID: 1, deletedAt: null },
-            { id: 3, lineID: 1, deletedAt: 'yesterday' },
-            { id: 4, lineID: 2, deletedAt: null },
-            { id: 5, lineID: 2, deletedAt: 'yesterday' }
-        ],
-        lines: [
-            { id: 0, agencyID: 0, deletedAt: null },
-            { id: 1, agencyID: 0, deletedAt: null },
-            { id: 2, agencyID: 1, deletedAt: null }
+            { id: 0, lineID: 0, agencyID: 0, deletedAt: null },
+            { id: 1, lineID: 0, agencyID: 0, deletedAt: 'yesterday' },
+            { id: 2, lineID: 1, agencyID: 0, deletedAt: null },
+            { id: 3, lineID: 1, agencyID: 0, deletedAt: 'yesterday' },
+            { id: 4, lineID: 2, agencyID: 1, deletedAt: null },
+            { id: 5, lineID: 2, agencyID: 1, deletedAt: 'yesterday' }
         ]
     }
 
     it('should select all services', () => {
         expect(selectAllServices(selectorState.services, true)).toEqual([
-            { id: 0, lineID: 0, deletedAt: null },
-            { id: 1, lineID: 0, deletedAt: 'yesterday' },
-            { id: 2, lineID: 1, deletedAt: null },
-            { id: 3, lineID: 1, deletedAt: 'yesterday' },
-            { id: 4, lineID: 2, deletedAt: null },
-            { id: 5, lineID: 2, deletedAt: 'yesterday' }
+            { id: 0, lineID: 0, agencyID: 0, deletedAt: null },
+            { id: 1, lineID: 0, agencyID: 0, deletedAt: 'yesterday' },
+            { id: 2, lineID: 1, agencyID: 0, deletedAt: null },
+            { id: 3, lineID: 1, agencyID: 0, deletedAt: 'yesterday' },
+            { id: 4, lineID: 2, agencyID: 1, deletedAt: null },
+            { id: 5, lineID: 2, agencyID: 1, deletedAt: 'yesterday' }
         ])
 
         expect(selectAllServices(selectorState.services, false)).toEqual([
-            { id: 0, lineID: 0, deletedAt: null },
-            { id: 2, lineID: 1, deletedAt: null },
-            { id: 4, lineID: 2, deletedAt: null }
+            { id: 0, lineID: 0, agencyID: 0, deletedAt: null },
+            { id: 2, lineID: 1, agencyID: 0, deletedAt: null },
+            { id: 4, lineID: 2, agencyID: 1, deletedAt: null }
         ])
     })
 
     it('should select service given id', () => {
-        expect(selectServiceGivenID(selectorState, 0, true)).toEqual([{ id: 0, lineID: 0, deletedAt: null }])
-        expect(selectServiceGivenID(selectorState, 0, false)).toEqual([{ id: 0, lineID: 0, deletedAt: null }])
-        expect(selectServiceGivenID(selectorState, 1, true)).toEqual([{ id: 1, lineID: 0, deletedAt: 'yesterday' }])
+        expect(selectServiceGivenID(selectorState, 0, true)).toEqual([
+            { id: 0, lineID: 0, agencyID: 0, deletedAt: null }
+        ])
+        expect(selectServiceGivenID(selectorState, 0, false)).toEqual([
+            { id: 0, lineID: 0, agencyID: 0, deletedAt: null }
+        ])
+        expect(selectServiceGivenID(selectorState, 1, true)).toEqual([
+            { id: 1, lineID: 0, agencyID: 0, deletedAt: 'yesterday' }
+        ])
         expect(selectServiceGivenID(selectorState, 1, false)).toEqual([])
     })
 
     it('should select services given line id', () => {
         expect(selectServicesGivenLineID(selectorState, 0, true)).toEqual([
-            { id: 0, lineID: 0, deletedAt: null },
-            { id: 1, lineID: 0, deletedAt: 'yesterday' }
+            { id: 0, lineID: 0, agencyID: 0, deletedAt: null },
+            { id: 1, lineID: 0, agencyID: 0, deletedAt: 'yesterday' }
         ])
-        expect(selectServicesGivenLineID(selectorState, 0, false)).toEqual([{ id: 0, lineID: 0, deletedAt: null }])
+        expect(selectServicesGivenLineID(selectorState, 0, false)).toEqual([
+            { id: 0, lineID: 0, agencyID: 0, deletedAt: null }
+        ])
     })
 
     it('should select service ids given line id', () => {
@@ -653,14 +656,14 @@ describe('Service Reducer', () => {
 
     it('should select services given agency id', () => {
         expect(selectServicesGivenAgencyID(selectorState, 0, true)).toEqual([
-            { id: 0, lineID: 0, deletedAt: null },
-            { id: 1, lineID: 0, deletedAt: 'yesterday' },
-            { id: 2, lineID: 1, deletedAt: null },
-            { id: 3, lineID: 1, deletedAt: 'yesterday' }
+            { id: 0, lineID: 0, agencyID: 0, deletedAt: null },
+            { id: 1, lineID: 0, agencyID: 0, deletedAt: 'yesterday' },
+            { id: 2, lineID: 1, agencyID: 0, deletedAt: null },
+            { id: 3, lineID: 1, agencyID: 0, deletedAt: 'yesterday' }
         ])
         expect(selectServicesGivenAgencyID(selectorState, 0, false)).toEqual([
-            { id: 0, lineID: 0, deletedAt: null },
-            { id: 2, lineID: 1, deletedAt: null }
+            { id: 0, lineID: 0, agencyID: 0, deletedAt: null },
+            { id: 2, lineID: 1, agencyID: 0, deletedAt: null }
         ])
     })
 
