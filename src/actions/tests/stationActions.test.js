@@ -3,6 +3,7 @@ import * as type from '../actionTypes'
 import * as transferTypes from '../../object_types/transfertypes'
 import configureMockStore from 'redux-mock-store'
 import { transferIDsGivenStationID } from '../../reducers/transferReducer'
+import getPresentState from '../../app/storeUtils'
 
 const mockStore = configureMockStore()
 describe('station action creator', () => {
@@ -108,39 +109,41 @@ describe('station action creator', () => {
 
     it('Restore Station', () => {
         let store = mockStore({
-            transfers: [
-                {
-                    id: 0,
-                    stationIDs: [0, 1],
-                    type: transferTypes.IN_STATION,
-                    deletedAt: '2021-05-23T18:47:02.436Z'
-                },
-                {
-                    id: 1,
-                    stationIDs: [0, 1],
-                    type: transferTypes.IN_STATION,
-                    deletedAt: '2021-05-23T18:47:02.436Z'
-                },
-                {
-                    id: 2,
-                    stationIDs: [1, 2],
-                    type: transferTypes.IN_STATION,
-                    deletedAt: null
-                },
-                {
-                    id: 3,
-                    stationIDs: [2, 3],
-                    type: transferTypes.IN_STATION,
-                    deletedAt: null
-                },
-                {
-                    id: 4,
-                    stationIDs: [0, 3],
-                    type: transferTypes.IN_STATION,
-                    deletedAt: '2021-05-23T18:47:02.436Z'
-                }
-            ],
-            tracks: [{ id: 0, stationIDs: [0, 1] }]
+            present: {
+                transfers: [
+                    {
+                        id: 0,
+                        stationIDs: [0, 1],
+                        type: transferTypes.IN_STATION,
+                        deletedAt: '2021-05-23T18:47:02.436Z'
+                    },
+                    {
+                        id: 1,
+                        stationIDs: [0, 1],
+                        type: transferTypes.IN_STATION,
+                        deletedAt: '2021-05-23T18:47:02.436Z'
+                    },
+                    {
+                        id: 2,
+                        stationIDs: [1, 2],
+                        type: transferTypes.IN_STATION,
+                        deletedAt: null
+                    },
+                    {
+                        id: 3,
+                        stationIDs: [2, 3],
+                        type: transferTypes.IN_STATION,
+                        deletedAt: null
+                    },
+                    {
+                        id: 4,
+                        stationIDs: [0, 3],
+                        type: transferTypes.IN_STATION,
+                        deletedAt: '2021-05-23T18:47:02.436Z'
+                    }
+                ],
+                tracks: [{ id: 0, stationIDs: [0, 1] }]
+            }
         })
 
         let id = 0
@@ -300,7 +303,7 @@ describe('station action creator', () => {
 
         expect(
             store.dispatch(
-                actions.getInverseStationActions(store.getState(), {
+                actions.getInverseStationActions(getPresentState(), {
                     type: type.REMOVE_STATION,
                     payload: {
                         id: 0,

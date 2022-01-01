@@ -10,6 +10,7 @@ import {
 } from './actionTypes'
 
 import store from '../app/store'
+import getPresentState from '../app/storeUtils'
 import { getById, nextIDForArray } from '../utils/utils'
 
 export function addStation(description, name, latitude, longitude) {
@@ -61,8 +62,8 @@ export function removeStation(id) {
         payload: {
             id: parseInt(id),
             deletedAt: new Date().toISOString(),
-            trackIDs: getTrackIDsByStationID(store.getState().tracks, parseInt(id), false),
-            transferIDs: transferIDsGivenStationID(store.getState().transfers, parseInt(id), false)
+            trackIDs: getTrackIDsByStationID(getPresentState().tracks, parseInt(id), false),
+            transferIDs: transferIDsGivenStationID(getPresentState().transfers, parseInt(id), false)
         }
     }
 }
@@ -72,8 +73,8 @@ export function restoreStation(id) {
         type: RESTORE_STATION,
         payload: {
             id: parseInt(id),
-            trackIDs: getTrackIDsByStationID(store.getState().tracks, parseInt(id), true),
-            transferIDs: transferIDsGivenStationID(store.getState().transfers, parseInt(id), true)
+            trackIDs: getTrackIDsByStationID(getPresentState().tracks, parseInt(id), true),
+            transferIDs: transferIDsGivenStationID(getPresentState().transfers, parseInt(id), true)
         }
     }
 }
