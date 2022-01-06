@@ -54,26 +54,24 @@ describe('remove and restore trackRoute reducer correctly', () => {
         expect(
             reducer(
                 [
-                    { id: 0, deletedAt: null },
-                    { id: 1, deletedAt: null },
-                    { id: 2, deletedAt: null },
-                    { id: 3, deletedAt: null }
+                    { id: 0, stationIDs: [0, 1], deletedAt: null },
+                    { id: 1, stationIDs: [2, 0], deletedAt: null },
+                    { id: 2, stationIDs: [1, 2], deletedAt: null },
+                    { id: 3, stationIDs: [2, 3], deletedAt: null }
                 ],
                 {
                     type: REMOVE_STATION,
                     payload: {
                         id: 0,
-                        deletedAt: date,
-                        trackIDs: [0, 2, 3],
-                        transferIDs: [1, 2]
+                        deletedAt: date
                     }
                 }
             )
         ).toEqual([
-            { id: 0, deletedAt: date },
-            { id: 1, deletedAt: null },
-            { id: 2, deletedAt: date },
-            { id: 3, deletedAt: date }
+            { id: 0, stationIDs: [0, 1], deletedAt: date },
+            { id: 1, stationIDs: [2, 0], deletedAt: date },
+            { id: 2, stationIDs: [1, 2], deletedAt: null },
+            { id: 3, stationIDs: [2, 3], deletedAt: null }
         ])
     })
 
@@ -105,25 +103,23 @@ describe('remove and restore trackRoute reducer correctly', () => {
         expect(
             reducer(
                 [
-                    { id: 0, deletedAt: 'last tuesday' },
-                    { id: 1, deletedAt: 'last tuesday' },
-                    { id: 2, deletedAt: 'last tuesday' },
-                    { id: 3, deletedAt: 'last tuesday' }
+                    { id: 0, stationIDs: [0, 1], deletedAt: 'last tuesday' },
+                    { id: 1, stationIDs: [2, 0], deletedAt: 'last tuesday' },
+                    { id: 2, stationIDs: [1, 2], deletedAt: 'last tuesday' },
+                    { id: 3, stationIDs: [2, 3], deletedAt: 'last tuesday' }
                 ],
                 {
                     type: RESTORE_STATION,
                     payload: {
-                        id: 0,
-                        trackIDs: [0, 2, 3],
-                        transferIDs: [1, 2]
+                        id: 0
                     }
                 }
             )
         ).toEqual([
-            { id: 0, deletedAt: null },
-            { id: 1, deletedAt: 'last tuesday' },
-            { id: 2, deletedAt: null },
-            { id: 3, deletedAt: null }
+            { id: 0, stationIDs: [0, 1], deletedAt: null },
+            { id: 1, stationIDs: [2, 0], deletedAt: null },
+            { id: 2, stationIDs: [1, 2], deletedAt: 'last tuesday' },
+            { id: 3, stationIDs: [2, 3], deletedAt: 'last tuesday' }
         ])
     })
 })

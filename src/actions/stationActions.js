@@ -59,9 +59,7 @@ export function removeStation(id) {
         type: REMOVE_STATION,
         payload: {
             id: parseInt(id),
-            deletedAt: new Date().toISOString(),
-            trackIDs: getTrackIDsByStationID(getPresentState().tracks, parseInt(id), false),
-            transferIDs: transferIDsGivenStationID(getPresentState().transfers, parseInt(id), false)
+            deletedAt: new Date().toISOString()
         }
     }
 }
@@ -70,9 +68,7 @@ export function restoreStation(id) {
     return {
         type: RESTORE_STATION,
         payload: {
-            id: parseInt(id),
-            trackIDs: getTrackIDsByStationID(getPresentState().tracks, parseInt(id), true),
-            transferIDs: transferIDsGivenStationID(getPresentState().transfers, parseInt(id), true)
+            id: parseInt(id)
         }
     }
 }

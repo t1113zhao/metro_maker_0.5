@@ -53,10 +53,12 @@ export default function trackRouteReducer(state = initialState, action) {
             return genericSingleRestore(state, action.payload.id)
         }
         case REMOVE_STATION: {
-            return genericMultiDelete(state, action.payload.trackIDs, action.payload.deletedAt)
+            let trackIDs = getTrackIDsByStationID(state, action.payload.id)
+            return genericMultiDelete(state, trackIDs, action.payload.deletedAt)
         }
         case RESTORE_STATION: {
-            return genericMultiRestore(state, action.payload.trackIDs)
+            let trackIDs = getTrackIDsByStationID(state, action.payload.id)
+            return genericMultiRestore(state, trackIDs)
         }
         case MOVE_NODE: {
             return doMoveNode(state, action)

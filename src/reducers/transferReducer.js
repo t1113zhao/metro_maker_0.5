@@ -32,13 +32,15 @@ export default function transferReducer(state = initialState, action) {
             return doEditTransfer(state, action)
         }
         case REMOVE_STATION: {
-            return genericMultiDelete(state, action.payload.transferIDs, action.payload.deletedAt)
+            let transferIDs = transferIDsGivenStationID(state, action.payload.id, false)
+            return genericMultiDelete(state, transferIDs, action.payload.deletedAt)
         }
         case REMOVE_TRANSFER: {
             return genericSingleDelete(state, action.payload.id, action.payload.deletedAt)
         }
         case RESTORE_STATION: {
-            return genericMultiRestore(state, action.payload.transferIDs)
+            let transferIDs = transferIDsGivenStationID(state, action.payload.id, true)
+            return genericMultiRestore(state, transferIDs)
         }
         case RESTORE_TRANSFER: {
             return genericSingleRestore(state, action.payload.id)

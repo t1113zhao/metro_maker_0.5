@@ -57,102 +57,24 @@ describe('station action creator', () => {
         var MockDate = require('mockdate')
         MockDate.set(1434319925275)
 
-        let store = mockStore({
-            transfers: [
-                {
-                    id: 0,
-                    stationIDs: [0, 1],
-                    type: transferTypes.IN_STATION,
-                    deletedAt: '2021-05-23T18:47:02.436Z'
-                },
-                {
-                    id: 1,
-                    stationIDs: [0, 1],
-                    type: transferTypes.IN_STATION,
-                    deletedAt: null
-                },
-                {
-                    id: 2,
-                    stationIDs: [1, 2],
-                    type: transferTypes.IN_STATION,
-                    deletedAt: null
-                },
-                {
-                    id: 3,
-                    stationIDs: [2, 3],
-                    type: transferTypes.IN_STATION,
-                    deletedAt: null
-                },
-                {
-                    id: 4,
-                    stationIDs: [0, 3],
-                    type: transferTypes.IN_STATION,
-                    deletedAt: null
-                }
-            ],
-            tracks: [{ id: 0, stationIDs: [0, 1] }]
-        })
-
         let id = 0
         let deletedAt = new Date().toISOString()
 
-        expect(store.dispatch(actions.removeStation(id))).toEqual({
+        expect(actions.removeStation(id)).toEqual({
             type: type.REMOVE_STATION,
             payload: {
                 id: id,
-                deletedAt: deletedAt,
-                trackIDs: [],
-                transferIDs: []
+                deletedAt: deletedAt
             }
         })
     })
 
     it('Restore Station', () => {
-        let store = mockStore({
-            present: {
-                transfers: [
-                    {
-                        id: 0,
-                        stationIDs: [0, 1],
-                        type: transferTypes.IN_STATION,
-                        deletedAt: '2021-05-23T18:47:02.436Z'
-                    },
-                    {
-                        id: 1,
-                        stationIDs: [0, 1],
-                        type: transferTypes.IN_STATION,
-                        deletedAt: '2021-05-23T18:47:02.436Z'
-                    },
-                    {
-                        id: 2,
-                        stationIDs: [1, 2],
-                        type: transferTypes.IN_STATION,
-                        deletedAt: null
-                    },
-                    {
-                        id: 3,
-                        stationIDs: [2, 3],
-                        type: transferTypes.IN_STATION,
-                        deletedAt: null
-                    },
-                    {
-                        id: 4,
-                        stationIDs: [0, 3],
-                        type: transferTypes.IN_STATION,
-                        deletedAt: '2021-05-23T18:47:02.436Z'
-                    }
-                ],
-                tracks: [{ id: 0, stationIDs: [0, 1] }]
-            }
-        })
-
         let id = 0
-        expect(store.dispatch(actions.restoreStation(id))).toEqual({
+        expect(actions.restoreStation(id)).toEqual({
             type: type.RESTORE_STATION,
             payload: {
-                id: 0,
-                trackIDs: [],
-                transferIDs: []
+                id: 0
             }
         })
     })
@@ -307,18 +229,14 @@ describe('station action creator', () => {
                     type: type.REMOVE_STATION,
                     payload: {
                         id: 0,
-                        deletedAt: deletedAt,
-                        trackIDs: [],
-                        transferIDs: []
+                        deletedAt: deletedAt
                     }
                 })
             )
         ).toEqual({
             type: type.RESTORE_STATION,
             payload: {
-                id: 0,
-                trackIDs: [],
-                transferIDs: []
+                id: 0
             }
         })
 
@@ -327,9 +245,7 @@ describe('station action creator', () => {
                 actions.getInverseStationActions(store.getState(), {
                     type: type.RESTORE_STATION,
                     payload: {
-                        id: 0,
-                        trackIDs: [],
-                        transferIDs: []
+                        id: 0
                     }
                 })
             )
@@ -337,9 +253,7 @@ describe('station action creator', () => {
             type: type.REMOVE_STATION,
             payload: {
                 id: 0,
-                deletedAt: deletedAt,
-                trackIDs: [],
-                transferIDs: []
+                deletedAt: deletedAt
             }
         })
     })
