@@ -10,76 +10,108 @@ import { getInverseTransferActions } from '../actions/transferActions'
 import { getInverseTrackRouteActions } from '../actions/trackRouteActions'
 import { getInverseNodeActions } from '../actions/nodeActions'
 import { getInverseTrackActions } from '../actions/trackActions'
+
+import presentReducer from './presentReducer'
+import { combineReducers } from 'redux'
 /**
- * Normal Action: adds the inverse action to the undo stack,
- * if redo stack is not empty, clear it
+ * Normal Action: adds the inverse action to the past stack,
+ * if future stack is not empty, clear it
  *
- * Undo Action: dispatches the top of the undo stack,
- * adds the inverse of the top of the undo stack to the redo stack
+ * Undo Action: dispatches the top of the past stack,
+ * adds the inverse of the top of the past stack to the future stack
  *
- * Redo Action: dispatches the top of the redo stack
- * adds the inverse of the top of the redo stack to the undo stack
+ * Redo Action: dispatches the top of the past stack
+ * adds the inverse of the top of the future stack to the past stack
  */
 
 const undohistorylength = 100
-export default function undoRedoReducer(reducer) {
-    const initialState = {
-        past: [],
-        present: reducer(undefined, {}),
-        future: []
+
+const actionStackInitialState = []
+
+export const combinedReducer = combineReducers({
+    past: pastReducer,
+    present: presentReducer,
+    future: futureReducer
+})
+
+export function redoUndoActionEnhancer(state, action) {
+    switch (action.type) {
+        case actionTypes.GLOBAL_UNDO: {
+            return redoUndoGeneralAction(state, false)
+        }
+        case actionTypes.GLOBAL_REDO: {
+            return redoUndoGeneralAction(state, true)
+        }
+        default: {
+            return action
+        }
     }
+}
 
-    return function (state = initialState, action) {
-        // const { past, present, future } = state
-        let past = state.past
-        let present = state.present
-        let future = state.future
+export default function undoRedoReducer(state, action) {
+    let enhancedAction = redoUndoActionEnhancer(state, action)
+    if (enhancedAction.type === actionTypes.EMPTY) {
+        console.log('ERROR IMPROPER action' + enhancedAction.type + state)
+        return state
+    } else {
+        return combinedReducer(state, enhancedAction)
+    }
+}
 
-        switch (action.type) {
-            case actionTypes.GLOBAL_UNDO: {
-                if (past.length > 0) {
-                    let newPast = [...past.slice(0, past.length - 1)]
-                    let actionToApply = past[past.length - 1]
+export function pastReducer(state = actionStackInitialState, action) {
+    if (!action.type) {
+        return state
+    }
+    switch (action.type) {
+        // In both Undo, remove one from the past stack
+        case actionTypes.GLOBAL_UNDO: {
+            let oldActionStackLen = state.length
+            return [...state.slice(0, oldActionStackLen - 1)]
+        }
+        case actionTypes.GLOBAL_REDO: {
+            return [...state, action.payload]
+        }
+        case actionTypes.EMPTY: {
+            return state
+        }
+        // Otherwise append action (should be inverted) to stack
+        default: {
+            return [...state, action]
+        }
+    }
+}
 
-                    let newFuture = [...future, getInverseAction(present, actionToApply)]
+export function futureReducer(state = actionStackInitialState, action) {
+    switch (action.type) {
+        // Remove one from the future
+        case actionTypes.GLOBAL_REDO: {
+            let oldActionStackLen = state.length
+            return [...state.slice(0, oldActionStackLen - 1)]
+        }
+        // Append inverted action from past to the future
+        case actionTypes.GLOBAL_UNDO: {
+            return [...state, action.payload]
+        }
+        // Default case, no actions
+        default: {
+            return []
+        }
+    }
+}
 
-                    return {
-                        past: newPast,
-                        present: reducer(present, actionToApply),
-                        future: newFuture
-                    }
-                } else {
-                    return state
-                }
-            }
-            case actionTypes.GLOBAL_REDO: {
-                if (future.length > 0) {
-                    let newFuture = [...future.slice(0, future.length - 1)]
-                    let actionToApply = future[future.length - 1]
+function redoUndoGeneralAction(state, isFuture) {
+    let pastOrFuture = isFuture ? state.future : state.past
+    let actionType = isFuture ? actionTypes.GLOBAL_REDO : actionTypes.GLOBAL_UNDO
 
-                    let newPast = [...past, getInverseAction(present, actionToApply)]
-
-                    return {
-                        past: newPast,
-                        present: reducer(present, actionToApply),
-                        future: newFuture
-                    }
-                } else {
-                    return state
-                }
-            }
-            default: {
-                if (action.type) {
-                    let newPast = [...past, getInverseAction(present, action)]
-                    return {
-                        past: newPast,
-                        present: reducer(present, action),
-                        future: []
-                    }
-                } else {
-                    return state
-                }
-            }
+    if (pastOrFuture.length > 0) {
+        let actionToApply = pastOrFuture[pastOrFuture.length - 1]
+        return {
+            type: actionType,
+            payload: getInverseAction(state.present, actionToApply)
+        }
+    } else {
+        return {
+            type: actionTypes.EMPTY
         }
     }
 }
@@ -150,7 +182,7 @@ function getInverseAction(presentState, action) {
             return getInverseTrackActions(presentState.tracks, action)
         }
         default: {
-            console.log('ERROR IMPROPER action')
+            console.log('ERROR IMPROPER action' + action.type)
             return {
                 type: actionTypes.EMPTY
             }
