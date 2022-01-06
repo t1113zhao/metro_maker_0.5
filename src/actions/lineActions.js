@@ -1,7 +1,5 @@
 import { ADD_LINE, UNDO_ADD_LINE, EDIT_LINE, REMOVE_LINE, RESTORE_LINE } from './actionTypes'
 
-import store from '../app/store'
-
 import { serviceIDsGivenLineID } from '../reducers/servicesReducer'
 import { nextIDForArray, getById } from '../utils/utils'
 

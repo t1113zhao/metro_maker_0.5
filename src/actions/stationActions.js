@@ -9,8 +9,6 @@ import {
     MOVE_STATION
 } from './actionTypes'
 
-import store from '../app/store'
-import getPresentState from '../app/storeUtils'
 import { getById, nextIDForArray } from '../utils/utils'
 
 export function addStation(description, name, latitude, longitude) {
