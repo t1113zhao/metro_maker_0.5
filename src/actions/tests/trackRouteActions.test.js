@@ -42,10 +42,16 @@ describe('track route action creators', () => {
 
     it('Clear Track Route Action Creator', () => {
         let trackID = 0
+        let nodes = [
+            [45, 76],
+            [45.5, 76.5],
+            [46, 77]
+        ]
 
-        expect(actions.clearTrackRoute(trackID)).toEqual({
+        expect(actions.clearTrackRoute(nodes, trackID)).toEqual({
             type: CLEAR_TRACKROUTE_NODES,
             payload: {
+                nodes: nodes,
                 trackID: trackID
             }
         })
@@ -106,6 +112,32 @@ describe('track route action creators', () => {
         ).toEqual({
             type: CLEAR_TRACKROUTE_NODES,
             payload: {
+                nodes: [
+                    [44.3, 74.5],
+                    [43.5, 74.3]
+                ],
+                trackID: 2
+            }
+        })
+
+        expect(
+            actions.getInverseTrackRouteActions(state, {
+                type: CLEAR_TRACKROUTE_NODES,
+                payload: {
+                    nodes: [
+                        [44.3, 74.5],
+                        [43.5, 74.3]
+                    ],
+                    trackID: 2
+                }
+            })
+        ).toEqual({
+            type: ADD_NEW_TRACKROUTE_NODES,
+            payload: {
+                nodes: [
+                    [44.3, 74.5],
+                    [43.5, 74.3]
+                ],
                 trackID: 2
             }
         })

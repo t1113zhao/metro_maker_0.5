@@ -26,10 +26,11 @@ export function editTrackRoute(startIndex, endIndex, nodes, trackID) {
     }
 }
 
-export function clearTrackRoute(trackID) {
+export function clearTrackRoute(nodes, trackID) {
     return {
         type: CLEAR_TRACKROUTE_NODES,
         payload: {
+            nodes: nodes,
             trackID: trackID
         }
     }
@@ -41,7 +42,7 @@ export function getInverseTrackRouteActions(state, action) {
             return { type: 'ERROR' }
         }
         case ADD_NEW_TRACKROUTE_NODES: {
-            return clearTrackRoute(action.payload.trackID)
+            return clearTrackRoute(action.payload.nodes.slice(), action.payload.trackID)
         }
         case EDIT_TRACKROUTE_NODES: {
             let targetTrackRouteNodes = getById(state, action.payload.trackID).nodes
@@ -51,9 +52,7 @@ export function getInverseTrackRouteActions(state, action) {
             return editTrackRoute(action.payload.startIndex, replaceEndIndex, removeNodes, action.payload.trackID)
         }
         case CLEAR_TRACKROUTE_NODES: {
-            let targetTrackRoute = getById(state, action.payload.trackID)
-            let nodesCopy = targetTrackRoute.nodes.slice()
-            return addNewTrackRoute(nodesCopy, action.payload.trackID)
+            return addNewTrackRoute(action.payload.nodes.slice(), action.payload.trackID)
         }
     }
 }

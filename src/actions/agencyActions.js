@@ -11,11 +11,13 @@ export function addAgency(name, color) {
     }
 }
 
-export function undoAddAgency(id) {
+export function undoAddAgency(id, name, color) {
     return {
         type: UNDO_ADD_AGENCY,
         payload: {
-            id: parseInt(id)
+            id: parseInt(id),
+            name: name,
+            color: color
         }
     }
 }
@@ -56,11 +58,10 @@ export function getInverseAgencyActions(state, action) {
             return { type: 'ERROR' }
         }
         case ADD_AGENCY: {
-            return undoAddAgency(nextIDForArray(state))
+            return undoAddAgency(nextIDForArray(state), action.payload.name, action.payload.color)
         }
         case UNDO_ADD_AGENCY: {
-            let targetAgency = getById(state, action.payload.id)
-            return addAgency(targetAgency.name, targetAgency.color)
+            return addAgency(action.payload.name, action.payload.color)
         }
         case EDIT_AGENCY: {
             let targetAgency = getById(state, action.payload.id)

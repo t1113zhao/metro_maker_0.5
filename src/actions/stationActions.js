@@ -23,11 +23,15 @@ export function addStation(description, name, latitude, longitude) {
     }
 }
 
-export function undoAddStation(id) {
+export function undoAddStation(id, description, name, latitude, longitude) {
     return {
         type: UNDO_ADD_STATION,
         payload: {
-            id: parseInt(id)
+            id: parseInt(id),
+            name: name,
+            description: description,
+            latitude: parseFloat(latitude),
+            longitude: parseFloat(longitude)
         }
     }
 }
@@ -79,15 +83,20 @@ export function getInverseStationActions(state, action) {
             return { type: 'ERROR' } // this should not happen
         }
         case ADD_STATION: {
-            return undoAddStation(nextIDForArray(state))
+            return undoAddStation(
+                nextIDForArray(state),
+                action.payload.description,
+                action.payload.name,
+                action.payload.latitude,
+                action.payload.longitude
+            )
         }
         case UNDO_ADD_STATION: {
-            let targetStation = getById(state, action.payload.id)
             return addStation(
-                targetStation.description,
-                targetStation.name,
-                targetStation.latitude,
-                targetStation.longitude
+                action.payload.description,
+                action.payload.name,
+                action.payload.latitude,
+                action.payload.longitude
             )
         }
         case EDIT_STATION: {

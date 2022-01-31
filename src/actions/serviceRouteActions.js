@@ -1,4 +1,4 @@
-import { getById } from "../utils/utils"
+import { getById } from '../utils/utils'
 import {
     ADD_SERVICETRACK_TWOWAY,
     ADD_SERVICETRACK_ONEWAY,
@@ -10,7 +10,7 @@ import {
     UNDO_CLEAR_SERVICE_ROUTE,
     REMOVE_STOP,
     RESTORE_STOP
-} from "./actionTypes"
+} from './actionTypes'
 
 export function addTwoWayService(trackID, serviceID, stationA_ID, stationB_ID, index) {
     return {
@@ -81,11 +81,13 @@ export function removeServiceAlongTrack(trackID, serviceID, index) {
     }
 }
 
-export function clearServiceRoute(serviceID) {
+export function clearServiceRoute(serviceID, stops, serviceTracks) {
     return {
         type: CLEAR_SERVICE_ROUTE,
         payload: {
-            serviceID: parseInt(serviceID)
+            serviceID: parseInt(serviceID),
+            stops: stops,
+            serviceTracks: serviceTracks
         }
     }
 }
@@ -124,7 +126,7 @@ export function restoreStop(serviceID, stationID) {
 export function getInverseServiceRouteActions(state, action) {
     switch (action.type) {
         default: {
-            return { type: "ERROR" } // this should not happen
+            return { type: 'ERROR' } // this should not happen
         }
         case ADD_SERVICETRACK_TWOWAY:
         case ADD_SERVICETRACK_ONEWAY: {
@@ -168,13 +170,10 @@ export function getInverseServiceRouteActions(state, action) {
             }
         }
         case CLEAR_SERVICE_ROUTE: {
-            let targetRoute = getById(state, action.payload.serviceID)
-            let stopsCopy = targetRoute.stopsByID.slice()
-            let serviceTracksCopy = targetRoute.serviceTracks.slice()
-            return undoClearServiceRoute(targetRoute.id, stopsCopy, serviceTracksCopy)
+            return undoClearServiceRoute(action.payload.serviceID, action.payload.stops, action.payload.serviceTracks)
         }
         case UNDO_CLEAR_SERVICE_ROUTE: {
-            return clearServiceRoute(action.payload.serviceID)
+            return clearServiceRoute(action.payload.serviceID, action.payload.stops, action.payload.serviceTracks)
         }
         case REMOVE_STOP: {
             return restoreStop(action.payload.serviceID, action.payload.stationID)

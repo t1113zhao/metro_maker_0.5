@@ -27,10 +27,19 @@ describe('Line Action Creator', () => {
     })
 
     it('Undo Add Line Action Creator', () => {
-        expect(actions.undoAddLine(1)).toEqual({
+        let name = 'Yonge-University'
+        let agencyID = 0
+        let color = '#ffcb0c'
+        let linetype = linetypes.HEAVY_METRO
+
+        expect(actions.undoAddLine(1, agencyID, name, color, linetype)).toEqual({
             type: type.UNDO_ADD_LINE,
             payload: {
-                id: 1
+                id: 1,
+                agencyID: agencyID,
+                name: name,
+                color: color,
+                linetype: linetype
             }
         })
     })
@@ -128,7 +137,14 @@ describe('Line Action Creator', () => {
                 linetype: linetypes.HEAVY_METRO,
                 deletedAt: null
             },
-            { id: 2, agencyID: 0, name: 'Ontario', color: 'Blue', linetype: linetypes.LIGHT_METRO, deletedAt: null }
+            {
+                id: 2,
+                agencyID: 0,
+                name: 'Ontario',
+                color: 'Blue',
+                linetype: linetypes.LIGHT_METRO,
+                deletedAt: null
+            }
         ]
         expect(
             actions.getInverseLineActions(state, {
@@ -151,7 +167,11 @@ describe('Line Action Creator', () => {
         ).toEqual({
             type: type.UNDO_ADD_LINE,
             payload: {
-                id: 3
+                id: 3,
+                name: 'LakeShore East',
+                agencyID: 0,
+                color: 'Maroon',
+                linetype: linetypes.COMMUTER_REGIONAL_RAIL
             }
         })
 
@@ -159,16 +179,20 @@ describe('Line Action Creator', () => {
             getInverseLineActions(state, {
                 type: type.UNDO_ADD_LINE,
                 payload: {
-                    id: 2
+                    id: 3,
+                    name: 'LakeShore East',
+                    agencyID: 0,
+                    color: 'Maroon',
+                    linetype: linetypes.COMMUTER_REGIONAL_RAIL
                 }
             })
         ).toEqual({
             type: type.ADD_LINE,
             payload: {
+                name: 'LakeShore East',
                 agencyID: 0,
-                name: 'Ontario',
-                color: 'Blue',
-                linetype: linetypes.LIGHT_METRO
+                color: 'Maroon',
+                linetype: linetypes.COMMUTER_REGIONAL_RAIL
             }
         })
 

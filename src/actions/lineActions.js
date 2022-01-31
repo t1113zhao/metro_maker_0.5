@@ -15,11 +15,15 @@ export function addLine(agencyID, name, color, linetype) {
     }
 }
 
-export function undoAddLine(id) {
+export function undoAddLine(id, agencyID, name, color, linetype) {
     return {
         type: UNDO_ADD_LINE,
         payload: {
-            id: parseInt(id)
+            id: parseInt(id),
+            agencyID: agencyID,
+            name: name,
+            color: color,
+            linetype: linetype
         }
     }
 }
@@ -61,11 +65,16 @@ export function getInverseLineActions(state, action) {
             return { type: 'ERROR' }
         }
         case ADD_LINE: {
-            return undoAddLine(nextIDForArray(state))
+            return undoAddLine(
+                nextIDForArray(state),
+                action.payload.agencyID,
+                action.payload.name,
+                action.payload.color,
+                action.payload.linetype
+            )
         }
         case UNDO_ADD_LINE: {
-            let targetLine = getById(state, action.payload.id)
-            return addLine(targetLine.agencyID, targetLine.name, targetLine.color, targetLine.linetype)
+            return addLine(action.payload.agencyID, action.payload.name, action.payload.color, action.payload.linetype)
         }
         case EDIT_LINE: {
             let targetLine = getById(state, action.payload.id)

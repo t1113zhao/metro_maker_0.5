@@ -21,10 +21,12 @@ describe('agency action creator', () => {
     })
 
     it('Should Undo Add Agency Action Creator', () => {
-        expect(actions.undoAddAgency(1)).toEqual({
+        expect(actions.undoAddAgency(1, 'Metrolinx', 'green')).toEqual({
             type: type.UNDO_ADD_AGENCY,
             payload: {
-                id: 1
+                id: 1,
+                name: 'Metrolinx',
+                color: 'green'
             }
         })
     })
@@ -171,7 +173,9 @@ describe('agency action creator', () => {
         ).toEqual({
             type: type.UNDO_ADD_AGENCY,
             payload: {
-                id: 4
+                id: 4,
+                name: 'Yetrolinx',
+                color: 'Yellow'
             }
         })
 
@@ -179,14 +183,16 @@ describe('agency action creator', () => {
             actions.getInverseAgencyActions(state, {
                 type: type.UNDO_ADD_AGENCY,
                 payload: {
-                    id: 3
+                    id: 4,
+                    name: 'Yetrolinx',
+                    color: 'Yellow'
                 }
             })
         ).toEqual({
             type: type.ADD_AGENCY,
             payload: {
-                name: 'YRT',
-                color: 'Blue'
+                name: 'Yetrolinx',
+                color: 'Yellow'
             }
         })
 

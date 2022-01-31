@@ -3,7 +3,6 @@ import * as type from '../actionTypes'
 import * as transferTypes from '../../object_types/transfertypes'
 import configureMockStore from 'redux-mock-store'
 import { transferIDsGivenStationID } from '../../reducers/transferReducer'
-import getPresentState from '../../app/storeUtils'
 
 const mockStore = configureMockStore()
 describe('station action creator', () => {
@@ -16,6 +15,25 @@ describe('station action creator', () => {
         expect(actions.addStation(description, name, latitude, longitude)).toEqual({
             type: type.ADD_STATION,
             payload: {
+                name: name,
+                description: description,
+                latitude: latitude,
+                longitude: longitude
+            }
+        })
+    })
+
+    it('Undo Add Station Action Creator', () => {
+        let id = 0
+        let name = 'Bloor-Yonge'
+        let description = 'Intersection of Yonge-University and Bloor-Danforth Lines'
+        let latitude = 43.671111
+        let longitude = -79.385833
+
+        expect(actions.undoAddStation(id, description, name, latitude, longitude)).toEqual({
+            type: type.UNDO_ADD_STATION,
+            payload: {
+                id: id,
                 name: name,
                 description: description,
                 latitude: latitude,
@@ -160,7 +178,11 @@ describe('station action creator', () => {
         ).toEqual({
             type: type.UNDO_ADD_STATION,
             payload: {
-                id: 5
+                id: 5,
+                name: 'Museum',
+                description: 'ROM',
+                latitude: 44.9,
+                longitude: -80.2
             }
         })
 
@@ -168,16 +190,20 @@ describe('station action creator', () => {
             actions.getInverseStationActions(state.stations, {
                 type: type.UNDO_ADD_STATION,
                 payload: {
-                    id: 4
+                    id: 5,
+                    name: 'Museum',
+                    description: 'ROM',
+                    latitude: 44.9,
+                    longitude: -80.2
                 }
             })
         ).toEqual({
             type: type.ADD_STATION,
             payload: {
-                name: 'Spadina-YU',
-                description: 'desc',
-                latitude: 45.1,
-                longitude: -80.3
+                name: 'Museum',
+                description: 'ROM',
+                latitude: 44.9,
+                longitude: -80.2
             }
         })
 
@@ -225,7 +251,7 @@ describe('station action creator', () => {
 
         expect(
             store.dispatch(
-                actions.getInverseStationActions(getPresentState(), {
+                actions.getInverseStationActions(store.getState(), {
                     type: type.REMOVE_STATION,
                     payload: {
                         id: 0,

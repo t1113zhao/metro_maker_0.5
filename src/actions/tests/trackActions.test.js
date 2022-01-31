@@ -8,19 +8,26 @@ const mockStore = configureMockStore()
 
 describe('track action creator', () => {
     it('Add Track Action Creator', () => {
-        let stationA_ID = 0
-        let stationB_ID = 1
-
-        let store = mockStore({
-            stations: [
-                { id: 0, longitude: 46, latitude: 47 },
-                { id: 1, longitude: 47, latitude: 47 }
-            ]
-        })
-        expect(store.dispatch(actions.addTrack(stationA_ID, stationB_ID))).toEqual({
+        let stationA = { id: 0, longitude: 46, latitude: 47 }
+        let stationB = { id: 1, longitude: 47, latitude: 47 }
+        expect(actions.addTrack(stationA, stationB)).toEqual({
             type: ADD_TRACK,
             payload: {
-                stations: [0, 1]
+                stations: [stationA, stationB]
+            }
+        })
+    })
+
+    it('Undo Add Track Creator', () => {
+        let stationA = { id: 0, longitude: 46, latitude: 47 }
+        let stationB = { id: 1, longitude: 47, latitude: 47 }
+        let id = 0
+
+        expect(actions.undoAddTrack(id, stationA, stationB)).toEqual({
+            type: UNDO_ADD_TRACK,
+            payload: {
+                id: id,
+                stations: [stationA, stationB]
             }
         })
     })
@@ -96,7 +103,6 @@ describe('track action creator', () => {
                         { id: 0, stationID: 0, latitude: 43.7, longitude: -79.44 },
                         { id: 1, stationID: 1, latitude: 43.7, longitude: -79.45 }
                     ],
-                    segments: [{ id: 0, isCurved: false, endNodes: [0, 1], controlPoint: null }],
                     deletedAt: null
                 },
                 {
@@ -106,7 +112,6 @@ describe('track action creator', () => {
                         { id: 0, stationID: 1, latitude: 43.7, longitude: -79.45 },
                         { id: 1, stationID: 2, latitude: 43.7, longitude: -79.46 }
                     ],
-                    segments: [{ id: 0, isCurved: false, endNodes: [0, 1], controlPoint: null }],
                     deletedAt: null
                 }
             ]
@@ -117,15 +122,19 @@ describe('track action creator', () => {
                 type: ADD_TRACK,
                 payload: {
                     stations: [
-                        { id: 2, latitude: 43.7, longitude: -79.46, deletedAt: null },
-                        { id: 3, latitude: 45, longitude: -80.1, deletedAt: null }
+                        { id: 0, stationID: 1, latitude: 43.7, longitude: -79.45 },
+                        { id: 1, stationID: 2, latitude: 43.7, longitude: -79.46 }
                     ]
                 }
             })
         ).toEqual({
             type: UNDO_ADD_TRACK,
             payload: {
-                id: 2
+                id: 2,
+                stations: [
+                    { id: 0, stationID: 1, latitude: 43.7, longitude: -79.45 },
+                    { id: 1, stationID: 2, latitude: 43.7, longitude: -79.46 }
+                ]
             }
         })
 
@@ -136,14 +145,21 @@ describe('track action creator', () => {
                 actions.getInverseTrackActions(state.tracks, {
                     type: UNDO_ADD_TRACK,
                     payload: {
-                        id: 1
+                        id: 2,
+                        stations: [
+                            { id: 0, stationID: 1, latitude: 43.7, longitude: -79.45 },
+                            { id: 1, stationID: 2, latitude: 43.7, longitude: -79.46 }
+                        ]
                     }
                 })
             )
         ).toEqual({
             type: ADD_TRACK,
             payload: {
-                stations: [1, 2]
+                stations: [
+                    { id: 0, stationID: 1, latitude: 43.7, longitude: -79.45 },
+                    { id: 1, stationID: 2, latitude: 43.7, longitude: -79.46 }
+                ]
             }
         })
 

@@ -1,11 +1,5 @@
 import { nextIDForArray, getById } from '../utils/utils'
-import {
-    ADD_TRANSFER,
-    UNDO_ADD_TRANSFER,
-    EDIT_TRANSFER,
-    REMOVE_TRANSFER,
-    RESTORE_TRANSFER
-} from './actionTypes'
+import { ADD_TRANSFER, UNDO_ADD_TRANSFER, EDIT_TRANSFER, REMOVE_TRANSFER, RESTORE_TRANSFER } from './actionTypes'
 
 export function addTransfer(stationA_ID, stationB_ID, type) {
     return {
@@ -17,11 +11,13 @@ export function addTransfer(stationA_ID, stationB_ID, type) {
     }
 }
 
-export function undoAddTransfer(id) {
+export function undoAddTransfer(id, stationA_ID, stationB_ID, type) {
     return {
         type: UNDO_ADD_TRANSFER,
         payload: {
-            id: parseInt(id)
+            id: parseInt(id),
+            stationIDs: [stationA_ID, stationB_ID],
+            type: type
         }
     }
 }
@@ -58,14 +54,18 @@ export function restoreTransfer(id) {
 export function getInverseTransferActions(state, action) {
     switch (action.type) {
         default: {
-            return { type: "ERROR" }
+            return { type: 'ERROR' }
         }
         case ADD_TRANSFER: {
-            return undoAddTransfer(nextIDForArray(state))
+            return undoAddTransfer(
+                nextIDForArray(state),
+                action.payload.stationIDs[0],
+                action.payload.stationIDs[1],
+                action.payload.type
+            )
         }
         case UNDO_ADD_TRANSFER: {
-            let targetTransfer = getById(state, action.payload.id)
-            return addTransfer(targetTransfer.stationIDs[0], targetTransfer.stationIDs[1], targetTransfer.type)
+            return addTransfer(action.payload.stationIDs[0], action.payload.stationIDs[1], action.payload.type)
         }
         case EDIT_TRANSFER: {
             let targetTransfer = getById(state, action.payload.id)

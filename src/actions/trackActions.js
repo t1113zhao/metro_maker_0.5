@@ -1,22 +1,24 @@
 import { selectStationsGivenStationIDs } from '../reducers/stationsReducer'
 import { ADD_TRACK, UNDO_ADD_TRACK, REMOVE_TRACK, RESTORE_TRACK } from './actionTypes'
-import { getById, nextIDForArray } from '../utils/utils'
+import { nextIDForArray } from '../utils/utils'
 
-export function addTrack(stationA_ID, stationB_ID) {
-    let stationIDs = [parseInt(stationA_ID), parseInt(stationB_ID)]
+export function addTrack(stationA, stationB) {
+    let stations = [stationA, stationB]
     return {
         type: ADD_TRACK,
         payload: {
-            stations: stationIDs
+            stations: stations
         }
     }
 }
 
-export function undoAddTrack(id) {
+export function undoAddTrack(id, stationA, stationB) {
+    let stations = [stationA, stationB]
     return {
         type: UNDO_ADD_TRACK,
         payload: {
-            id: parseInt(id)
+            id: parseInt(id),
+            stations: stations
         }
     }
 }
@@ -46,11 +48,10 @@ export function getInverseTrackActions(state, action) {
             return { type: 'ERROR' } // this should not happen
         }
         case ADD_TRACK: {
-            return undoAddTrack(nextIDForArray(state))
+            return undoAddTrack(nextIDForArray(state), action.payload.stations[0], action.payload.stations[1])
         }
         case UNDO_ADD_TRACK: {
-            let targetTrack = getById(state, action.payload.id)
-            return addTrack(targetTrack.stationIDs[0], targetTrack.stationIDs[1])
+            return addTrack(action.payload.stations[0], action.payload.stations[1])
         }
         case REMOVE_TRACK: {
             return restoreTrack(action.payload.id)

@@ -1,6 +1,6 @@
 import { ADD_SERVICE, UNDO_ADD_SERVICE, EDIT_SERVICE, REMOVE_SERVICE, RESTORE_SERVICE } from './actionTypes'
 
-import { nextIDForArray, getById } from '../utils/utils'
+import { getById, nextIDForArray } from '../utils/utils'
 
 export function addService(lineID, agencyID, name, servicePeriod, frequency) {
     return {
@@ -15,11 +15,16 @@ export function addService(lineID, agencyID, name, servicePeriod, frequency) {
     }
 }
 
-export function undoAddService(id) {
+export function undoAddService(id, lineID, agencyID, name, servicePeriod, frequency) {
     return {
         type: UNDO_ADD_SERVICE,
         payload: {
-            id: parseInt(id)
+            id: parseInt(id),
+            lineID: parseInt(lineID),
+            agencyID: parseInt(agencyID),
+            name: name,
+            servicePeriod: servicePeriod,
+            frequency: frequency // trains per hour
         }
     }
 }
@@ -61,16 +66,22 @@ export function getInverseServiceActions(state, action) {
             return { type: 'ERROR' }
         }
         case ADD_SERVICE: {
-            return undoAddService(nextIDForArray(state))
+            return undoAddService(
+                nextIDForArray(state),
+                action.payload.lineID,
+                action.payload.agencyID,
+                action.payload.name,
+                action.payload.servicePeriod,
+                action.payload.frequency
+            )
         }
         case UNDO_ADD_SERVICE: {
-            let targetService = getById(state, action.payload.id)
             return addService(
-                targetService.lineID,
-                targetService.agencyID,
-                targetService.name,
-                targetService.servicePeriod,
-                targetService.frequency
+                action.payload.lineID,
+                action.payload.agencyID,
+                action.payload.name,
+                action.payload.servicePeriod,
+                action.payload.frequency
             )
         }
         case EDIT_SERVICE: {

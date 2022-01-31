@@ -37,10 +37,10 @@ export const combinedReducer = combineReducers({
 export function redoUndoActionEnhancer(state, action) {
     switch (action.type) {
         case actionTypes.GLOBAL_UNDO: {
-            return redoUndoGeneralAction(state, false)
+            return enhanceUndoRedoAction(state, false)
         }
         case actionTypes.GLOBAL_REDO: {
-            return redoUndoGeneralAction(state, true)
+            return enhanceUndoRedoAction(state, true)
         }
         default: {
             return action
@@ -59,7 +59,7 @@ export default function undoRedoReducer(state, action) {
 }
 
 export function pastReducer(state = actionStackInitialState, action) {
-    if (!action.type) {
+    if (!action.type || !action.isEnhanced) {
         return state
     }
     switch (action.type) {
@@ -82,6 +82,9 @@ export function pastReducer(state = actionStackInitialState, action) {
 }
 
 export function futureReducer(state = actionStackInitialState, action) {
+    if (!action.isEnhanced) {
+        return state
+    }
     switch (action.type) {
         // Remove one from the future
         case actionTypes.GLOBAL_REDO: {
@@ -99,15 +102,17 @@ export function futureReducer(state = actionStackInitialState, action) {
     }
 }
 
-function redoUndoGeneralAction(state, isFuture) {
+// Get the inverse of top of the future/past stack
+export function enhanceUndoRedoAction(state, isFuture) {
     let pastOrFuture = isFuture ? state.future : state.past
-    let actionType = isFuture ? actionTypes.GLOBAL_REDO : actionTypes.GLOBAL_UNDO
 
     if (pastOrFuture.length > 0) {
-        let actionToApply = pastOrFuture[pastOrFuture.length - 1]
+        let actionToInvert = pastOrFuture[pastOrFuture.length - 1]
+        let invertedAction = getInverseAction(state.present, actionToInvert)
         return {
-            type: actionType,
-            payload: getInverseAction(state.present, actionToApply)
+            type: invertedAction.type,
+            payload: invertedAction.payload,
+            isEnhanced: true
         }
     } else {
         return {
@@ -117,7 +122,7 @@ function redoUndoGeneralAction(state, isFuture) {
 }
 
 // get the inverse action to put in past/future
-function getInverseAction(presentState, action) {
+export function getInverseAction(presentState, action) {
     switch (action.type) {
         case actionTypes.ADD_AGENCY:
         case actionTypes.UNDO_ADD_AGENCY:

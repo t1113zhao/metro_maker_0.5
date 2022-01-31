@@ -22,10 +22,21 @@ describe('Service Action Creator', () => {
     })
 
     it('Undo Add Service Action Creator', () => {
-        expect(actions.undoAddService(0)).toEqual({
+        let lineID = 0
+        let agencyID = 0
+        let name = 'Yonge University Local'
+        let frequency = 40
+        let servicePeriod = periods.ALWAYS
+
+        expect(actions.undoAddService(0, lineID, agencyID, name, servicePeriod, frequency)).toEqual({
             type: type.UNDO_ADD_SERVICE,
             payload: {
-                id: 0
+                id: 0,
+                lineID: lineID,
+                agencyID: agencyID,
+                name: name,
+                servicePeriod: servicePeriod,
+                frequency: frequency
             }
         })
     })
@@ -137,7 +148,12 @@ describe('Service Action Creator', () => {
         ).toEqual({
             type: type.UNDO_ADD_SERVICE,
             payload: {
-                id: 5
+                id: 5,
+                lineID: 0,
+                agencyID: 0,
+                name: 'Yonge University Express',
+                servicePeriod: periods.PEAK_ONLY,
+                frequency: 20
             }
         })
 
@@ -145,17 +161,22 @@ describe('Service Action Creator', () => {
             actions.getInverseServiceActions(state, {
                 type: type.UNDO_ADD_SERVICE,
                 payload: {
-                    id: 1
+                    id: 5,
+                    lineID: 0,
+                    agencyID: 0,
+                    name: 'Yonge University Express',
+                    servicePeriod: periods.PEAK_ONLY,
+                    frequency: 20
                 }
             })
         ).toEqual({
             type: type.ADD_SERVICE,
             payload: {
-                lineID: 1,
+                lineID: 0,
                 agencyID: 0,
-                name: 'Bloor Danforth Local',
-                servicePeriod: periods.ALWAYS,
-                frequency: 40
+                name: 'Yonge University Express',
+                servicePeriod: periods.PEAK_ONLY,
+                frequency: 20
             }
         })
 

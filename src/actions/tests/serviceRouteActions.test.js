@@ -20,9 +20,7 @@ describe('Service Route Action Creator', () => {
         let stationB_ID = 1
         let index = 0
 
-        expect(actions.addTwoWayService(
-            trackID, serviceID, stationA_ID, stationB_ID, index
-        )).toEqual({
+        expect(actions.addTwoWayService(trackID, serviceID, stationA_ID, stationB_ID, index)).toEqual({
             type: ADD_SERVICETRACK_TWOWAY,
             payload: {
                 trackID: trackID,
@@ -40,9 +38,7 @@ describe('Service Route Action Creator', () => {
         let toID = 1
         let index = 0
 
-        expect(actions.addOneWayService(
-            trackID, serviceID, fromID, toID, index
-        )).toEqual({
+        expect(actions.addOneWayService(trackID, serviceID, fromID, toID, index)).toEqual({
             type: ADD_SERVICETRACK_ONEWAY,
             payload: {
                 trackID: trackID,
@@ -165,10 +161,13 @@ describe('Service Route Action Creator', () => {
     it('get inverse service route actions', () => {
         let state = [
             {
-                id: 0, deletedAt: null, stopsByID: [0, 1, 2, 3, 4], serviceTracks: [
+                id: 0,
+                deletedAt: null,
+                stopsByID: [0, 1, 2, 3, 4],
+                serviceTracks: [
                     [
                         { trackID: 1, fromStationID: 0, toStationID: 1 },
-                        { trackID: 1, fromStationID: 1, toStationID: 0 },
+                        { trackID: 1, fromStationID: 1, toStationID: 0 }
                     ],
                     [
                         { trackID: 7, fromStationID: 1, toStationID: 2 },
@@ -177,33 +176,36 @@ describe('Service Route Action Creator', () => {
                     [
                         { trackID: 4, fromStationID: 2, toStationID: 3 },
                         { trackID: 5, fromStationID: 3, toStationID: 4 },
-                        { trackID: 6, fromStationID: 4, toStationID: 2 },
-                    ],
+                        { trackID: 6, fromStationID: 4, toStationID: 2 }
+                    ]
                 ]
             },
             {
-                id: 1, deletedAt: null, stopsByID: [0, 1, 5], serviceTracks: [
+                id: 1,
+                deletedAt: null,
+                stopsByID: [0, 1, 5],
+                serviceTracks: [
                     [
                         { trackID: 1, fromStationID: 0, toStationID: 1 },
-                        { trackID: 1, fromStationID: 1, toStationID: 0 },
+                        { trackID: 1, fromStationID: 1, toStationID: 0 }
                     ],
-                    [
-                        { trackID: 2, fromStationID: 1, toStationID: 5 },
-                    ],
+                    [{ trackID: 2, fromStationID: 1, toStationID: 5 }]
                 ]
-            },
+            }
         ]
 
-        expect(actions.getInverseServiceRouteActions(state, {
-            type: ADD_SERVICETRACK_ONEWAY,
-            payload: {
-                trackID: 8,
-                serviceID: 0,
-                fromID: 4,
-                toID: 5,
-                index: 3
-            }
-        })).toEqual({
+        expect(
+            actions.getInverseServiceRouteActions(state, {
+                type: ADD_SERVICETRACK_ONEWAY,
+                payload: {
+                    trackID: 8,
+                    serviceID: 0,
+                    fromID: 4,
+                    toID: 5,
+                    index: 3
+                }
+            })
+        ).toEqual({
             type: REMOVE_SERVICE_ALONG_TRACK,
             payload: {
                 trackID: 8,
@@ -212,15 +214,17 @@ describe('Service Route Action Creator', () => {
             }
         })
 
-        expect(actions.getInverseServiceRouteActions(state, {
-            type: ADD_SERVICETRACK_TWOWAY,
-            payload: {
-                trackID: 8,
-                serviceID: 0,
-                stationIDs: [4, 5],
-                index: 3
-            }
-        })).toEqual({
+        expect(
+            actions.getInverseServiceRouteActions(state, {
+                type: ADD_SERVICETRACK_TWOWAY,
+                payload: {
+                    trackID: 8,
+                    serviceID: 0,
+                    stationIDs: [4, 5],
+                    index: 3
+                }
+            })
+        ).toEqual({
             type: REMOVE_SERVICE_ALONG_TRACK,
             payload: {
                 trackID: 8,
@@ -229,14 +233,16 @@ describe('Service Route Action Creator', () => {
             }
         })
 
-        expect(actions.getInverseServiceRouteActions(state, {
-            type: SWITCH_ONEWAY_DIRECTION,
-            payload: {
-                trackID: 2,
-                serviceID: 1,
-                index: 1
-            }
-        })).toEqual({
+        expect(
+            actions.getInverseServiceRouteActions(state, {
+                type: SWITCH_ONEWAY_DIRECTION,
+                payload: {
+                    trackID: 2,
+                    serviceID: 1,
+                    index: 1
+                }
+            })
+        ).toEqual({
             type: SWITCH_ONEWAY_DIRECTION,
             payload: {
                 trackID: 2,
@@ -245,14 +251,16 @@ describe('Service Route Action Creator', () => {
             }
         })
 
-        expect(actions.getInverseServiceRouteActions(state, {
-            type: ONEWAY_TO_TWOWAY,
-            payload: {
-                trackID: 2,
-                serviceID: 1,
-                index: 1
-            }
-        })).toEqual({
+        expect(
+            actions.getInverseServiceRouteActions(state, {
+                type: ONEWAY_TO_TWOWAY,
+                payload: {
+                    trackID: 2,
+                    serviceID: 1,
+                    index: 1
+                }
+            })
+        ).toEqual({
             type: TWOWAY_TO_ONEWAY,
             payload: {
                 trackID: 2,
@@ -261,14 +269,16 @@ describe('Service Route Action Creator', () => {
             }
         })
 
-        expect(actions.getInverseServiceRouteActions(state, {
-            type: TWOWAY_TO_ONEWAY,
-            payload: {
-                trackID: 2,
-                serviceID: 1,
-                index: 1
-            }
-        })).toEqual({
+        expect(
+            actions.getInverseServiceRouteActions(state, {
+                type: TWOWAY_TO_ONEWAY,
+                payload: {
+                    trackID: 2,
+                    serviceID: 1,
+                    index: 1
+                }
+            })
+        ).toEqual({
             type: ONEWAY_TO_TWOWAY,
             payload: {
                 trackID: 2,
@@ -277,14 +287,16 @@ describe('Service Route Action Creator', () => {
             }
         })
 
-        expect(actions.getInverseServiceRouteActions(state, {
-            type: REMOVE_SERVICE_ALONG_TRACK,
-            payload: {
-                trackID: 2,
-                serviceID: 1,
-                index: 1
-            }
-        })).toEqual({
+        expect(
+            actions.getInverseServiceRouteActions(state, {
+                type: REMOVE_SERVICE_ALONG_TRACK,
+                payload: {
+                    trackID: 2,
+                    serviceID: 1,
+                    index: 1
+                }
+            })
+        ).toEqual({
             type: ADD_SERVICETRACK_ONEWAY,
             payload: {
                 trackID: 2,
@@ -295,14 +307,16 @@ describe('Service Route Action Creator', () => {
             }
         })
 
-        expect(actions.getInverseServiceRouteActions(state, {
-            type: REMOVE_SERVICE_ALONG_TRACK,
-            payload: {
-                trackID: 1,
-                serviceID: 0,
-                index: 0
-            }
-        })).toEqual({
+        expect(
+            actions.getInverseServiceRouteActions(state, {
+                type: REMOVE_SERVICE_ALONG_TRACK,
+                payload: {
+                    trackID: 1,
+                    serviceID: 0,
+                    index: 0
+                }
+            })
+        ).toEqual({
             type: ADD_SERVICETRACK_TWOWAY,
             payload: {
                 trackID: 1,
@@ -312,12 +326,30 @@ describe('Service Route Action Creator', () => {
             }
         })
 
-        expect(actions.getInverseServiceRouteActions(state, {
-            type: CLEAR_SERVICE_ROUTE,
-            payload: {
-                serviceID: 0
-            }
-        })).toEqual({
+        expect(
+            actions.getInverseServiceRouteActions(state, {
+                type: CLEAR_SERVICE_ROUTE,
+                payload: {
+                    serviceID: 0,
+                    stops: [0, 1, 2, 3, 4],
+                    serviceTracks: [
+                        [
+                            { trackID: 1, fromStationID: 0, toStationID: 1 },
+                            { trackID: 1, fromStationID: 1, toStationID: 0 }
+                        ],
+                        [
+                            { trackID: 7, fromStationID: 1, toStationID: 2 },
+                            { trackID: 7, fromStationID: 2, toStationID: 1 }
+                        ],
+                        [
+                            { trackID: 4, fromStationID: 2, toStationID: 3 },
+                            { trackID: 5, fromStationID: 3, toStationID: 4 },
+                            { trackID: 6, fromStationID: 4, toStationID: 2 }
+                        ]
+                    ]
+                }
+            })
+        ).toEqual({
             type: UNDO_CLEAR_SERVICE_ROUTE,
             payload: {
                 serviceID: 0,
@@ -325,7 +357,7 @@ describe('Service Route Action Creator', () => {
                 serviceTracks: [
                     [
                         { trackID: 1, fromStationID: 0, toStationID: 1 },
-                        { trackID: 1, fromStationID: 1, toStationID: 0 },
+                        { trackID: 1, fromStationID: 1, toStationID: 0 }
                     ],
                     [
                         { trackID: 7, fromStationID: 1, toStationID: 2 },
@@ -334,21 +366,44 @@ describe('Service Route Action Creator', () => {
                     [
                         { trackID: 4, fromStationID: 2, toStationID: 3 },
                         { trackID: 5, fromStationID: 3, toStationID: 4 },
-                        { trackID: 6, fromStationID: 4, toStationID: 2 },
-                    ],
+                        { trackID: 6, fromStationID: 4, toStationID: 2 }
+                    ]
                 ]
             }
         })
 
-        expect(actions.getInverseServiceRouteActions(state, {
-            type: UNDO_CLEAR_SERVICE_ROUTE,
+        expect(
+            actions.getInverseServiceRouteActions(state, {
+                type: UNDO_CLEAR_SERVICE_ROUTE,
+                payload: {
+                    serviceID: 0,
+                    stops: [0, 1, 2, 3, 4],
+                    serviceTracks: [
+                        [
+                            { trackID: 1, fromStationID: 0, toStationID: 1 },
+                            { trackID: 1, fromStationID: 1, toStationID: 0 }
+                        ],
+                        [
+                            { trackID: 7, fromStationID: 1, toStationID: 2 },
+                            { trackID: 7, fromStationID: 2, toStationID: 1 }
+                        ],
+                        [
+                            { trackID: 4, fromStationID: 2, toStationID: 3 },
+                            { trackID: 5, fromStationID: 3, toStationID: 4 },
+                            { trackID: 6, fromStationID: 4, toStationID: 2 }
+                        ]
+                    ]
+                }
+            })
+        ).toEqual({
+            type: CLEAR_SERVICE_ROUTE,
             payload: {
                 serviceID: 0,
                 stops: [0, 1, 2, 3, 4],
                 serviceTracks: [
                     [
                         { trackID: 1, fromStationID: 0, toStationID: 1 },
-                        { trackID: 1, fromStationID: 1, toStationID: 0 },
+                        { trackID: 1, fromStationID: 1, toStationID: 0 }
                     ],
                     [
                         { trackID: 7, fromStationID: 1, toStationID: 2 },
@@ -357,42 +412,41 @@ describe('Service Route Action Creator', () => {
                     [
                         { trackID: 4, fromStationID: 2, toStationID: 3 },
                         { trackID: 5, fromStationID: 3, toStationID: 4 },
-                        { trackID: 6, fromStationID: 4, toStationID: 2 },
-                    ],
+                        { trackID: 6, fromStationID: 4, toStationID: 2 }
+                    ]
                 ]
             }
-        })).toEqual({
-            type: CLEAR_SERVICE_ROUTE,
-            payload: {
-                serviceID: 0
-            }
         })
 
-        expect(actions.getInverseServiceRouteActions(state, {
-            type: REMOVE_STOP,
-            payload: {
-                serviceID: 1,
-                stationID: 5,
-            }
-        })).toEqual({
+        expect(
+            actions.getInverseServiceRouteActions(state, {
+                type: REMOVE_STOP,
+                payload: {
+                    serviceID: 1,
+                    stationID: 5
+                }
+            })
+        ).toEqual({
             type: RESTORE_STOP,
             payload: {
                 serviceID: 1,
-                stationID: 5,
+                stationID: 5
             }
         })
 
-        expect(actions.getInverseServiceRouteActions(state, {
-            type: RESTORE_STOP,
-            payload: {
-                serviceID: 1,
-                stationID: 5,
-            }
-        })).toEqual({
+        expect(
+            actions.getInverseServiceRouteActions(state, {
+                type: RESTORE_STOP,
+                payload: {
+                    serviceID: 1,
+                    stationID: 5
+                }
+            })
+        ).toEqual({
             type: REMOVE_STOP,
             payload: {
                 serviceID: 1,
-                stationID: 5,
+                stationID: 5
             }
         })
     })

@@ -7,6 +7,11 @@ export function nextIDForArray(array) {
     return maxID + 1
 }
 
+export function lastIdOfArray(array) {
+    const maxID = array.reduce((maxID, element) => Math.max(element.id, maxID), -1)
+    return maxID
+}
+
 export function genericSingleDelete(array, id, deletedAt) {
     return array.map(item => {
         if (item.id !== id) {
