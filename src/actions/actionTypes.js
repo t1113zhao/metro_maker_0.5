@@ -78,3 +78,9 @@ export const APP_NAVIGATE = 'APP_NAVIGATE'
 export const SEARCH = 'SEARCH'
 export const VIEW_FILTER = 'VIEW_FILTER'
 export const FOCUS_ENTITY = 'FOCUS_ENTITY'
+
+// Undo Redo Enhanced Action Types
+
+export const ENHANCE_TYPE_UNDO = 'enhance_type_undo'
+export const ENHANCE_TYPE_REDO = 'enhance_type_redo'
+export const ENHANCE_TYPE_NORMAL = 'enhance_type_normal'

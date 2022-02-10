@@ -22,9 +22,23 @@ import { combineReducers } from 'redux'
  *
  * Redo Action: dispatches the top of the past stack
  * adds the inverse of the top of the future stack to the past stack
+ *
+ * let S_0 = past: [], present: [S_P0], future: []
+ *
+ * A1 * S_0 = S_1 = past: [... , A1^-1], present: [S_P1], future: []
+ *
+ * U * S_1 = S_1U = past:[...], present:[S_P0], future:[A1]
+ *
+ * S_P0 * A1 = S_P1 * A1^-1
+ *
+ * R * S_1U = S_1 = past:[... , A1^-1], present:[S_P1], future:[]
+ *
+ * A2 * S_1 = S_2 = past: [..., A1^-1, A2^-1], present: [S_P2], future:[]
+ *
+ * A2 * S_1U = S_1U-2 = past:[..., A2^-1], present:[S_P0-2], future:[]
  */
 
-const undohistorylength = 100
+const MAX_UNDO_LENGTH = 100
 
 const actionStackInitialState = []
 
@@ -34,85 +48,94 @@ export const combinedReducer = combineReducers({
     future: futureReducer
 })
 
-export function redoUndoActionEnhancer(state, action) {
-    switch (action.type) {
-        case actionTypes.GLOBAL_UNDO: {
-            return enhanceUndoRedoAction(state, false)
-        }
-        case actionTypes.GLOBAL_REDO: {
-            return enhanceUndoRedoAction(state, true)
-        }
-        default: {
-            return action
-        }
-    }
-}
-
 export default function undoRedoReducer(state, action) {
     let enhancedAction = redoUndoActionEnhancer(state, action)
     if (enhancedAction.type === actionTypes.EMPTY) {
-        console.log('ERROR IMPROPER action' + enhancedAction.type + state)
-        return state
-    } else {
-        return combinedReducer(state, enhancedAction)
+        console.log('ERROR IMPROPER action:' + JSON.stringify(action) + '\n' + state)
     }
+    return combinedReducer(state, enhancedAction)
 }
 
 export function pastReducer(state = actionStackInitialState, action) {
-    if (!action.type || !action.isEnhanced) {
+    if (!action.enhanceType) {
         return state
     }
-    switch (action.type) {
+    let returnState = []
+    switch (action.enhanceType) {
         // In both Undo, remove one from the past stack
-        case actionTypes.GLOBAL_UNDO: {
+        case actionTypes.ENHANCE_TYPE_UNDO: {
             let oldActionStackLen = state.length
-            return [...state.slice(0, oldActionStackLen - 1)]
+            return state.slice(0, oldActionStackLen - 1)
         }
-        case actionTypes.GLOBAL_REDO: {
-            return [...state, action.payload]
+        // Otherwise append to the state
+        case actionTypes.ENHANCE_TYPE_REDO: {
+            returnState = [...state, action.invertedAction]
         }
-        case actionTypes.EMPTY: {
-            return state
-        }
-        // Otherwise append action (should be inverted) to stack
-        default: {
-            return [...state, action]
+        case actionTypes.ENHANCE_TYPE_NORMAL: {
+            returnState = [...state, action.invertedAction]
         }
     }
+
+    if (returnState.length > MAX_UNDO_LENGTH) {
+        return [returnState.slice(1)]
+    }
+    return returnState
 }
 
 export function futureReducer(state = actionStackInitialState, action) {
-    if (!action.isEnhanced) {
+    if (!action.enhanceType) {
         return state
     }
-    switch (action.type) {
-        // Remove one from the future
-        case actionTypes.GLOBAL_REDO: {
+    switch (action.enhanceType) {
+        case actionTypes.ENHANCE_TYPE_REDO: {
             let oldActionStackLen = state.length
-            return [...state.slice(0, oldActionStackLen - 1)]
+            return state.slice(0, oldActionStackLen - 1)
         }
-        // Append inverted action from past to the future
-        case actionTypes.GLOBAL_UNDO: {
-            return [...state, action.payload]
+        case actionTypes.ENHANCE_TYPE_UNDO: {
+            return [...state, action.invertedAction]
         }
-        // Default case, no actions
-        default: {
+        case actionTypes.ENHANCE_TYPE_NORMAL: {
             return []
         }
     }
 }
 
-// Get the inverse of top of the future/past stack
-export function enhanceUndoRedoAction(state, isFuture) {
-    let pastOrFuture = isFuture ? state.future : state.past
-
-    if (pastOrFuture.length > 0) {
-        let actionToInvert = pastOrFuture[pastOrFuture.length - 1]
-        let invertedAction = getInverseAction(state.present, actionToInvert)
+export function redoUndoActionEnhancer(state, action) {
+    if (!action.type) {
         return {
-            type: invertedAction.type,
-            payload: invertedAction.payload,
-            isEnhanced: true
+            type: actionTypes.EMPTY
+        }
+    }
+    switch (action.type) {
+        case actionTypes.GLOBAL_UNDO: {
+            return redoUndoActionEnhancerHelper(state, false)
+        }
+        case actionTypes.GLOBAL_REDO: {
+            return redoUndoActionEnhancerHelper(state, true)
+        }
+        default: {
+            return {
+                type: action.type,
+                payload: action.payload,
+                invertedAction: getInverseAction(state.present, action),
+                enhanceType: actionTypes.ENHANCE_TYPE_NORMAL
+            }
+        }
+    }
+}
+
+// Get the inverse of top of the future/past stack to the payload of redo/undo action
+function redoUndoActionEnhancerHelper(state, isRedo) {
+    let actionStack = isRedo ? state.future : state.past
+    let enhanceType = isRedo ? actionTypes.ENHANCE_TYPE_REDO : actionTypes.ENHANCE_TYPE_UNDO
+
+    if (actionStack.length > 0) {
+        let stackAction = actionStack[actionStack.length - 1]
+        return {
+            type: stackAction.type,
+            payload: stackAction.payload,
+            invertedAction: getInverseAction(state.present, stackAction),
+            enhanceType: enhanceType
         }
     } else {
         return {
