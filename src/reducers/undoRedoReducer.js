@@ -42,13 +42,27 @@ const MAX_UNDO_LENGTH = 100
 
 const actionStackInitialState = []
 
+const defaultState = {
+    past: [],
+    present: {
+        agencies: [],
+        lines: [],
+        services: [],
+        serviceRoutes: [],
+        stations: [],
+        tracks: [],
+        transfers: []
+    },
+    future: []
+}
+
 export const combinedReducer = combineReducers({
     past: pastReducer,
     present: presentReducer,
     future: futureReducer
 })
 
-export default function undoRedoReducer(state, action) {
+export default function undoRedoReducer(state = defaultState, action) {
     let enhancedAction = redoUndoActionEnhancer(state, action)
     if (enhancedAction.type === actionTypes.EMPTY) {
         console.log('ERROR IMPROPER action:' + JSON.stringify(action) + '\n' + state)
@@ -101,7 +115,7 @@ export function futureReducer(state = actionStackInitialState, action) {
 }
 
 export function redoUndoActionEnhancer(state, action) {
-    if (!action.type) {
+    if (!action.type || action.type == actionTypes.EMPTY || action.type == '@@INIT') {
         return {
             type: actionTypes.EMPTY
         }

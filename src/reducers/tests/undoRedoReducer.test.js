@@ -23,25 +23,13 @@ let defaultState = {
         serviceRoutes: [],
         stations: [],
         tracks: [],
-        transfers: [],
-        viewState: {
-            focusType: null,
-            focusID: null,
-            screen: null,
-            searchString: null,
-            userID: null,
-            userType: null,
-            viewMode: null,
-            viewParams: null,
-            window: null,
-            zoom: null
-        }
+        transfers: []
     },
     future: []
 }
 
-// const mockStore = configureMockStore()
-
+let initAction = { type: '@@INIT' }
+let emptyAction = { type: 'EMPTY' }
 let action1 = { type: actionTypes.ADD_AGENCY, payload: { name: 'One', color: 'blue' } }
 let action2 = { type: actionTypes.ADD_AGENCY, payload: { name: 'Two', color: 'red' } }
 let action3 = { type: actionTypes.EDIT_AGENCY, payload: { id: 1, name: 'TwoPlus', color: 'redPlus' } }
@@ -63,19 +51,7 @@ let s00 = {
         serviceRoutes: [],
         stations: [],
         tracks: [],
-        transfers: [],
-        viewState: {
-            focusType: null,
-            focusID: null,
-            screen: null,
-            searchString: null,
-            userID: null,
-            userType: null,
-            viewMode: null,
-            viewParams: null,
-            window: null,
-            zoom: null
-        }
+        transfers: []
     },
     future: []
 }
@@ -88,19 +64,7 @@ let s0 = {
         serviceRoutes: [],
         stations: [],
         tracks: [],
-        transfers: [],
-        viewState: {
-            focusType: null,
-            focusID: null,
-            screen: null,
-            searchString: null,
-            userID: null,
-            userType: null,
-            viewMode: null,
-            viewParams: null,
-            window: null,
-            zoom: null
-        }
+        transfers: []
     },
     future: []
 }
@@ -114,19 +78,7 @@ let s0_U = {
         serviceRoutes: [],
         stations: [],
         tracks: [],
-        transfers: [],
-        viewState: {
-            focusType: null,
-            focusID: null,
-            screen: null,
-            searchString: null,
-            userID: null,
-            userType: null,
-            viewMode: null,
-            viewParams: null,
-            window: null,
-            zoom: null
-        }
+        transfers: []
     },
     future: [action2]
 }
@@ -140,19 +92,7 @@ let s0_UU = {
         serviceRoutes: [],
         stations: [],
         tracks: [],
-        transfers: [],
-        viewState: {
-            focusType: null,
-            focusID: null,
-            screen: null,
-            searchString: null,
-            userID: null,
-            userType: null,
-            viewMode: null,
-            viewParams: null,
-            window: null,
-            zoom: null
-        }
+        transfers: []
     },
     future: [action2, action1]
 }
@@ -166,19 +106,7 @@ let s1 = {
         serviceRoutes: [],
         stations: [],
         tracks: [],
-        transfers: [],
-        viewState: {
-            focusType: null,
-            focusID: null,
-            screen: null,
-            searchString: null,
-            userID: null,
-            userType: null,
-            viewMode: null,
-            viewParams: null,
-            window: null,
-            zoom: null
-        }
+        transfers: []
     },
     future: []
 }
@@ -192,19 +120,7 @@ let s1_U = {
         serviceRoutes: [],
         stations: [],
         tracks: [],
-        transfers: [],
-        viewState: {
-            focusType: null,
-            focusID: null,
-            screen: null,
-            searchString: null,
-            userID: null,
-            userType: null,
-            viewMode: null,
-            viewParams: null,
-            window: null,
-            zoom: null
-        }
+        transfers: []
     },
     future: [action3]
 }
@@ -283,6 +199,10 @@ describe('future reducer', function () {
 })
 
 describe('enhanceUndoRedoAction', function () {
+    it('should return nothing with empty action', () => {
+        expect(redoUndoActionEnhancer(defaultState, initAction)).toEqual(emptyAction)
+    })
+
     it('should get the enhanced action for top of past stack', () => {
         expect(redoUndoActionEnhancer(s0, undoActions.undo())).toEqual({
             type: action2inv.type,
@@ -336,6 +256,8 @@ describe('undo-redo reducer', function () {
     })
 
     it('should correctly perform a normal action', () => {
+        expect(undoRedoReducer(defaultState, initAction)).toEqual(defaultState)
+
         expect(undoRedoReducer(defaultState, action1)).toEqual(s00)
 
         expect(undoRedoReducer(s00, action2)).toEqual(s0)
